@@ -3,13 +3,13 @@
 	<groupId>com.cloudera</groupId>
 	<artifactId>cloudera-cyclehire</artifactId>
 	<packaging>pom</packaging>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 
 	<scm>
 		<connection>scm:git:git@github.com:ggear/cloudera-cyclehire.git</connection>
 		<url>scm:git:git@github.com:ggear/cloudera-cyclehire.git</url>
 		<developerConnection>scm:git:git@github.com:ggear/cloudera-cyclehire.git</developerConnection>
-	  <tag>cloudera-cyclehire-0.0.1</tag>
+	  <tag>HEAD</tag>
   </scm>
 
 	<distributionManagement>

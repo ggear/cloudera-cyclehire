@@ -4,12 +4,12 @@
 	<groupId>com.cloudera.cyclehire.repo.bom.cdh</groupId>
 	<artifactId>cloudera-cyclehire-repo-bom-cdh4-client</artifactId>
 	<packaging>pom</packaging>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 
 	<parent>
 		<groupId>com.cloudera.cyclehire.repo.bom</groupId>
 		<artifactId>cloudera-cyclehire-repo-bom-cdh4</artifactId>
-		<version>0.0.1</version>
+		<version>0.0.2-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
