@@ -29,4 +29,5 @@ mvn clean install -PREL,ALL
 Release
 -------------------------------------------------------------------------------
 
-mvn release:prepare
+mvn release:prepare -B -DreleaseVersion=Major.Minor.Patch -DdevelopmentVersion=Major.Minor.Patch-SNAPSHOT
+mvn release:clean
