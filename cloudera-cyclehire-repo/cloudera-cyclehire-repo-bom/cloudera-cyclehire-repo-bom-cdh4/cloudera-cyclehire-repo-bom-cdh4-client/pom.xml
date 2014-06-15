@@ -63,10 +63,6 @@
 					<artifactId>jackson-mapper-asl</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>commons-io</groupId>
-					<artifactId>commons-io</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
 				</exclusion>
@@ -177,10 +173,6 @@
 				<exclusion>
 					<groupId>org.codehaus.jettison</groupId>
 					<artifactId>jettison</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.commons</groupId>
-					<artifactId>commons-compress</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>org.glassfish.grizzly</groupId>
@@ -362,10 +354,6 @@
 					<artifactId>jackson-mapper-asl</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>commons-io</groupId>
-					<artifactId>commons-io</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
 				</exclusion>
@@ -476,10 +464,6 @@
 				<exclusion>
 					<groupId>org.codehaus.jettison</groupId>
 					<artifactId>jettison</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.commons</groupId>
-					<artifactId>commons-compress</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>org.glassfish.grizzly</groupId>

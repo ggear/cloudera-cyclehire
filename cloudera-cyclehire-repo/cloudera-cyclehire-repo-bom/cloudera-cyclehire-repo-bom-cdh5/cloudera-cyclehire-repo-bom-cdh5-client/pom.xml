@@ -164,10 +164,6 @@
 					<artifactId>jackson-jaxrs</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>org.apache.commons</groupId>
-					<artifactId>commons-compress</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>javax.servlet</groupId>
 					<artifactId>servlet-api</artifactId>
 				</exclusion>
@@ -190,10 +186,6 @@
 				<exclusion>
 					<groupId>javax.inject</groupId>
 					<artifactId>javax.inject</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>commons-io</groupId>
-					<artifactId>commons-io</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>com.sun.jersey.contribs</groupId>
@@ -395,10 +387,6 @@
 					<artifactId>jackson-jaxrs</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>org.apache.commons</groupId>
-					<artifactId>commons-compress</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>javax.servlet</groupId>
 					<artifactId>servlet-api</artifactId>
 				</exclusion>
@@ -421,10 +409,6 @@
 				<exclusion>
 					<groupId>javax.inject</groupId>
 					<artifactId>javax.inject</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>commons-io</groupId>
-					<artifactId>commons-io</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>com.sun.jersey.contribs</groupId>
