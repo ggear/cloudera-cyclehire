@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.cloudera.cyclehire</groupId>
+	<artifactId>cloudera-cyclehire-main</artifactId>
+	<packaging>pom</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<parent>
+		<groupId>com.cloudera</groupId>
+		<artifactId>cloudera-cyclehire</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<modules>
+		<module>cloudera-cyclehire-main-test</module>
+		<module>cloudera-cyclehire-main-common</module>
+		<module>cloudera-cyclehire-main-ingress</module>
+		<module>cloudera-cyclehire-main-process</module>
+		<module>cloudera-cyclehire-main-science</module>
+		<module>cloudera-cyclehire-main-egress</module>
+		<module>cloudera-cyclehire-main-assembly</module>
+		<module>cloudera-cyclehire-main-test-system</module>
+	</modules>
+
+	<build>
+		<filters>
+			<filter>./../cloudera-cyclehire-main-assembly/src/main/filter/${target.environment}_filter.properties</filter>
+		</filters>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/webapp</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
+	</build>
+
+</project>

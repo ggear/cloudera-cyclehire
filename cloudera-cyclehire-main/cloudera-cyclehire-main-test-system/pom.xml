@@ -1,0 +1,113 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.cloudera.cyclehire.main</groupId>
+	<artifactId>cloudera-cyclehire-main-test-system</artifactId>
+	<packaging>jar</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<parent>
+		<groupId>com.cloudera.cyclehire</groupId>
+		<artifactId>cloudera-cyclehire-main</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.cloudera.cyclehire.main</groupId>
+			<artifactId>cloudera-cyclehire-main-assembly</artifactId>
+			<version>${project.version}</version>
+			<classifier>assembly</classifier>
+			<type>tar.gz</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>${maven.integration-test.skip}</skipTests>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack-assembly</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>com.cloudera.cyclehire.main</groupId>
+									<artifactId>cloudera-cyclehire-main-assembly</artifactId>
+									<version>${project.version}</version>
+									<classifier>assembly</classifier>
+									<type>tar.gz</type>
+									<outputDirectory>target/${project.assembly-test-dir}</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+							<skip>${maven.assembly.skip}</skip>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack-test-data</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeArtifactIds>cloudera-cyclehire-data</includeArtifactIds>
+							<excludes>**\/*.sh</excludes>
+							<outputDirectory>${project.build.directory}/test-data</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>link-data</id>
+						<phase>test-compile</phase>
+						<configuration>
+							<target>
+								<symlink
+									link="${project.build.directory}/${project.assembly-test-dir}/cloudera-cyclehire-main-assembly-${project.version}/data/cyclehire"
+									resource="../../../../../../cloudera-cyclehire-data/data/cyclehire"
+									failonerror="false" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>link-hadoop</id>
+						<phase>process-sources</phase>
+						<configuration>
+							<target>
+								<mkdir dir="${project.build.directory}/${project.runtime-test-dir}" />
+								<symlink
+									link="${project.build.directory}/${project.runtime-test-dir}/hadoop"
+									resource="../../../../cloudera-cyclehire-repo/cloudera-cyclehire-repo-runtime/target/test-runtime/hadoop"
+									failonerror="false" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

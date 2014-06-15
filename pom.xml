@@ -1,0 +1,181 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.cloudera</groupId>
+	<artifactId>cloudera-cyclehire</artifactId>
+	<packaging>pom</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<scm>
+		<connection>scm:git:git@github.com:ggear/cloudera-cyclehire.git</connection>
+		<url>scm:git:git@github.com:ggear/cloudera-cyclehire.git</url>
+		<developerConnection>scm:git:git@github.com:ggear/cloudera-cyclehire.git</developerConnection>
+	</scm>
+
+	<distributionManagement>
+		<site>
+			<url>scm:git:git@github.com:ggear/cloudera-cyclehire.git</url>
+		</site>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>cdh.repo</id>
+			<url>https://repository.cloudera.com/content/groups/cloudera-repos</url>
+			<name>Cloudera Repository</name>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<properties>
+
+		<target.environment>DEVELOPMENT</target.environment>
+
+		<maven.test.skip>false</maven.test.skip>
+		<maven.system-test.skip>true</maven.system-test.skip>
+		<maven.integration-test.skip>true</maven.integration-test.skip>
+		<maven.data-download.skip>true</maven.data-download.skip>
+		<maven.assembly.skip>false</maven.assembly.skip>
+
+		<java.version>1.6</java.version>
+
+<!--		
+		<hadoop-cdh.version>4</hadoop-cdh.version>
+		<hadoop.version>2.0.0-cdh4.6.0</hadoop.version>
+		<hadoop-hive.version>0.10.0-cdh4.6.0</hadoop-hive.version>
+-->
+		<hadoop-cdh.version>5</hadoop-cdh.version>
+		<hadoop.version>2.3.0-cdh5.0.2</hadoop.version>
+		<hadoop-hive.version>0.12.0-cdh5.0.2</hadoop-hive.version>
+
+		<opencsv.version>2.3</opencsv.version>
+		<slf4j.version>1.6.4</slf4j.version>
+		<log4j.version>1.2.16</log4j.version>
+		<commons-exec.version>1.1</commons-exec.version>
+		<junit.version>4.9</junit.version>
+		<mrunit.version>0.9.0-incubating</mrunit.version>
+
+		<project.runtime-test-dir>test-runtime</project.runtime-test-dir>
+		<project.assembly-test-dir>test-assembly</project.assembly-test-dir>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<project.runtime.heap.max>2048</project.runtime.heap.max>
+
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>DEV</id>
+			<properties>
+				<target.environment>DEVELOPMENT</target.environment>
+			</properties>
+		</profile>
+		<profile>
+			<id>REL</id>
+			<properties>
+				<target.environment>RELEASE</target.environment>
+			</properties>
+		</profile>
+		<profile>
+			<id>ITR</id>
+			<properties>
+				<maven.test.skip>true</maven.test.skip>
+				<maven.system-test.skip>true</maven.system-test.skip>
+				<maven.integration-test.skip>true</maven.integration-test.skip>
+				<maven.data-download.skip>true</maven.data-download.skip>
+				<maven.assembly.skip>true</maven.assembly.skip>
+			</properties>
+		</profile>
+		<profile>
+			<id>BLD</id>
+			<properties>
+				<maven.test.skip>false</maven.test.skip>
+				<maven.system-test.skip>true</maven.system-test.skip>
+				<maven.integration-test.skip>true</maven.integration-test.skip>
+				<maven.data-download.skip>true</maven.data-download.skip>
+				<maven.assembly.skip>true</maven.assembly.skip>
+			</properties>
+		</profile>
+		<profile>
+			<id>PKG</id>
+			<properties>
+				<maven.test.skip>true</maven.test.skip>
+				<maven.system-test.skip>true</maven.system-test.skip>
+				<maven.integration-test.skip>true</maven.integration-test.skip>
+				<maven.data-download.skip>true</maven.data-download.skip>
+				<maven.assembly.skip>false</maven.assembly.skip>
+			</properties>
+		</profile>
+		<profile>
+			<id>ALL</id>
+			<properties>
+				<maven.test.skip>false</maven.test.skip>
+				<maven.system-test.skip>false</maven.system-test.skip>
+				<maven.integration-test.skip>false</maven.integration-test.skip>
+				<maven.data-download.skip>false</maven.data-download.skip>
+				<maven.assembly.skip>false</maven.assembly.skip>
+			</properties>
+		</profile>
+	</profiles>
+
+	<modules>
+		<module>cloudera-cyclehire-docs</module>
+		<module>cloudera-cyclehire-data</module>
+		<module>cloudera-cyclehire-repo</module>
+		<module>cloudera-cyclehire-main</module>
+	</modules>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.5.1</version>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.7</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.9</version>
+					<configuration>
+						<argLine>-Xmx${project.runtime.heap.max}m</argLine>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>2.5.1</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.4</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+</project>

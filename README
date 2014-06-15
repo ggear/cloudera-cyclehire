@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------------
+Cloudera Cycle Hire Readme
+-------------------------------------------------------------------------------
+
+Sample Cloudera project to investigate the usage charactersics of the Transport
+for London Cycle Hire Scheme:
+
+http://www.tfl.gov.uk/modes/cycling/barclays-cycle-hire
+
+-------------------------------------------------------------------------------
+Build
+-------------------------------------------------------------------------------
+
+mvn clean install -PDEV,ITR
+
+-------------------------------------------------------------------------------
+Package
+-------------------------------------------------------------------------------
+
+mvn clean install -PREL,PKG
+
+-------------------------------------------------------------------------------
+Test
+-------------------------------------------------------------------------------
+
+mvn clean install -PREL,ALL
+
+-------------------------------------------------------------------------------
+Release
+-------------------------------------------------------------------------------
+
+git checkout -b maintenance-1.0.0
+mvn --batch-mode release:prepare
+mvn release:perform -Dgoals=install
+git checkout master
+git merge maintenance-1.0.0
+mvn versions:set -DnewVersion=1.1.0-SNAPSHOT -DgenerateBackupPoms=false
+git commit -a -m "Preparing for next major release: updated version in master"
