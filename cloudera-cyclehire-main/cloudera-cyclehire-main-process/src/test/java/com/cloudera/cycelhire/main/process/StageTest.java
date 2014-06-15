@@ -2,6 +2,8 @@ package com.cloudera.cycelhire.main.process;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
@@ -43,6 +45,7 @@ public class StageTest extends BaseTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testStageValid() throws FileNotFoundException, IllegalArgumentException, IOException {
 
     Assert.assertEquals(
@@ -106,8 +109,10 @@ public class StageTest extends BaseTest {
 
     stageDriver.reset();
 
-    getFileSystem().delete(
-        HDFSClientUtil.listFiles(getFileSystem(), new Path(BaseTestCase.PATH_HDFS_DIR_RAW_STAGING), true).get(0), true);
+    List<Path> stagingPaths = HDFSClientUtil.listFiles(getFileSystem(),
+        new Path(BaseTestCase.PATH_HDFS_DIR_RAW_STAGING), true);
+    Collections.sort(stagingPaths);
+    getFileSystem().delete(stagingPaths.get(0), true);
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         stageDriver.runner(new String[] { BaseTestCase.PATH_HDFS_DIR_RAW_LANDING,
