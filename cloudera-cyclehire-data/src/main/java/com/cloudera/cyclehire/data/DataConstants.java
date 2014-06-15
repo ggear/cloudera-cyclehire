@@ -25,9 +25,7 @@ public class DataConstants {
     }
   });
   static {
-    System.err.println(Arrays.asList(PATH_LOCAL_XMLS));
     Arrays.sort(PATH_LOCAL_XMLS);
-    System.err.println(Arrays.asList(PATH_LOCAL_XMLS));
   }
   public static final String[][] PATH_LOCAL_XMLSS = new String[PATH_LOCAL_XMLS.length][];
   static {
