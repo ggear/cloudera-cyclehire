@@ -3,7 +3,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cloudera.cyclehire.main</groupId>
-	<artifactId>cloudera-cyclehire-main-egress</artifactId>
+	<artifactId>cloudera-cyclehire-main-report</artifactId>
 	<packaging>jar</packaging>
 	<version>0.0.2-SNAPSHOT</version>
 

@@ -4,19 +4,19 @@ Sample Cloudera project to investigate the usage characteristics of the Transpor
 
 http://www.tfl.gov.uk/modes/cycling/barclays-cycle-hire
 
+##Compile
+
+```bash
+mvn clean install -PDEV,CMP
+```
+
 ##Build
 
 ```bash
-mvn clean install -PDEV,ITR
+mvn clean install -PDEV,BLD
 ```
 
 ##Package
-
-```bash
-mvn clean install -PREL,PKG
-```
-
-##Test
 
 ```bash
 mvn clean install -PREL,ALL
