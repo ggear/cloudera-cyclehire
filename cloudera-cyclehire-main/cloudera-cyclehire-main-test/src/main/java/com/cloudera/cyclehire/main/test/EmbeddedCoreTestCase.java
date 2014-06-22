@@ -6,7 +6,8 @@ import org.apache.hadoop.mapred.HadoopTestCase;
 import org.junit.After;
 import org.junit.Before;
 
-public abstract class EmbeddedCoreTestCase extends HadoopTestCase implements BaseTest {
+public abstract class EmbeddedCoreTestCase extends HadoopTestCase implements
+    BaseTest {
 
   public EmbeddedCoreTestCase() throws IOException {
     super(HadoopTestCase.LOCAL_MR, HadoopTestCase.LOCAL_FS, 2, 2);

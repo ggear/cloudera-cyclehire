@@ -39,7 +39,7 @@
 		<maven.data-download.skip>true</maven.data-download.skip>
 		<maven.assembly.skip>false</maven.assembly.skip>
 
-		<java.version>1.6</java.version>
+		<java.version>1.7</java.version>
 <!--		
 		<hadoop-cdh.version>4</hadoop-cdh.version>
 		<hadoop.version>2.0.0-cdh4.6.0</hadoop.version>

@@ -30,9 +30,12 @@ public class EmbeddedHiveTestCaseTest extends EmbeddedHiveTestCase {
     writer.close();
 
     execute("/com/cloudera/cyclehire/main/test/ddl", "create.sql");
-    execute("LOAD DATA LOCAL INPATH '" + localDataFile.toString() + "' OVERWRITE INTO TABLE somedata");
-    Assert.assertEquals("3", executeAndFetchOne("SELECT count(1) AS cnt FROM somedata"));
-    Assert.assertEquals("2", executeAndFetchOne("SELECT col1 FROM somedata WHERE col2 = 2"));
+    execute("LOAD DATA LOCAL INPATH '" + localDataFile.toString()
+        + "' OVERWRITE INTO TABLE somedata");
+    Assert.assertEquals("3",
+        executeAndFetchOne("SELECT count(1) AS cnt FROM somedata"));
+    Assert.assertEquals("2",
+        executeAndFetchOne("SELECT col1 FROM somedata WHERE col2 = 2"));
     execute("DROP TABLE somedata");
 
   }

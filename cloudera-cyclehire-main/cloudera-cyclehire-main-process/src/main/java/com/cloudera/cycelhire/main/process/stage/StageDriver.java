@@ -1,8 +1,8 @@
 package com.cloudera.cycelhire.main.process.stage;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.hadoop.conf.Configuration;
@@ -53,9 +53,12 @@ public class StageDriver extends Driver {
   @Override
   public void reset() {
     super.reset();
-    for (Counter counter : new Counter[] { Counter.FILES_SKIPPED, Counter.FILES_FAILED, Counter.FILES_SUCCESSFUL,
-        Counter.FILES, Counter.PARTITIONS_SKIPPED, Counter.PARTITIONS_FAILED, Counter.PARTITIONS_SUCCESSFUL,
-        Counter.PARTITIONS }) {
+    for (Counter counter : new Counter[] { Counter.FILES_SKIPPED,
+        Counter.FILES_FAILED, Counter.FILES_SUCCESSFUL, Counter.FILES,
+        Counter.BATCHES_SKIPPED, Counter.BATCHES_FAILED,
+        Counter.BATCHES_SUCCESSFUL, Counter.BATCHES,
+        Counter.PARTITIONS_SKIPPED, Counter.PARTITIONS_FAILED,
+        Counter.PARTITIONS_SUCCESSFUL, Counter.PARTITIONS }) {
       incramentCounter(StageDriver.class.getCanonicalName(), counter, 0);
     }
   }
@@ -71,9 +74,11 @@ public class StageDriver extends Driver {
 
     hdfsLandingPath = new Path(arguments[0]);
     if (!hdfs.exists(hdfsLandingPath)
-        || !HDFSClientUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser().getUserName(), UserGroupInformation
+        || !HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
+            .getCurrentUser().getUserName(), UserGroupInformation
             .getCurrentUser().getGroupNames(), hdfsLandingPath, FsAction.READ)) {
-      throw new Exception("HDFS landing directory [" + hdfsLandingPath + "] not available to user ["
+      throw new Exception("HDFS landing directory [" + hdfsLandingPath
+          + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
     if (log.isInfoEnabled()) {
@@ -83,16 +88,19 @@ public class StageDriver extends Driver {
     hdfsStagingPath = new Path(arguments[1]);
     if (hdfs.exists(hdfsStagingPath)) {
       if (!hdfs.isDirectory(hdfsStagingPath)) {
-        throw new Exception("HDFS staging directory [" + hdfsStagingPath + "] is not a directory");
+        throw new Exception("HDFS staging directory [" + hdfsStagingPath
+            + "] is not a directory");
       }
-      if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser().getUserName(), UserGroupInformation
+      if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
+          .getCurrentUser().getUserName(), UserGroupInformation
           .getCurrentUser().getGroupNames(), hdfsStagingPath, FsAction.ALL)) {
         throw new Exception("HDFS staging directory [" + hdfsStagingPath
             + "] has too restrictive permissions to read/write as user ["
             + UserGroupInformation.getCurrentUser().getUserName() + "]");
       }
     } else {
-      hdfs.mkdirs(hdfsStagingPath, new FsPermission(FsAction.ALL, FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
+      hdfs.mkdirs(hdfsStagingPath, new FsPermission(FsAction.ALL,
+          FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
     }
     if (log.isInfoEnabled()) {
       log.info("HDFS staging directory [" + hdfsStagingPath + "] validated");
@@ -102,58 +110,74 @@ public class StageDriver extends Driver {
   }
 
   @Override
-  public int execute() throws InterruptedException, ExecutionException, IOException, ClassNotFoundException {
+  public int execute() throws InterruptedException, ExecutionException,
+      IOException, ClassNotFoundException {
 
     FileSystem hdfs = FileSystem.newInstance(getConf());
-    for (Path pathLanding : HDFSClientUtil.listFiles(hdfs, hdfsLandingPath, true)) {
-      if (!PartitionFlag.isValue(pathLanding.getName())
-          && PartitionFlag.isValue(hdfs, pathLanding, PartitionFlag._SUCCESS)) {
-        PartitionFlag partitionFlag = PartitionFlag._PARTITION;
-        PartitionKey partitionKey = new PartitionKey();
-        try {
-          partitionKey.batch(pathLanding.getParent().getName()).build();
-        } catch (IllegalArgumentException exception) {
-          partitionFlag = PartitionFlag._FAILED;
-        }
-        String pathLandingName = pathLanding.getName();
+
+    Set<String> counterFiles = new HashSet<String>();
+    Set<String> counterBatches = new HashSet<String>();
+    Set<String> counterPartitions = new HashSet<String>();
+    for (Path pathLanding : HDFSClientUtil.listFiles(hdfs, hdfsLandingPath,
+        true)) {
+      if (!PartitionFlag.isValue(pathLanding.getName())) {
         String pathLandingString = pathLanding.toString();
-        String pathStagingStringPrefix = pathLandingString.substring(0,
-            pathLandingString.length() - pathLandingName.length()).replace(hdfsLandingPath.toString(),
-            hdfsStagingPath.toString());
-        List<String> pathPartitionStrings = partitionFlag.equals(PartitionFlag._FAILED) ? Arrays
-            .asList(new String[] { PartitionKey.PARTITION_UNKNOWN }) : partitionKey.getPartitions();
-        boolean pathLandingSkipped = true;
-        for (String partition : pathPartitionStrings) {
-          StringBuilder pathStagingString = new StringBuilder(512);
-          pathStagingString.append(pathStagingStringPrefix);
-          pathStagingString.append(partition);
-          pathStagingString.append('/');
-          pathStagingString.append(pathLandingName);
-          Path pathStaging = new Path(pathStagingString.toString());
-          if (PartitionFlag.valueOf(hdfs, pathStaging) == null) {
-            pathLandingSkipped = false;
-            HDFSClientUtil.createSymlink(hdfs, pathLanding, pathStaging, getConf());
-            hdfs.createNewFile(new Path(pathStaging.getParent(), partitionFlag.toString()));
-            if (partitionFlag.equals(PartitionFlag._PARTITION)) {
-              incramentCounter(StageDriver.class.getCanonicalName(), Counter.PARTITIONS_SUCCESSFUL, 1);
+        String hdfsLandingPathString = hdfsLandingPath.toString();
+        String pathLandingRelative = pathLandingString.substring(
+            pathLandingString.indexOf(hdfsLandingPathString)
+                + hdfsLandingPathString.length() + 1,
+            pathLandingString.length());
+        if (PartitionFlag.list(hdfs, pathLanding, PartitionFlag._SUCCESS)) {
+          for (PartitionKey partitionKey : PartitionKey.getKeys(pathLanding
+              .getParent().getName(), pathLanding.getName())) {
+            Path pathStaging = new Path(new StringBuilder(512)
+                .append(hdfsStagingPath).append('/')
+                .append(partitionKey.getPath()).toString());
+            if (PartitionFlag.list(hdfs, pathStaging).isEmpty()) {
+              if (partitionKey.isValid()) {
+                HDFSClientUtil.createSymlinkOrCopy(hdfs, pathLanding,
+                    pathStaging);
+                PartitionFlag.update(hdfs, pathStaging.getParent(),
+                    PartitionFlag._PARTITION);
+              } else {
+                // TODO: symlink to /erroneous, add _FAILED, check to skip
+                System.out.println("Errored file: " + pathLandingRelative);
+              }
+              incramentCounter(StageDriver.class.getCanonicalName(),
+                  partitionKey.isValid() ? Counter.FILES_SUCCESSFUL
+                      : Counter.FILES_FAILED, 1, pathLandingRelative,
+                  counterFiles);
+              incramentCounter(StageDriver.class.getCanonicalName(),
+                  partitionKey.isValid() ? Counter.BATCHES_SUCCESSFUL
+                      : Counter.BATCHES_FAILED, 1, partitionKey.getPartition()
+                      + partitionKey.getBatch(), counterBatches);
+              incramentCounter(StageDriver.class.getCanonicalName(),
+                  partitionKey.isValid() ? Counter.PARTITIONS_SUCCESSFUL
+                      : Counter.PARTITIONS_FAILED, 1,
+                  partitionKey.getPartition(), counterPartitions);
             } else {
-              incramentCounter(StageDriver.class.getCanonicalName(), Counter.PARTITIONS_FAILED, 1);
+              incramentCounter(StageDriver.class.getCanonicalName(),
+                  Counter.FILES_SKIPPED, 1, pathLandingRelative, counterFiles);
+              incramentCounter(StageDriver.class.getCanonicalName(),
+                  Counter.BATCHES_SKIPPED, 1, partitionKey.getPartition()
+                      + partitionKey.getBatch(), counterBatches);
+              incramentCounter(StageDriver.class.getCanonicalName(),
+                  Counter.PARTITIONS_SKIPPED, 1, partitionKey.getPartition(),
+                  counterPartitions);
             }
-          } else {
-            incramentCounter(StageDriver.class.getCanonicalName(), Counter.PARTITIONS_SKIPPED, 1);
           }
-          incramentCounter(StageDriver.class.getCanonicalName(), Counter.PARTITIONS, 1);
-        }
-        if (pathLandingSkipped) {
-          incramentCounter(StageDriver.class.getCanonicalName(), Counter.FILES_SKIPPED, 1);
-        } else if (partitionFlag.equals(PartitionFlag._FAILED)) {
-          incramentCounter(StageDriver.class.getCanonicalName(), Counter.FILES_FAILED, 1);
         } else {
-          incramentCounter(StageDriver.class.getCanonicalName(), Counter.FILES_SUCCESSFUL, 1);
+          incramentCounter(StageDriver.class.getCanonicalName(),
+              Counter.FILES_SKIPPED, 1, pathLandingRelative, counterFiles);
         }
-        incramentCounter(StageDriver.class.getCanonicalName(), Counter.FILES, 1);
       }
     }
+    incramentCounter(StageDriver.class.getCanonicalName(), Counter.FILES,
+        counterFiles.size());
+    incramentCounter(StageDriver.class.getCanonicalName(), Counter.BATCHES,
+        counterBatches.size());
+    incramentCounter(StageDriver.class.getCanonicalName(), Counter.PARTITIONS,
+        counterPartitions.size());
 
     return RETURN_SUCCESS;
 

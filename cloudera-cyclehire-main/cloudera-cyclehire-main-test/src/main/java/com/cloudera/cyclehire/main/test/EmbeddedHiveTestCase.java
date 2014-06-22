@@ -21,7 +21,8 @@ import org.slf4j.LoggerFactory;
 
 public abstract class EmbeddedHiveTestCase extends EmbeddedCoreTestCase {
 
-  private static Logger log = LoggerFactory.getLogger(EmbeddedHiveTestCase.class);
+  private static Logger log = LoggerFactory
+      .getLogger(EmbeddedHiveTestCase.class);
 
   private HiveInterface hive;
   private HiveConf hiveConf;
@@ -46,33 +47,39 @@ public abstract class EmbeddedHiveTestCase extends EmbeddedCoreTestCase {
   }
 
   public HiveConf getConf() throws TException {
-    return hiveConf == null ? hiveConf = new HiveConf(SessionState.class) : hiveConf;
+    return hiveConf == null ? hiveConf = new HiveConf(SessionState.class)
+        : hiveConf;
   }
 
   public void execute(String query) throws HiveServerException, TException {
     _execute(query);
   }
 
-  public List<String> executeAndFetchAll(String query) throws HiveServerException, TException {
+  public List<String> executeAndFetchAll(String query)
+      throws HiveServerException, TException {
     _execute(query);
     return _fetchAll(query);
   }
 
-  public String executeAndFetchOne(String query) throws HiveServerException, TException {
+  public String executeAndFetchOne(String query) throws HiveServerException,
+      TException {
     _execute(query);
     return _fetchOne(query);
   }
 
-  public void execute(String directory, String file) throws HiveServerException, TException, IOException {
-    for (String query : readColonDelimiteredLinesFromFileOnClasspath(directory, file)) {
+  public void execute(String directory, String file)
+      throws HiveServerException, TException, IOException {
+    for (String query : readColonDelimiteredLinesFromFileOnClasspath(directory,
+        file)) {
       _execute(query);
     }
   }
 
-  public List<List<String>> executeAndFetchAll(String directory, String file) throws HiveServerException, TException,
-      IOException {
+  public List<List<String>> executeAndFetchAll(String directory, String file)
+      throws HiveServerException, TException, IOException {
     List<List<String>> rows = new ArrayList<List<String>>();
-    for (String query : readColonDelimiteredLinesFromFileOnClasspath(directory, file)) {
+    for (String query : readColonDelimiteredLinesFromFileOnClasspath(directory,
+        file)) {
       _execute(query);
       rows.add(_fetchAll(query));
     }
@@ -89,7 +96,8 @@ public abstract class EmbeddedHiveTestCase extends EmbeddedCoreTestCase {
     }
   }
 
-  private List<String> _fetch(String query, List<String> rows) throws HiveServerException, TException {
+  private List<String> _fetch(String query, List<String> rows)
+      throws HiveServerException, TException {
     if (log.isDebugEnabled()) {
       StringBuilder rowsString = new StringBuilder();
       rowsString.append("Hive client test fetched results:\n" + query + "\n");
@@ -103,25 +111,31 @@ public abstract class EmbeddedHiveTestCase extends EmbeddedCoreTestCase {
     return rows;
   }
 
-  private List<String> _fetchAll(String query) throws HiveServerException, TException {
+  private List<String> _fetchAll(String query) throws HiveServerException,
+      TException {
     return _fetch(query, hive.fetchAll());
   }
 
   private String _fetchOne(String query) throws HiveServerException, TException {
-    return _fetch(query, Arrays.asList(new String[] { hive.fetchOne() })).get(0);
+    return _fetch(query, Arrays.asList(new String[] { hive.fetchOne() }))
+        .get(0);
   }
 
-  private List<String> readColonDelimiteredLinesFromFileOnClasspath(String directory, String file) throws IOException {
+  private List<String> readColonDelimiteredLinesFromFileOnClasspath(
+      String directory, String file) throws IOException {
     List<String> lines = new ArrayList<String>();
-    URL fileUrl = EmbeddedHiveTestCase.class.getResource(directory + "/" + file);
+    URL fileUrl = EmbeddedHiveTestCase.class
+        .getResource(directory + "/" + file);
     if (fileUrl != null) {
-      for (String line : FileUtils.readFileToString(new File(fileUrl.getFile())).split(";")) {
+      for (String line : FileUtils
+          .readFileToString(new File(fileUrl.getFile())).split(";")) {
         if (!line.trim().equals("")) {
           lines.add(line.trim());
         }
       }
       return lines;
     }
-    throw new IOException("Could not load file [" + directory + "/" + file + "] from classpath");
+    throw new IOException("Could not load file [" + directory + "/" + file
+        + "] from classpath");
   }
 }

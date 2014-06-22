@@ -26,33 +26,38 @@ public class PartitionTest extends BaseTest {
     partitionDriver = new PartitionDriver(getFileSystem().getConf());
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
-        stageDriver.runner(new String[] { BaseTestCase.PATH_HDFS_DIR_RAW_LANDING,
+        stageDriver.runner(new String[] {
+            BaseTestCase.PATH_HDFS_DIR_RAW_LANDING,
             BaseTestCase.PATH_HDFS_DIR_RAW_STAGING }));
   }
 
   @Test
   public void testPartitionInvalid() {
-    Assert.assertEquals(Driver.RETURN_FAILURE_RUNTIME, partitionDriver.runner(new String[0]));
     Assert.assertEquals(Driver.RETURN_FAILURE_RUNTIME,
-        partitionDriver.runner(new String[] { BaseTestCase.PATH_HDFS_DIR_RAW_STAGING }));
+        partitionDriver.runner(new String[0]));
+    Assert.assertEquals(Driver.RETURN_FAILURE_RUNTIME, partitionDriver
+        .runner(new String[] { BaseTestCase.PATH_HDFS_DIR_RAW_STAGING }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
-        partitionDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT,
+        partitionDriver.runner(new String[] {
+            BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT,
             BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
-        partitionDriver.runner(new String[] { BaseTestCase.PATH_HDFS_DIR_RAW_STAGING,
-            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING, BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING }));
+        partitionDriver.runner(new String[] {
+            BaseTestCase.PATH_HDFS_DIR_RAW_STAGING,
+            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING,
+            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING }));
   }
 
   @Test
   public void testPartitionValid() {
 
-    // TODO
-    // Assert.assertEquals(
-    // Driver.RETURN_SUCCESS,
-    // partitionDriver.runner(new String[] { BaseTestCase.PATH_HDFS_DIR_RAW_STAGING,
-    // BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING }));
+    Assert.assertEquals(
+        Driver.RETURN_SUCCESS,
+        partitionDriver.runner(new String[] {
+            BaseTestCase.PATH_HDFS_DIR_RAW_STAGING,
+            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING }));
 
   }
 

@@ -18,18 +18,25 @@ public abstract class BaseTestCase implements BaseTest {
 
   public static final String PATH_LOCAL_DIR_NON_EXISTANT = BaseTestCase
       .getPathLocal("target/test-data/some/non/existant/dir");
-  public static final String PATH_HDFS_DIR_NON_EXISTANT = BaseTestCase.getPathHDFS("some/non/existant/dir");
-  public static final String PATH_HDFS_DIR_RAW_LANDING = BaseTestCase.getPathHDFS("tmp/cyclehire/raw/landing");
-  public static final String PATH_HDFS_DIR_RAW_STAGING = BaseTestCase.getPathHDFS("tmp/cyclehire/raw/staging");
-  public static final String PATH_HDFS_DIR_RAW_PARTITIONING = BaseTestCase.getPathHDFS("tmp/cyclehire/raw/partition");
+  public static final String PATH_HDFS_DIR_NON_EXISTANT = BaseTestCase
+      .getPathHDFS("some/non/existant/dir");
+  public static final String PATH_HDFS_DIR_RAW_LANDING = BaseTestCase
+      .getPathHDFS("tmp/cyclehire/raw/landing");
+  public static final String PATH_HDFS_DIR_RAW_STAGING = BaseTestCase
+      .getPathHDFS("tmp/cyclehire/raw/staging");
+  public static final String PATH_HDFS_DIR_RAW_PARTITIONING = BaseTestCase
+      .getPathHDFS("tmp/cyclehire/raw/partition");
 
-  public static String PATH_LOCAL_DIR_TAR = BaseTestCase.getPathLocal(DataConstants.PATH_LOCAL_TAR);
-  public static String PATH_LOCAL_DIR_XML = BaseTestCase.getPathLocal(DataConstants.PATH_LOCAL_XML);
+  public static String PATH_LOCAL_DIR_TAR = BaseTestCase
+      .getPathLocal(DataConstants.PATH_LOCAL_TAR);
+  public static String PATH_LOCAL_DIR_XML = BaseTestCase
+      .getPathLocal(DataConstants.PATH_LOCAL_XML);
   public static String[] PATH_LOCAL_DIRS_XML = new String[DataConstants.PATH_LOCAL_XMLS.length];
   static {
     for (int i = 0; i < DataConstants.PATH_LOCAL_XMLS.length; i++) {
-      PATH_LOCAL_DIRS_XML[i] = BaseTestCase.getPathLocal(DataConstants.PATH_LOCAL_XML + "/"
-          + DataConstants.PATH_LOCAL_XMLS[i]);
+      PATH_LOCAL_DIRS_XML[i] = BaseTestCase
+          .getPathLocal(DataConstants.PATH_LOCAL_XML + "/"
+              + DataConstants.PATH_LOCAL_XMLS[i]);
     }
   }
 
@@ -38,11 +45,14 @@ public abstract class BaseTestCase implements BaseTest {
     System.setProperty("java.security.krb5.kdc", "kdc.cdhcluster.com");
     System.setProperty("java.security.krb5.conf", "/dev/null");
 
-    System.setProperty("derby.stream.error.file", BaseTest.PATH_LOCAL_WORKING_DIR + "/target/derby.log");
+    System.setProperty("derby.stream.error.file",
+        BaseTest.PATH_LOCAL_WORKING_DIR + "/target/derby.log");
 
     System.setProperty("dir.working", BaseTest.PATH_LOCAL_WORKING_DIR);
-    System.setProperty("dir.working.target", BaseTest.PATH_LOCAL_WORKING_DIR_TARGET);
-    System.setProperty("dir.working.target.hdfs", BaseTest.PATH_LOCAL_WORKING_DIR_TARGET_HDFS);
+    System.setProperty("dir.working.target",
+        BaseTest.PATH_LOCAL_WORKING_DIR_TARGET);
+    System.setProperty("dir.working.target.hdfs",
+        BaseTest.PATH_LOCAL_WORKING_DIR_TARGET_HDFS);
   }
 
   public static void initHadoopHome(String hadoopHome) {
@@ -74,9 +84,11 @@ public abstract class BaseTestCase implements BaseTest {
       fileSystem.delete(rootPath, true);
       fileSystem.mkdirs(rootPath);
       fileSystem.mkdirs(tmpPath);
-      fileSystem.setPermission(tmpPath, new FsPermission(FsAction.ALL, FsAction.ALL, FsAction.ALL));
+      fileSystem.setPermission(tmpPath, new FsPermission(FsAction.ALL,
+          FsAction.ALL, FsAction.ALL));
       fileSystem.mkdirs(userPath);
-      fileSystem.setPermission(userPath, new FsPermission(FsAction.ALL, FsAction.ALL, FsAction.ALL));
+      fileSystem.setPermission(userPath, new FsPermission(FsAction.ALL,
+          FsAction.ALL, FsAction.ALL));
     }
   }
 
@@ -86,29 +98,35 @@ public abstract class BaseTestCase implements BaseTest {
 
   public static String getPathLocal(String pathRelativeToModuleRoot) {
     String pathRelativeToModuleRootLessLeadingSlashes = stripLeadingSlashes(pathRelativeToModuleRoot);
-    return pathRelativeToModuleRootLessLeadingSlashes.equals("") ? PATH_LOCAL_WORKING_DIR.length() < 2 ? "/"
-        : PATH_LOCAL_WORKING_DIR.substring(0, PATH_LOCAL_WORKING_DIR.length() - 2) : new Path(PATH_LOCAL_WORKING_DIR,
+    return pathRelativeToModuleRootLessLeadingSlashes.equals("") ? PATH_LOCAL_WORKING_DIR
+        .length() < 2 ? "/" : PATH_LOCAL_WORKING_DIR.substring(0,
+        PATH_LOCAL_WORKING_DIR.length() - 2) : new Path(PATH_LOCAL_WORKING_DIR,
         pathRelativeToModuleRootLessLeadingSlashes).toUri().toString();
   }
 
   public static String getPathHDFS(String pathRelativeToHDFSRoot) {
     String pathRelativeToHDFSRootLessLeadingSlashes = stripLeadingSlashes(pathRelativeToHDFSRoot);
-    return pathRelativeToHDFSRootLessLeadingSlashes.equals("") ? PATH_HDFS : new Path(PATH_HDFS,
-        pathRelativeToHDFSRootLessLeadingSlashes).toUri().toString();
+    return pathRelativeToHDFSRootLessLeadingSlashes.equals("") ? PATH_HDFS
+        : new Path(PATH_HDFS, pathRelativeToHDFSRootLessLeadingSlashes).toUri()
+            .toString();
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private static void setEnvionment(Map<String, String> newenv) {
     try {
-      Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
-      Field theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
+      Class<?> processEnvironmentClass = Class
+          .forName("java.lang.ProcessEnvironment");
+      Field theEnvironmentField = processEnvironmentClass
+          .getDeclaredField("theEnvironment");
       theEnvironmentField.setAccessible(true);
-      Map<String, String> env = (Map<String, String>) theEnvironmentField.get(null);
+      Map<String, String> env = (Map<String, String>) theEnvironmentField
+          .get(null);
       env.putAll(newenv);
       Field theCaseInsensitiveEnvironmentField = processEnvironmentClass
           .getDeclaredField("theCaseInsensitiveEnvironment");
       theCaseInsensitiveEnvironmentField.setAccessible(true);
-      Map<String, String> cienv = (Map<String, String>) theCaseInsensitiveEnvironmentField.get(null);
+      Map<String, String> cienv = (Map<String, String>) theCaseInsensitiveEnvironmentField
+          .get(null);
       cienv.putAll(newenv);
     } catch (NoSuchFieldException e) {
       try {
@@ -134,9 +152,11 @@ public abstract class BaseTestCase implements BaseTest {
 
   private static String stripLeadingSlashes(String string) {
     int indexAfterLeadingSlash = 0;
-    while (indexAfterLeadingSlash < string.length() && string.charAt(indexAfterLeadingSlash) == '/')
+    while (indexAfterLeadingSlash < string.length()
+        && string.charAt(indexAfterLeadingSlash) == '/')
       ++indexAfterLeadingSlash;
-    return indexAfterLeadingSlash == 0 ? string : string.substring(indexAfterLeadingSlash, string.length());
+    return indexAfterLeadingSlash == 0 ? string : string.substring(
+        indexAfterLeadingSlash, string.length());
   }
 
 }

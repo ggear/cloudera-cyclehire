@@ -62,9 +62,12 @@ public class CopyDriver extends Driver {
 
   @Override
   public String[] options() {
-    return new String[] { CONF_DIR_INCLUDE + "=true|false", CONF_BLOCK_SINGLE + "=true|false",
-        CONF_THREAD_QUEUE + "=" + CONF_THREAD_QUEUE_FILE + "|" + CONF_THREAD_QUEUE_DIR,
-        CONF_THREAD_NUMBER + "=integer", CONF_TIMEOUT_SECS + "=integer" };
+    return new String[] {
+        CONF_DIR_INCLUDE + "=true|false",
+        CONF_BLOCK_SINGLE + "=true|false",
+        CONF_THREAD_QUEUE + "=" + CONF_THREAD_QUEUE_FILE + "|"
+            + CONF_THREAD_QUEUE_DIR, CONF_THREAD_NUMBER + "=integer",
+        CONF_TIMEOUT_SECS + "=integer" };
   }
 
   @Override
@@ -75,8 +78,9 @@ public class CopyDriver extends Driver {
   @Override
   public void reset() {
     super.reset();
-    for (Counter counter : new Counter[] { Counter.FILES_PENDING, Counter.FILES_SKIPPED, Counter.FILES_FAILED,
-        Counter.FILES_SUCCESSFUL, Counter.FILES }) {
+    for (Counter counter : new Counter[] { Counter.FILES_PENDING,
+        Counter.FILES_SKIPPED, Counter.FILES_FAILED, Counter.FILES_SUCCESSFUL,
+        Counter.FILES }) {
       incramentCounter(CopyDriver.class.getCanonicalName(), counter, 0);
     }
     localLandingFileSets = new ArrayList<FileSetCopy>();
@@ -94,16 +98,19 @@ public class CopyDriver extends Driver {
     hdfsLandingPath = new Path(arguments[arguments.length - 1]);
     if (hdfs.exists(hdfsLandingPath)) {
       if (!hdfs.isDirectory(hdfsLandingPath)) {
-        throw new Exception("HDFS landing directory [" + hdfsLandingPath + "] is not a directory");
+        throw new Exception("HDFS landing directory [" + hdfsLandingPath
+            + "] is not a directory");
       }
-      if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser().getUserName(), UserGroupInformation
+      if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
+          .getCurrentUser().getUserName(), UserGroupInformation
           .getCurrentUser().getGroupNames(), hdfsLandingPath, FsAction.ALL)) {
         throw new Exception("HDFS landing directory [" + hdfsLandingPath
             + "] has too restrictive permissions to read/write as user ["
             + UserGroupInformation.getCurrentUser().getUserName() + "]");
       }
     } else {
-      hdfs.mkdirs(hdfsLandingPath, new FsPermission(FsAction.ALL, FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
+      hdfs.mkdirs(hdfsLandingPath, new FsPermission(FsAction.ALL,
+          FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
     }
     if (log.isInfoEnabled()) {
       log.info("HDFS landing directory [" + hdfsLandingPath + "] validated");
@@ -113,22 +120,26 @@ public class CopyDriver extends Driver {
     for (int i = 0; i < arguments.length - 1; i++) {
       File file = new File(arguments[i]);
       if (!file.exists() || !file.canRead() || !file.isDirectory()) {
-        throw new Exception("Local directory [" + arguments[i] + "] cannot be read");
+        throw new Exception("Local directory [" + arguments[i]
+            + "] cannot be read");
       }
       localLandingDirs.add(file);
     }
     boolean isDirIncluded = getConf().getBoolean(CONF_DIR_INCLUDE, false);
-    boolean isFileQueue = getConf().get(CONF_THREAD_QUEUE, CONF_THREAD_QUEUE_FILE).equals(CONF_THREAD_QUEUE_FILE);
+    boolean isFileQueue = getConf().get(CONF_THREAD_QUEUE,
+        CONF_THREAD_QUEUE_FILE).equals(CONF_THREAD_QUEUE_FILE);
     for (File localLandingDir : localLandingDirs) {
-      FileSetCopy localLandingFileSet = new FileSetCopy(hdfsLandingPath.toString()
-          + (isDirIncluded ? "/" + localLandingDir.getName() : ""));
+      FileSetCopy localLandingFileSet = new FileSetCopy(
+          hdfsLandingPath.toString()
+              + (isDirIncluded ? "/" + localLandingDir.getName() : ""));
       localLandingFileSets.add(localLandingFileSet);
       for (File localLandingFile : localLandingDir.listFiles()) {
         if (localLandingFile.isFile() && localLandingFile.canRead()) {
           localLandingFileSet.addFile(localLandingFile);
           if (isFileQueue) {
-            localLandingFileSets.add(localLandingFileSet = new FileSetCopy(hdfsLandingPath.toString()
-                + (isDirIncluded ? "/" + localLandingDir.getName() : "")));
+            localLandingFileSets.add(localLandingFileSet = new FileSetCopy(
+                hdfsLandingPath.toString()
+                    + (isDirIncluded ? "/" + localLandingDir.getName() : "")));
           }
         }
       }
@@ -149,7 +160,8 @@ public class CopyDriver extends Driver {
       }
     }
     if (!hdfsLandingNamespaceClash.isEmpty()) {
-      throw new Exception("File namespace clashes detected with " + hdfsLandingNamespaceClash
+      throw new Exception("File namespace clashes detected with "
+          + hdfsLandingNamespaceClash
           + ", consider including directories in ingress path or file renaming");
     }
     if (log.isInfoEnabled()) {
@@ -164,20 +176,23 @@ public class CopyDriver extends Driver {
 
     int numberThreads = getConf().getInt(CONF_THREAD_NUMBER, 1);
     List<Future<FileSetCopy>> fileSetCopyFutures = new ArrayList<Future<FileSetCopy>>();
-    ExecutorService fileSetCopyExecutor = new ThreadPoolExecutor(numberThreads, numberThreads, 0L, TimeUnit.SECONDS,
+    ExecutorService fileSetCopyExecutor = new ThreadPoolExecutor(numberThreads,
+        numberThreads, 0L, TimeUnit.SECONDS,
         new LinkedBlockingQueue<Runnable>());
     for (FileSetCopy fileSetCopy : localLandingFileSets) {
       fileSetCopyFutures.add(fileSetCopyExecutor.submit(fileSetCopy));
     }
     fileSetCopyExecutor.shutdown();
-    if (!fileSetCopyExecutor.awaitTermination(getConf().getInt(CONF_TIMEOUT_SECS, 600) * localLandingFileSets.size(),
+    if (!fileSetCopyExecutor.awaitTermination(
+        getConf().getInt(CONF_TIMEOUT_SECS, 600) * localLandingFileSets.size(),
         TimeUnit.SECONDS)) {
       fileSetCopyExecutor.shutdownNow();
     }
     for (Future<FileSetCopy> fileSetCopyFuture : fileSetCopyFutures) {
       FileSetCopy fileSetCopy = fileSetCopyFuture.get();
       for (File file : fileSetCopy.getFiles()) {
-        incramentCounter(CopyDriver.class.getCanonicalName(), fileSetCopy.getFileStatus(file), 1);
+        incramentCounter(CopyDriver.class.getCanonicalName(),
+            fileSetCopy.getFileStatus(file), 1);
         incramentCounter(CopyDriver.class.getCanonicalName(), Counter.FILES, 1);
       }
     }
@@ -198,7 +213,8 @@ public class CopyDriver extends Driver {
   private synchronized FileSystem getFileSystem() throws IOException {
     FileSystem fileSystem = fileSystems.get(Thread.currentThread().getId());
     if (fileSystem == null) {
-      fileSystems.put(Thread.currentThread().getId(), fileSystem = FileSystem.newInstance(getConf()));
+      fileSystems.put(Thread.currentThread().getId(),
+          fileSystem = FileSystem.newInstance(getConf()));
     }
     return fileSystem;
   }
@@ -244,21 +260,17 @@ public class CopyDriver extends Driver {
         long fileSize = file.length();
         String fileName = file.getName();
         Path dirTo = new Path(dir
-            + (fileName.indexOf('.') == -1 ? "" : fileName.substring(fileName.indexOf('.'), fileName.length()).replace(
-                '.', '/')), fileName);
+            + (fileName.indexOf('.') == -1 ? "" : fileName.substring(
+                fileName.indexOf('.'), fileName.length()).replace('.', '/')),
+            fileName);
         Path fileFrom = new Path(file.getAbsolutePath());
         Path fileTo = new Path(dirTo, fileName);
         try {
-          if (HDFSClientUtil.copyFromLocalFile(
-              hdfs,
-              fileFrom,
-              fileTo,
-              true,
-              fileSize,
-              getConf().getInt("io.file.buffer.size", 8192),
+          if (HDFSClientUtil.copyFromLocalFile(hdfs, fileFrom, fileTo, true,
+              fileSize, getConf().getInt("io.file.buffer.size", 8192),
               getConf().getInt("dfs.replication", 3),
-              getConf().getBoolean(CONF_BLOCK_SINGLE, false) ? fileSize + 1024 : getConf().getLong(
-                  "fs.local.block.size", 33554432L))) {
+              getConf().getBoolean(CONF_BLOCK_SINGLE, false) ? fileSize + 1024
+                  : getConf().getLong("fs.local.block.size", 33554432L))) {
             files.put(file, Counter.FILES_SUCCESSFUL);
           } else {
             files.put(file, Counter.FILES_SKIPPED);
@@ -270,7 +282,8 @@ public class CopyDriver extends Driver {
           }
         } finally {
           if (log.isInfoEnabled()) {
-            log.info("File ingress [" + files.get(file) + "] from [" + fileFrom + "] to [" + fileTo + "]");
+            log.info("File ingress [" + files.get(file) + "] from [" + fileFrom
+                + "] to [" + fileTo + "]");
           }
         }
       }

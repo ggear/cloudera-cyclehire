@@ -1,11 +1,6 @@
 package com.cloudera.cycelhire.main.process.partition;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.Calendar;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -15,7 +10,8 @@ import com.cloudera.cycelhire.main.common.Counter;
 import com.cloudera.cycelhire.main.common.model.PartitionKey;
 import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
 
-public class PartitionMapper extends Mapper<PartitionKey, Text, PartitionKey, Text> {
+public class PartitionMapper extends
+    Mapper<PartitionKey, Text, PartitionKey, Text> {
 
   private MultipleOutputs<PartitionKey, Text> multipleOutputs;
 
@@ -30,30 +26,21 @@ public class PartitionMapper extends Mapper<PartitionKey, Text, PartitionKey, Te
   }
 
   @Override
-  protected void map(PartitionKey key, Text value, Context context) throws IOException, InterruptedException {
-    context.getCounter(Counter.RECORDS).increment(1);
-    long lastUpdate = key.getEpochGet();
+  protected void map(PartitionKey key, Text value, Context context)
+      throws IOException, InterruptedException {
     try {
-      if (value.getLength() > 0) {
-        lastUpdate = Long.parseLong(XMLInputFactory.newInstance()
-            .createXMLEventReader(new StringReader(value.toString())).nextTag().asStartElement()
-            .getAttributeByName(new QName("lastUpdate")).getValue());
-      }
-    } catch (Exception exception) {
-    }
-    Calendar outputCalendar = Calendar.getInstance();
-    outputCalendar.setTimeInMillis(lastUpdate);
-    PartitionKey outputKey = new PartitionKey().record(key.getRecord()).epochGet(key.getEpochGet())
-        .epochUpdate(lastUpdate);
-    Text outputValue = new Text(value);
-    try {
-      multipleOutputs.write(PartitionDriver.NAMED_OUTPUT, outputKey, outputValue, PartitionDriver.NAMED_OUTPUT + "/"
-          + MapReduceUtil.getCodecString(context.getConfiguration()) + "/" + outputKey.getRecord() + "/year="
-          + outputCalendar.get(Calendar.YEAR) + "/month=" + outputCalendar.get(Calendar.MONTH)
-          + "/livecyclehireupdates");
+      multipleOutputs.write(
+          PartitionDriver.NAMED_OUTPUT,
+          key,
+          value,
+          PartitionDriver.NAMED_OUTPUT + "/"
+              + MapReduceUtil.getCodecString(context.getConfiguration()) + "/"
+              + key.getPartition() + "/" + key.getBatch() + "/"
+              + key.getBatch());
     } catch (IllegalArgumentException exception) {
       // necessary for MRUnit to work with MultipleOutputs
-      context.write(outputKey, outputValue);
+      context.write(key, value);
     }
+    context.getCounter(Counter.RECORDS).increment(1);
   }
 }

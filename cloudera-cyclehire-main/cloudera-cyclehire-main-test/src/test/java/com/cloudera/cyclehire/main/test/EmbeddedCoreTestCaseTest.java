@@ -40,7 +40,8 @@ public class EmbeddedCoreTestCaseTest extends EmbeddedCoreTestCase {
   @Test
   public void testFileSystem() throws IOException {
     String someDir = BaseTestCase.getPathHDFS("/some_dir");
-    Assert.assertTrue(FileSystem.get(getFileSystem().getConf()).mkdirs(new Path(someDir)));
+    Assert.assertTrue(FileSystem.get(getFileSystem().getConf()).mkdirs(
+        new Path(someDir)));
     Assert.assertTrue(new File(BaseTestCase.getPathLocal(someDir)).exists());
   }
 
@@ -52,7 +53,8 @@ public class EmbeddedCoreTestCaseTest extends EmbeddedCoreTestCase {
     Path dirOutput = new Path(BaseTestCase.getPathHDFS("/tmp/wordcount/output"));
 
     Path hdfsFile = new Path(dirInput, "file1.txt");
-    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(this.getFileSystem().create(hdfsFile)));
+    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(this
+        .getFileSystem().create(hdfsFile)));
     writer.write("a a a a a\n");
     writer.write("b b\n");
     writer.close();
@@ -69,8 +71,8 @@ public class EmbeddedCoreTestCaseTest extends EmbeddedCoreTestCase {
 
     Assert.assertTrue(JobClient.runJob(conf).isSuccessful());
 
-    Path[] outputFiles = FileUtil.stat2Paths(getFileSystem().listStatus(dirOutput,
-        new Utils.OutputFileUtils.OutputFilesFilter()));
+    Path[] outputFiles = FileUtil.stat2Paths(getFileSystem().listStatus(
+        dirOutput, new Utils.OutputFileUtils.OutputFilesFilter()));
 
     Assert.assertEquals(1, outputFiles.length);
 
@@ -82,13 +84,15 @@ public class EmbeddedCoreTestCaseTest extends EmbeddedCoreTestCase {
     reader.close();
   }
 
-  public static class MapClass extends MapReduceBase implements Mapper<LongWritable, Text, Text, IntWritable> {
+  public static class MapClass extends MapReduceBase implements
+      Mapper<LongWritable, Text, Text, IntWritable> {
 
     private final static IntWritable one = new IntWritable(1);
     private Text word = new Text();
 
     @Override
-    public void map(LongWritable key, Text value, OutputCollector<Text, IntWritable> output, Reporter reporter)
+    public void map(LongWritable key, Text value,
+        OutputCollector<Text, IntWritable> output, Reporter reporter)
         throws IOException {
       String line = value.toString();
       StringTokenizer itr = new StringTokenizer(line);
@@ -99,11 +103,13 @@ public class EmbeddedCoreTestCaseTest extends EmbeddedCoreTestCase {
     }
   }
 
-  public static class Reduce extends MapReduceBase implements Reducer<Text, IntWritable, Text, IntWritable> {
+  public static class Reduce extends MapReduceBase implements
+      Reducer<Text, IntWritable, Text, IntWritable> {
 
     @Override
-    public void reduce(Text key, Iterator<IntWritable> values, OutputCollector<Text, IntWritable> output,
-        Reporter reporter) throws IOException {
+    public void reduce(Text key, Iterator<IntWritable> values,
+        OutputCollector<Text, IntWritable> output, Reporter reporter)
+        throws IOException {
       int sum = 0;
       while (values.hasNext()) {
         sum += values.next().get();

@@ -4,9 +4,11 @@ import org.apache.hadoop.mapred.ClusterMapReduceTestCase;
 import org.junit.After;
 import org.junit.Before;
 
-public class LocalClusterTest extends ClusterMapReduceTestCase implements BaseTest {
+public class LocalClusterTest extends ClusterMapReduceTestCase implements
+    BaseTest {
 
-  private static final String WORKING_DIR_RUNTIME = PATH_LOCAL_WORKING_DIR + "/target/test-runtime/";
+  private static final String WORKING_DIR_RUNTIME = PATH_LOCAL_WORKING_DIR
+      + "/target/test-runtime/";
 
   public LocalClusterTest() {
     super();

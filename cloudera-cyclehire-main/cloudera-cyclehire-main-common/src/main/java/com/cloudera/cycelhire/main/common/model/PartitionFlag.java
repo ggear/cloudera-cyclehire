@@ -2,6 +2,8 @@ package com.cloudera.cycelhire.main.common.model;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -9,7 +11,7 @@ import org.apache.hadoop.fs.Path;
 
 public enum PartitionFlag {
 
-  _SUCCESS, _PARTITION, _PROCESS, _FAILED, _LOCKED;
+  _SUCCESS, _PARTITION, _PROCESS, _FAILED, _UNKNOWN, _LOCKED;
 
   public static boolean isValue(String value) {
     if (value != null) {
@@ -22,7 +24,8 @@ public enum PartitionFlag {
     return false;
   }
 
-  public static boolean isValue(FileSystem hdfs, Path path, PartitionFlag partitionFlag) throws IOException {
+  public static boolean list(FileSystem hdfs, Path path,
+      PartitionFlag partitionFlag) throws IOException {
     FileStatus pathStatus = hdfs.getFileStatus(path);
     if (pathStatus != null && !isValue(path.getName())) {
       if (!pathStatus.isDirectory()) {
@@ -35,7 +38,9 @@ public enum PartitionFlag {
     return false;
   }
 
-  public static PartitionFlag valueOf(FileSystem hdfs, Path path) throws IOException {
+  public static List<PartitionFlag> list(FileSystem hdfs, Path path)
+      throws IOException {
+    List<PartitionFlag> partitionFlags = new ArrayList<PartitionFlag>();
     try {
       FileStatus pathStatus = hdfs.getFileStatus(path);
       if (pathStatus != null && !isValue(path.getName())) {
@@ -43,16 +48,33 @@ public enum PartitionFlag {
           pathStatus = hdfs.getFileStatus(path.getParent());
         }
         for (PartitionFlag partitionFlag : PartitionFlag.values()) {
-          if (hdfs.exists(new Path(pathStatus.getPath(), partitionFlag.toString()))) {
-            return partitionFlag;
+          if (hdfs.exists(new Path(pathStatus.getPath(), partitionFlag
+              .toString()))) {
+            partitionFlags.add(partitionFlag);
           }
         }
       }
     } catch (FileNotFoundException exception) {
-      // ignore exception, bad to use exceptions for flow control but this is what
-      // FileSystem.exists does in any case and avoid an extra round trip
+      // ignore exception, bad to use exceptions for flow control but this is
+      // what FileSystem.exists() does, so OK to avoid an extra round trip
     }
-    return null;
+    return partitionFlags;
+  }
+
+  public static boolean update(FileSystem hdfs, Path path,
+      PartitionFlag partitionFlag) throws IOException {
+    boolean updated = false;
+    for (PartitionFlag partitionFlagToDelete : list(hdfs, path)) {
+      if (!partitionFlagToDelete.equals(partitionFlag)) {
+        hdfs.delete(new Path(hdfs.getFileStatus(path).isDirectory() ? path
+            : path.getParent(), partitionFlagToDelete.toString()), false);
+      } else
+        updated = true;
+    }
+    return updated
+        || hdfs.createNewFile(new Path(
+            hdfs.getFileStatus(path).isDirectory() ? path : path.getParent(),
+            partitionFlag.toString()));
   }
 
 }

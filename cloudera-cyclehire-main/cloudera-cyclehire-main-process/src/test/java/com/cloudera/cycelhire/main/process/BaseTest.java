@@ -21,9 +21,11 @@ public abstract class BaseTest extends EmbeddedCoreTestCase {
     super.setUp();
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
-        new CopyDriver(getFileSystem().getConf()).runner(new String[] { BaseTestCase.PATH_LOCAL_DIR_TAR,
+        new CopyDriver(getFileSystem().getConf()).runner(new String[] {
+            BaseTestCase.PATH_LOCAL_DIR_TAR,
             BaseTestCase.PATH_HDFS_DIR_RAW_LANDING }));
-    getFileSystem().copyFromLocalFile(new Path(BaseTestCase.PATH_LOCAL_DIR_XML),
+    getFileSystem().copyFromLocalFile(
+        new Path(BaseTestCase.PATH_LOCAL_DIR_XML),
         new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDING));
   }
 

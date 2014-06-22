@@ -13,11 +13,16 @@ public class BaseTestCaseTest {
     Assert.assertEquals(BaseTest.PATH_HDFS, BaseTestCase.getPathHDFS(""));
     Assert.assertEquals(BaseTest.PATH_HDFS, BaseTestCase.getPathHDFS("/"));
     Assert.assertEquals(BaseTest.PATH_HDFS, BaseTestCase.getPathHDFS("//"));
-    Assert.assertEquals(BaseTest.PATH_HDFS + "/tmp", BaseTestCase.getPathHDFS("tmp"));
-    Assert.assertEquals(BaseTest.PATH_HDFS + "/tmp", BaseTestCase.getPathHDFS("/tmp"));
-    Assert.assertEquals(BaseTest.PATH_HDFS + "/tmp", BaseTestCase.getPathHDFS("//tmp"));
-    Assert.assertEquals(BaseTest.PATH_HDFS + "/tmp", BaseTestCase.getPathHDFS("///tmp"));
-    Assert.assertEquals(BaseTest.PATH_HDFS + "/tmp/tmp", BaseTestCase.getPathHDFS("///tmp//tmp"));
+    Assert.assertEquals(BaseTest.PATH_HDFS + "/tmp",
+        BaseTestCase.getPathHDFS("tmp"));
+    Assert.assertEquals(BaseTest.PATH_HDFS + "/tmp",
+        BaseTestCase.getPathHDFS("/tmp"));
+    Assert.assertEquals(BaseTest.PATH_HDFS + "/tmp",
+        BaseTestCase.getPathHDFS("//tmp"));
+    Assert.assertEquals(BaseTest.PATH_HDFS + "/tmp",
+        BaseTestCase.getPathHDFS("///tmp"));
+    Assert.assertEquals(BaseTest.PATH_HDFS + "/tmp/tmp",
+        BaseTestCase.getPathHDFS("///tmp//tmp"));
   }
 
   @Test
@@ -31,7 +36,8 @@ public class BaseTestCaseTest {
     Assert.assertEquals(localDir + "/tmp", BaseTestCase.getPathLocal("/tmp"));
     Assert.assertEquals(localDir + "/tmp", BaseTestCase.getPathLocal("//tmp"));
     Assert.assertEquals(localDir + "/tmp", BaseTestCase.getPathLocal("///tmp"));
-    Assert.assertEquals(localDir + "/tmp/tmp", BaseTestCase.getPathLocal("///tmp//tmp"));
+    Assert.assertEquals(localDir + "/tmp/tmp",
+        BaseTestCase.getPathLocal("///tmp//tmp"));
   }
 
 }

@@ -14,7 +14,8 @@ import org.apache.hadoop.mapreduce.lib.input.CombineFileSplit;
 
 import com.cloudera.cycelhire.main.common.model.PartitionKey;
 
-public class PartitionInputFormatXML extends CombineFileInputFormat<PartitionKey, Text> {
+public class PartitionInputFormatXML extends
+    CombineFileInputFormat<PartitionKey, Text> {
 
   @Override
   protected boolean isSplitable(JobContext context, Path filename) {
@@ -22,22 +23,24 @@ public class PartitionInputFormatXML extends CombineFileInputFormat<PartitionKey
   }
 
   @Override
-  public RecordReader<PartitionKey, Text> createRecordReader(InputSplit split, TaskAttemptContext context)
-      throws IOException {
-    return new CombineFileRecordReader<PartitionKey, Text>((CombineFileSplit) split, context,
-        PartitionRecordReaderXML.class);
+  public RecordReader<PartitionKey, Text> createRecordReader(InputSplit split,
+      TaskAttemptContext context) throws IOException {
+    return new CombineFileRecordReader<PartitionKey, Text>(
+        (CombineFileSplit) split, context, PartitionRecordReaderXML.class);
   }
 
-  class PartitionRecordReaderXML extends RecordReader<PartitionKey, Text> {
+  public class PartitionRecordReaderXML extends
+      RecordReader<PartitionKey, Text> {
 
-    public PartitionRecordReaderXML(CombineFileSplit split, TaskAttemptContext context, Integer index)
-        throws IOException {
+    public PartitionRecordReaderXML(CombineFileSplit split,
+        TaskAttemptContext context, Integer index) throws IOException {
       super();
       // TODO Auto-generated constructor stub
     }
 
     @Override
-    public void initialize(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
+    public void initialize(InputSplit split, TaskAttemptContext context)
+        throws IOException, InterruptedException {
       // TODO Auto-generated method stub
 
     }
@@ -49,7 +52,8 @@ public class PartitionInputFormatXML extends CombineFileInputFormat<PartitionKey
     }
 
     @Override
-    public PartitionKey getCurrentKey() throws IOException, InterruptedException {
+    public PartitionKey getCurrentKey() throws IOException,
+        InterruptedException {
       // TODO Auto-generated method stub
       return null;
     }
