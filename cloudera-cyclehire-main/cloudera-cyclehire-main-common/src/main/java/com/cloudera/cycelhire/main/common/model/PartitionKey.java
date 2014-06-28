@@ -21,9 +21,9 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableUtils;
 
-public class PartitionKey implements WritableComparable<PartitionKey> {
+import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
 
-  public static final String CODEC_NONE_LABEL = "deflate";
+public class PartitionKey implements WritableComparable<PartitionKey> {
 
   public static final String TOKEN_PARTITION_YEAR = "year";
   public static final String TOKEN_PARTITION_MONTH = "month";
@@ -206,8 +206,9 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
 
   public String getCodec() {
     return codec == null ? getMatcherBatch() == null ? PartitionFlag._UNKNOWN
-        .toString() : getMatcherBatch().group(4).equals("") ? CODEC_NONE_LABEL
-        : getMatcherBatch().group(4) : codec;
+        .toString()
+        : getMatcherBatch().group(4).equals("") ? MapReduceUtil.CODEC_NONE
+            : getMatcherBatch().group(4) : codec;
   }
 
   public String getPartition() {

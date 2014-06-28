@@ -8,22 +8,31 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class MapReduceUtil {
 
+  public static final String CODEC_NONE = "none";
+
   public static String getCodecString(Configuration configuration) {
-    String codecType = configuration.get(FileOutputFormat.COMPRESS_TYPE, null);
-    Class<?> codecClass = configuration
-        .getClass(FileOutputFormat.COMPRESS_CODEC, codecType == null
-            || !codecType.equals(CompressionType.NONE.toString()) ? null
-            : DefaultCodec.class);
-    if (codecClass == null) {
-      return "none";
-    } else {
-      try {
-        return ((CompressionCodec) codecClass.newInstance())
-            .getDefaultExtension().replace(".", "");
-      } catch (Exception exception) {
-        throw new RuntimeException("Could not determine codec", exception);
+    boolean compress = configuration.getBoolean(FileOutputFormat.COMPRESS_TYPE,
+        false);
+    if (compress) {
+      String codecType = configuration
+          .get(FileOutputFormat.COMPRESS_TYPE, null);
+      Class<?> codecClass = configuration.getClass(
+          FileOutputFormat.COMPRESS_CODEC,
+          codecType == null
+              || !codecType.equals(CompressionType.NONE.toString()) ? null
+              : DefaultCodec.class);
+      if (codecClass == null) {
+        return CODEC_NONE;
+      } else {
+        try {
+          return ((CompressionCodec) codecClass.newInstance())
+              .getDefaultExtension().replace(".", "");
+        } catch (Exception exception) {
+          throw new RuntimeException("Could not determine codec", exception);
+        }
       }
     }
+    return CODEC_NONE;
   }
 
 }

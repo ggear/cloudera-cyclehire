@@ -12,7 +12,7 @@ public class PartitionInputFormat {
 
   private static Map<String, ImmutableMap<String, ? extends Class<? extends FileInputFormat<PartitionKey, Text>>>> INPUT_FORMATS = ImmutableMap
       .of("tar", ImmutableMap.of("gz", PartitionInputFormatTarGzip.class),
-          "xml", ImmutableMap.of("deflate", PartitionInputFormatXML.class));
+          "xml", ImmutableMap.of("none", PartitionInputFormatXML.class));
 
   public static boolean supports(String type, String codec) {
     return INPUT_FORMATS.containsKey(type)

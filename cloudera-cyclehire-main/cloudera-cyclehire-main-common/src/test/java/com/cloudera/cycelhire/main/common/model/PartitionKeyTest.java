@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.cloudera.cyclehire.data.DataConstants;
+import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
 
 public class PartitionKeyTest {
 
@@ -21,7 +22,7 @@ public class PartitionKeyTest {
   private static String TAR_EXTENSION = "tar";
   private static String TAR_REPO = DataConstants.PATH_LOCAL_TARS[0];
 
-  private static String XML_CODEC = PartitionKey.CODEC_NONE_LABEL;
+  private static String XML_CODEC = MapReduceUtil.CODEC_NONE;
   private static String XML_EXTENSION = "xml";
   private static String XML_REPO = DataConstants.PATH_LOCAL_XMLS[0];
 
