@@ -6,16 +6,17 @@ public enum Counter {
   FILES, FILES_PENDING, FILES_SUCCESSFUL, FILES_SKIPPED, FILES_FAILED,
 
   // Batch counters
-  BATCHES, BATCHES_SUCCESSFUL, BATCHES_SKIPPED, BATCHES_FAILED,
+  BATCHES, BATCHES_SUCCESSFUL("valid"), BATCHES_SKIPPED, BATCHES_FAILED(
+      "invalid"),
 
   // Partition counters
   PARTITIONS, PARTITIONS_SUCCESSFUL, PARTITIONS_SKIPPED, PARTITIONS_FAILED,
 
   // Record counters
-  RECORDS, RECORDS_VALID("cleansed/"), RECORDS_MALFORMED("erroneous/malformed/"), RECORDS_DUPLICATE(
-      "erroneous/duplicate/");
+  RECORDS, RECORDS_CLEANSED("cleansed"), RECORDS_MALFORMED(
+      "erroneous/malformed"), RECORDS_DUPLICATE("erroneous/duplicate");
 
-  private String path;
+  private String path = "";
 
   Counter() {
   }
@@ -25,7 +26,7 @@ public enum Counter {
   }
 
   public String getPath() {
-    return path == null ? "" : path;
+    return path;
   }
 
 }

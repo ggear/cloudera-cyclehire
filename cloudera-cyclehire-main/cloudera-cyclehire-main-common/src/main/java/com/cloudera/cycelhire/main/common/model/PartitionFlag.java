@@ -63,17 +63,24 @@ public enum PartitionFlag {
 
   public static boolean update(FileSystem hdfs, Path path,
       PartitionFlag partitionFlag) throws IOException {
+    FileStatus status = null;
     boolean updated = false;
-    for (PartitionFlag partitionFlagToDelete : list(hdfs, path)) {
-      if (!partitionFlagToDelete.equals(partitionFlag)) {
-        hdfs.delete(new Path(hdfs.getFileStatus(path).isDirectory() ? path
-            : path.getParent(), partitionFlagToDelete.toString()), false);
-      } else
-        updated = true;
+    boolean isDirectory = true;
+    try {
+      status = hdfs.getFileStatus(path);
+      isDirectory = status.isDirectory();
+      for (PartitionFlag partitionFlagToDelete : list(hdfs, path)) {
+        if (!partitionFlagToDelete.equals(partitionFlag)) {
+          hdfs.delete(new Path(hdfs.getFileStatus(path).isDirectory() ? path
+              : path.getParent(), partitionFlagToDelete.toString()), false);
+        } else
+          updated = true;
+      }
+    } catch (FileNotFoundException exception) {
+      hdfs.mkdirs(path);
     }
     return updated
-        || hdfs.createNewFile(new Path(
-            hdfs.getFileStatus(path).isDirectory() ? path : path.getParent(),
+        || hdfs.createNewFile(new Path(isDirectory ? path : path.getParent(),
             partitionFlag.toString()));
   }
 

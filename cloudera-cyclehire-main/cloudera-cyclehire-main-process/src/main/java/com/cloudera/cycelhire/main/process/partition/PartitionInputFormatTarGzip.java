@@ -37,9 +37,10 @@ public class PartitionInputFormatTarGzip extends
     return new RecordReader<PartitionKey, Text>() {
 
       private Path path;
+      private Text value;
       private ArchiveEntry entry;
-      private TarArchiveInputStream stream;
       private PartitionKey partitionKey;
+      private TarArchiveInputStream stream;
 
       @Override
       public void initialize(InputSplit split, TaskAttemptContext context)
@@ -58,11 +59,19 @@ public class PartitionInputFormatTarGzip extends
 
       @Override
       public boolean nextKeyValue() throws IOException {
-        return stream == null ? false
-            : (entry = stream.getNextTarEntry()) != null ? entry.isDirectory()
-                || !(partitionKey = new PartitionKey().batch(
-                    path.getParent().getName()).record(entry.getName()))
-                    .isValid() ? nextKeyValue() : true : false;
+        if (stream != null) {
+          if ((entry = stream.getNextTarEntry()) != null) {
+            if (entry.isDirectory()
+                || !(partitionKey = new PartitionKey().path(path.toString()))
+                    .isValid()) {
+              return nextKeyValue();
+            } else {
+              value = new Text(IOUtils.toString(stream));
+              return true;
+            }
+          }
+        }
+        return false;
       }
 
       @Override
@@ -73,12 +82,12 @@ public class PartitionInputFormatTarGzip extends
 
       @Override
       public Text getCurrentValue() throws IOException, InterruptedException {
-        return new Text(IOUtils.toString(stream));
+        return value;
       }
 
       @Override
       public float getProgress() throws IOException, InterruptedException {
-        return entry == null ? 1 : 0;
+        return entry == null ? 1F : 0F;
       }
 
       @Override

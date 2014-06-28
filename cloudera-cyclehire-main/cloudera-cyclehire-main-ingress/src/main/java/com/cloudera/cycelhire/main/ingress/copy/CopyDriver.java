@@ -81,7 +81,7 @@ public class CopyDriver extends Driver {
     for (Counter counter : new Counter[] { Counter.FILES_PENDING,
         Counter.FILES_SKIPPED, Counter.FILES_FAILED, Counter.FILES_SUCCESSFUL,
         Counter.FILES }) {
-      incramentCounter(CopyDriver.class.getCanonicalName(), counter, 0);
+      incramentCounter(counter, 0);
     }
     localLandingFileSets = new ArrayList<FileSetCopy>();
   }
@@ -191,9 +191,8 @@ public class CopyDriver extends Driver {
     for (Future<FileSetCopy> fileSetCopyFuture : fileSetCopyFutures) {
       FileSetCopy fileSetCopy = fileSetCopyFuture.get();
       for (File file : fileSetCopy.getFiles()) {
-        incramentCounter(CopyDriver.class.getCanonicalName(),
-            fileSetCopy.getFileStatus(file), 1);
-        incramentCounter(CopyDriver.class.getCanonicalName(), Counter.FILES, 1);
+        incramentCounter(fileSetCopy.getFileStatus(file), 1);
+        incramentCounter(Counter.FILES, 1);
       }
     }
 

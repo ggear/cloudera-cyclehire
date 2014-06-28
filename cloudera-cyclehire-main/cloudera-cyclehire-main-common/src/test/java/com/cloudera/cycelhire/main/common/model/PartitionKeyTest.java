@@ -33,10 +33,12 @@ public class PartitionKeyTest {
   private static Set<String> PARTITIONS = new TreeSet<String>();
   private static Set<String> PARTITIONS_UNKNOWN = new TreeSet<String>(
       Arrays.asList(new String[] { PartitionFlag._UNKNOWN.toString() }));
-  private static String PATH_UNKNOWN = "/" + PartitionFlag._UNKNOWN.toString()
-      + "/" + PartitionFlag._UNKNOWN.toString() + "/"
-      + PartitionFlag._UNKNOWN.toString() + "/"
-      + PartitionFlag._UNKNOWN.toString() + "/"
+  private static String PATH_UNKNOWN_PARENT = '/'
+      + PartitionFlag._UNKNOWN.toString() + '/'
+      + PartitionFlag._UNKNOWN.toString() + '/'
+      + PartitionFlag._UNKNOWN.toString();
+  private static String PATH_UNKNOWN = PATH_UNKNOWN_PARENT + '/'
+      + PartitionFlag._UNKNOWN.toString() + '/'
       + PartitionFlag._UNKNOWN.toString();
   private static String FILE = DataConstants.PATH_LOCAL_XMLSS[0][50];
   static {
@@ -108,9 +110,6 @@ public class PartitionKeyTest {
         .epochGet(EPOCH_GET + 1).isValid());
     Assert.assertEquals(false, new PartitionKey().batch(TAR_REPO).record(FILE)
         .epochGet(EPOCH_GET - 1).isValid());
-    Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), PartitionKey
-        .getKeys(XML_REPO, "2" + FILE.substring(1, FILE.length())).iterator()
-        .next().getPartition());
     Assert.assertEquals(false,
         new PartitionKey().batch(TAR_REPO).partition("some-rubbish").isValid());
     Assert.assertEquals(
@@ -329,12 +328,78 @@ public class PartitionKeyTest {
   public void testInvalidPath() {
     Assert.assertEquals(false, new PartitionKey().path(null).isValid());
     Assert.assertEquals(PATH_UNKNOWN, new PartitionKey().path(null).getPath());
+    Assert.assertEquals(PATH_UNKNOWN_PARENT, new PartitionKey().path(null)
+        .getPathPartition());
     Assert.assertEquals(false, new PartitionKey().path("").isValid());
     Assert.assertEquals(PATH_UNKNOWN, new PartitionKey().path("").getPath());
+    Assert.assertEquals(PATH_UNKNOWN_PARENT, new PartitionKey().path("")
+        .getPathPartition());
     Assert.assertEquals(false, new PartitionKey().path("some/rubbish/path")
         .isValid());
     Assert.assertEquals(PATH_UNKNOWN,
         new PartitionKey().path("some/rubbish/path").getPath());
+    Assert.assertEquals(PATH_UNKNOWN_PARENT,
+        new PartitionKey().path("some/rubbish/path").getPathPartition());
+    Assert.assertEquals(PATH_UNKNOWN, new PartitionKey().path(PATH_UNKNOWN)
+        .getPath());
+
+    Assert.assertEquals(
+        '/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
+            + PARTITIONS.iterator().next() + '/' + TAR_REPO + '/' + TAR_REPO,
+        new PartitionKey().path(
+            "file:///some/dir/" + TAR_EXTENSION + '/'
+                + PartitionFlag._UNKNOWN.toString() + '/'
+                + PARTITIONS.iterator().next() + '/' + TAR_REPO + '/'
+                + TAR_REPO + "-some-extra-extension").getPath());
+    Assert.assertEquals(
+        '/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
+            + PARTITIONS.iterator().next() + '/' + TAR_REPO + '/' + TAR_REPO,
+        new PartitionKey().path(
+            "file:///some/dir/" + PartitionFlag._UNKNOWN.toString() + '/'
+                + TAR_CODEC + '/' + PARTITIONS.iterator().next() + '/'
+                + TAR_REPO + '/' + TAR_REPO + "-some-extra-extension")
+            .getPath());
+    Assert.assertEquals(
+        '/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
+            + PartitionFlag._UNKNOWN.toString() + '/' + TAR_REPO + '/'
+            + TAR_REPO,
+        new PartitionKey().path(
+            "file:///some/dir/" + PartitionFlag._UNKNOWN.toString() + '/'
+                + TAR_CODEC + "/some-rubbish/" + TAR_REPO + '/' + TAR_REPO
+                + "-some-extra-extension").getPath());
+    Assert.assertEquals(
+        '/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
+            + PartitionFlag._UNKNOWN.toString() + '/' + TAR_REPO + '/'
+            + TAR_REPO,
+        new PartitionKey().path(
+            "file:///some/dir/" + PartitionFlag._UNKNOWN.toString() + '/'
+                + TAR_CODEC + "/some/rubbish/" + TAR_REPO + '/' + TAR_REPO
+                + "-some-extra-extension").getPath());
+    Assert.assertEquals(
+        '/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
+            + PartitionFlag._UNKNOWN.toString() + '/' + TAR_REPO + '/'
+            + TAR_REPO,
+        new PartitionKey().path(
+            "file:///some/dir/" + PartitionFlag._UNKNOWN.toString() + '/'
+                + TAR_CODEC + '/' + PartitionFlag._UNKNOWN.toString() + '/'
+                + TAR_REPO + '/' + TAR_REPO + "-some-extra-extension")
+            .getPath());
+    Assert.assertEquals(
+        '/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
+            + PartitionFlag._UNKNOWN.toString() + '/' + TAR_REPO + '/'
+            + TAR_REPO,
+        new PartitionKey().path(
+            "file:///some/dir/" + PATH_UNKNOWN_PARENT + '/' + TAR_REPO + '/'
+                + TAR_REPO + "-some-extra-extension").getPath());
+    Assert.assertEquals(
+        '/' + PartitionFlag._UNKNOWN.toString() + '/'
+            + PartitionFlag._UNKNOWN.toString() + '/'
+            + PartitionFlag._UNKNOWN.toString() + '/'
+            + "some-rubbish.extension" + '/' + "some-rubbish.extension",
+        new PartitionKey().path(
+            "file:///some/dir/" + PATH_UNKNOWN_PARENT + '/'
+                + "some-rubbish.extension" + '/' + "some-rubbish.extension"
+                + "-some-extra-extension").getPath());
   }
 
   @Test
@@ -357,19 +422,76 @@ public class PartitionKeyTest {
       Assert
           .assertEquals('/' + TAR_EXTENSION + '/' + TAR_CODEC + '/' + partition
               + '/' + TAR_REPO + '/' + TAR_REPO, partitionKey.getPath());
+      Assert.assertEquals('/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
+          + partition, partitionKey.getPathPartition());
+    }
+    partitionsIterator = PARTITIONS.iterator();
+    for (PartitionKey partitionKey : PartitionKey.getKeys(TAR_REPO)) {
+      String partition = partitionsIterator.next();
+      Assert.assertEquals(TAR_REPO, partitionKey.getRecord());
+      Assert.assertEquals(TAR_REPO, partitionKey.getBatch());
+      Assert.assertEquals(new Long(0L), partitionKey.getEpochGet());
+      Assert.assertEquals(new Long(0L), partitionKey.getEpochUpdate());
+      Assert.assertEquals(TAR_EXTENSION, partitionKey.getType());
+      Assert.assertEquals(TAR_CODEC, partitionKey.getCodec());
+      Assert.assertEquals(partition, partitionKey.getPartition());
+      Assert.assertEquals(
+          new TreeSet<String>(Arrays.asList(new String[] { partition })),
+          partitionKey.getPartitions());
+      Assert
+          .assertEquals('/' + TAR_EXTENSION + '/' + TAR_CODEC + '/' + partition
+              + '/' + TAR_REPO + '/' + TAR_REPO, partitionKey.getPath());
+      Assert.assertEquals('/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
+          + partition, partitionKey.getPathPartition());
     }
   }
 
   @Test
   public void testKeysXML() {
-    Assert.assertEquals(PARTITION.size(), PartitionKey.getKeys(XML_REPO, FILE)
+    Assert.assertEquals(PARTITIONS.size(), PartitionKey.getKeys(XML_REPO, FILE)
         .size());
-    Iterator<String> partitionsIterator = PARTITION.iterator();
+    Iterator<String> partitionsIterator = PARTITIONS.iterator();
     for (PartitionKey partitionKey : PartitionKey.getKeys(XML_REPO, FILE)) {
       String partition = partitionsIterator.next();
-      Assert.assertEquals(FILE, partitionKey.getRecord());
+      if (FILE.equals(partitionKey.getRecord())) {
+        Assert.assertEquals(FILE, partitionKey.getRecord());
+        Assert.assertEquals(XML_REPO, partitionKey.getBatch());
+        Assert.assertEquals(EPOCH_GET, partitionKey.getEpochGet());
+        Assert.assertEquals(new Long(0L), partitionKey.getEpochUpdate());
+        Assert.assertEquals(XML_EXTENSION, partitionKey.getType());
+        Assert.assertEquals(XML_CODEC, partitionKey.getCodec());
+        Assert.assertEquals(partition, partitionKey.getPartition());
+        Assert.assertEquals(
+            new TreeSet<String>(Arrays.asList(new String[] { partition })),
+            partitionKey.getPartitions());
+        Assert.assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
+            + partition + '/' + XML_REPO + '/' + FILE, partitionKey.getPath());
+        Assert.assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
+            + partition, partitionKey.getPathPartition());
+      } else {
+        Assert.assertEquals(XML_REPO, partitionKey.getRecord());
+        Assert.assertEquals(XML_REPO, partitionKey.getBatch());
+        Assert.assertEquals(new Long(0L), partitionKey.getEpochGet());
+        Assert.assertEquals(new Long(0L), partitionKey.getEpochUpdate());
+        Assert.assertEquals(XML_EXTENSION, partitionKey.getType());
+        Assert.assertEquals(XML_CODEC, partitionKey.getCodec());
+        Assert.assertEquals(partition, partitionKey.getPartition());
+        Assert.assertEquals(
+            new TreeSet<String>(Arrays.asList(new String[] { partition })),
+            partitionKey.getPartitions());
+        Assert.assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
+            + partition + '/' + XML_REPO + '/' + XML_REPO,
+            partitionKey.getPath());
+        Assert.assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
+            + partition, partitionKey.getPathPartition());
+      }
+    }
+    partitionsIterator = PARTITIONS.iterator();
+    for (PartitionKey partitionKey : PartitionKey.getKeys(XML_REPO)) {
+      String partition = partitionsIterator.next();
+      Assert.assertEquals(XML_REPO, partitionKey.getRecord());
       Assert.assertEquals(XML_REPO, partitionKey.getBatch());
-      Assert.assertEquals(EPOCH_GET, partitionKey.getEpochGet());
+      Assert.assertEquals(new Long(0L), partitionKey.getEpochGet());
       Assert.assertEquals(new Long(0L), partitionKey.getEpochUpdate());
       Assert.assertEquals(XML_EXTENSION, partitionKey.getType());
       Assert.assertEquals(XML_CODEC, partitionKey.getCodec());
@@ -377,8 +499,11 @@ public class PartitionKeyTest {
       Assert.assertEquals(
           new TreeSet<String>(Arrays.asList(new String[] { partition })),
           partitionKey.getPartitions());
+      Assert
+          .assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/' + partition
+              + '/' + XML_REPO + '/' + XML_REPO, partitionKey.getPath());
       Assert.assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
-          + partition + '/' + XML_REPO + '/' + FILE, partitionKey.getPath());
+          + partition, partitionKey.getPathPartition());
     }
   }
 
@@ -396,6 +521,10 @@ public class PartitionKeyTest {
     Assert.assertEquals('/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
         + PARTITIONS_UNKNOWN.iterator().next() + '/' + TAR_REPO + '/'
         + TAR_REPO, partitionKey.getPath());
+    Assert
+        .assertEquals('/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
+            + PARTITIONS_UNKNOWN.iterator().next(),
+            partitionKey.getPathPartition());
   }
 
   @Test
@@ -411,6 +540,10 @@ public class PartitionKeyTest {
     Assert.assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
         + PARTITIONS_UNKNOWN.iterator().next() + '/' + XML_REPO + '/'
         + XML_REPO, partitionKey.getPath());
+    Assert
+        .assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
+            + PARTITIONS_UNKNOWN.iterator().next(),
+            partitionKey.getPathPartition());
   }
 
   @Test
@@ -429,6 +562,8 @@ public class PartitionKeyTest {
     Assert.assertEquals('/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
         + PARTITION.iterator().next() + '/' + TAR_REPO + '/' + FILE,
         partitionKey.getPath());
+    Assert.assertEquals('/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
+        + PARTITION.iterator().next(), partitionKey.getPathPartition());
   }
 
   @Test
@@ -447,6 +582,8 @@ public class PartitionKeyTest {
     Assert.assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
         + PARTITION.iterator().next() + '/' + XML_REPO + '/' + FILE,
         partitionKey.getPath());
+    Assert.assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
+        + PARTITION.iterator().next(), partitionKey.getPathPartition());
   }
 
   @Test
@@ -466,6 +603,8 @@ public class PartitionKeyTest {
     Assert.assertEquals('/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
         + PARTITION.iterator().next() + '/' + TAR_REPO + '/' + FILE,
         partitionKey.getPath());
+    Assert.assertEquals('/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
+        + PARTITION.iterator().next(), partitionKey.getPathPartition());
   }
 
   @Test
@@ -485,13 +624,15 @@ public class PartitionKeyTest {
     Assert.assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
         + PARTITION.iterator().next() + '/' + XML_REPO + '/' + FILE,
         partitionKey.getPath());
+    Assert.assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
+        + PARTITION.iterator().next(), partitionKey.getPathPartition());
   }
 
   @Test
   public void testPathTar() {
     PartitionKey partitionKey = new PartitionKey().path("file:///some/dir/"
-        + TAR_EXTENSION + "/" + TAR_CODEC + "/" + PARTITION.iterator().next()
-        + "/" + TAR_REPO + "/" + TAR_REPO + "-some-extension");
+        + TAR_EXTENSION + '/' + TAR_CODEC + '/' + PARTITION.iterator().next()
+        + '/' + TAR_REPO + '/' + TAR_REPO + "-some-extension");
     Assert.assertTrue(partitionKey.isValid());
     Assert.assertEquals(TAR_REPO, partitionKey.getRecord());
     Assert.assertEquals(TAR_REPO, partitionKey.getBatch());
@@ -505,13 +646,15 @@ public class PartitionKeyTest {
     Assert.assertEquals('/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
         + PARTITION.iterator().next() + '/' + TAR_REPO + '/' + TAR_REPO,
         partitionKey.getPath());
+    Assert.assertEquals('/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
+        + PARTITION.iterator().next(), partitionKey.getPathPartition());
   }
 
   @Test
   public void testPathXML() {
     PartitionKey partitionKey = new PartitionKey().path("file:///some/dir/"
-        + XML_EXTENSION + "/" + XML_CODEC + "/" + PARTITION.iterator().next()
-        + "/" + XML_REPO + "/" + FILE + "-some-extension");
+        + XML_EXTENSION + '/' + XML_CODEC + '/' + PARTITION.iterator().next()
+        + '/' + XML_REPO + '/' + FILE + "-some-extension");
     Assert.assertTrue(partitionKey.isValid());
     Assert.assertEquals(FILE, partitionKey.getRecord());
     Assert.assertEquals(XML_REPO, partitionKey.getBatch());
@@ -525,6 +668,8 @@ public class PartitionKeyTest {
     Assert.assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
         + PARTITION.iterator().next() + '/' + XML_REPO + '/' + FILE,
         partitionKey.getPath());
+    Assert.assertEquals('/' + XML_EXTENSION + '/' + XML_CODEC + '/'
+        + PARTITION.iterator().next(), partitionKey.getPathPartition());
   }
 
   @Test
@@ -541,6 +686,10 @@ public class PartitionKeyTest {
     Assert.assertEquals('/' + SEQ_EXTENSION + '/' + SEQ_CODEC + '/'
         + PARTITIONS_UNKNOWN.iterator().next() + '/' + TAR_REPO + '/'
         + TAR_REPO, partitionKey.getPath());
+    Assert
+        .assertEquals('/' + SEQ_EXTENSION + '/' + SEQ_CODEC + '/'
+            + PARTITIONS_UNKNOWN.iterator().next(),
+            partitionKey.getPathPartition());
   }
 
   @Test
@@ -557,6 +706,10 @@ public class PartitionKeyTest {
     Assert.assertEquals('/' + SEQ_EXTENSION + '/' + SEQ_CODEC + '/'
         + PARTITIONS_UNKNOWN.iterator().next() + '/' + XML_REPO + '/'
         + XML_REPO, partitionKey.getPath());
+    Assert
+        .assertEquals('/' + SEQ_EXTENSION + '/' + SEQ_CODEC + '/'
+            + PARTITIONS_UNKNOWN.iterator().next(),
+            partitionKey.getPathPartition());
   }
 
 }

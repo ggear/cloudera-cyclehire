@@ -49,8 +49,76 @@ public class StageTest extends BaseTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
   public void testStageValid() throws FileNotFoundException,
+      IllegalArgumentException, IOException {
+
+    Assert.assertEquals(
+        Driver.RETURN_SUCCESS,
+        stageDriver.runner(new String[] {
+            BaseTestCase.PATH_HDFS_DIR_RAW_LANDING,
+            BaseTestCase.PATH_HDFS_DIR_RAW_STAGING }));
+    Assert.assertEquals(
+        stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+            Counter.FILES).longValue(),
+        stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+            Counter.FILES_SKIPPED)
+            + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+                Counter.FILES_FAILED)
+            + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+                Counter.FILES_SUCCESSFUL));
+    Assert.assertTrue(stageDriver.getCounter(
+        StageDriver.class.getCanonicalName(), Counter.FILES_SKIPPED) > 0);
+    Assert.assertTrue(stageDriver.getCounter(
+        StageDriver.class.getCanonicalName(), Counter.FILES_FAILED) > 0);
+    Assert.assertTrue(stageDriver.getCounter(
+        StageDriver.class.getCanonicalName(), Counter.FILES_SUCCESSFUL) > 0);
+    Assert.assertTrue(stageDriver.getCounter(
+        StageDriver.class.getCanonicalName(), Counter.FILES) > 0);
+    Assert.assertEquals(
+        stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+            Counter.BATCHES).longValue(),
+        stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+            Counter.BATCHES_SKIPPED)
+            + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+                Counter.BATCHES_FAILED)
+            + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+                Counter.BATCHES_SUCCESSFUL));
+    Assert.assertEquals(
+        0L,
+        stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+            Counter.BATCHES_SKIPPED).longValue());
+    Assert.assertTrue(stageDriver.getCounter(
+        StageDriver.class.getCanonicalName(), Counter.BATCHES_FAILED) > 0);
+    Assert.assertTrue(stageDriver.getCounter(
+        StageDriver.class.getCanonicalName(), Counter.BATCHES_SUCCESSFUL) > 0);
+    Assert.assertTrue(stageDriver.getCounter(
+        StageDriver.class.getCanonicalName(), Counter.BATCHES) > 0);
+    Assert.assertEquals(
+        stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+            Counter.PARTITIONS).longValue(),
+        stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+            Counter.PARTITIONS_SKIPPED)
+            + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+                Counter.PARTITIONS_FAILED)
+            + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+                Counter.PARTITIONS_SUCCESSFUL));
+    Assert.assertEquals(
+        0L,
+        stageDriver.getCounter(StageDriver.class.getCanonicalName(),
+            Counter.PARTITIONS_SKIPPED).longValue());
+    Assert.assertTrue(stageDriver.getCounter(
+        StageDriver.class.getCanonicalName(), Counter.PARTITIONS_FAILED) > 0);
+    Assert
+        .assertTrue(stageDriver.getCounter(
+            StageDriver.class.getCanonicalName(), Counter.PARTITIONS_SUCCESSFUL) > 0);
+    Assert.assertTrue(stageDriver.getCounter(
+        StageDriver.class.getCanonicalName(), Counter.PARTITIONS) > 0);
+
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testStageValidRinseRepeat() throws FileNotFoundException,
       IllegalArgumentException, IOException {
 
     Assert.assertEquals(
@@ -207,10 +275,10 @@ public class StageTest extends BaseTest {
     stageDriver.reset();
 
     List<Path> stagingPaths = HDFSClientUtil.listFiles(getFileSystem(),
-        new Path(BaseTestCase.PATH_HDFS_DIR_RAW_STAGING), true);
+        new Path(BaseTestCase.PATH_HDFS_DIR_RAW_STAGING,
+            Counter.BATCHES_SUCCESSFUL.getPath()), true);
     Collections.sort(stagingPaths);
-    Path stagingPathToDelete = stagingPaths.get(stagingPaths.size() - 1)
-        .getParent();
+    Path stagingPathToDelete = stagingPaths.get(16).getParent();
     long filesCountDeleted = HDFSClientUtil.listFiles(getFileSystem(),
         stagingPathToDelete, false).size() - 1;
     getFileSystem().delete(stagingPathToDelete, true);

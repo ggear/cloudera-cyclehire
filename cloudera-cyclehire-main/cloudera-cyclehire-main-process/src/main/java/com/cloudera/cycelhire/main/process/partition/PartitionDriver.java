@@ -36,7 +36,7 @@ import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
 
 public class PartitionDriver extends Driver {
 
-  public static final String NAMED_OUTPUT = "sequence";
+  public static final String NAMED_OUTPUT_SEQUENCE = "sequence";
 
   private static final Logger log = LoggerFactory
       .getLogger(PartitionDriver.class);
@@ -74,7 +74,7 @@ public class PartitionDriver extends Driver {
         Counter.BATCHES_FAILED, Counter.BATCHES_SUCCESSFUL, Counter.BATCHES,
         Counter.PARTITIONS_SKIPPED, Counter.PARTITIONS_FAILED,
         Counter.PARTITIONS_SUCCESSFUL, Counter.PARTITIONS, Counter.RECORDS }) {
-      incramentCounter(PartitionDriver.class.getCanonicalName(), counter, 0);
+      incramentCounter(counter, 0);
     }
   }
 
@@ -131,58 +131,47 @@ public class PartitionDriver extends Driver {
       IOException, ClassNotFoundException {
 
     FileSystem hdfs = FileSystem.newInstance(getConf());
-    
+
     Set<String> counterBatches = new HashSet<String>();
     Set<String> counterPartitions = new HashSet<String>();
-    Map<Path, PartitionKey> pathStagingsPartitioning = new HashMap<Path, PartitionKey>();
+    Map<String, PartitionKey> partitionKeys = new HashMap<String, PartitionKey>();
     for (Path pathStaging : HDFSClientUtil.listFiles(hdfs, hdfsStagingPath,
         true)) {
       if (!PartitionFlag.isValue(pathStaging.getName())) {
         PartitionKey partitionKey = new PartitionKey().path(pathStaging
             .toString());
         if (PartitionFlag.list(hdfs, pathStaging, PartitionFlag._PARTITION)) {
-          if (!pathStagingsPartitioning.containsKey(pathStaging.getParent())) {
-            if (partitionKey.isValid()) {
-              pathStagingsPartitioning.put(pathStaging.getParent(),
-                  partitionKey);
-            }
+          if (!partitionKeys.containsKey(partitionKey.getBatch())) {
+            partitionKeys.put(partitionKey.getBatch(), partitionKey);
           }
-          incramentCounter(PartitionDriver.class.getCanonicalName(),
-              Counter.BATCHES, 0, pathStaging.getParent().toString(),
-              counterBatches);
-          incramentCounter(PartitionDriver.class.getCanonicalName(),
-              Counter.PARTITIONS, 0, partitionKey.getPartition(),
-              counterPartitions);
         } else {
-          incramentCounter(PartitionDriver.class.getCanonicalName(),
-              Counter.BATCHES_SKIPPED, 1, pathStaging.getParent().toString(),
+          incramentCounter(Counter.BATCHES_SKIPPED, 1,
+              partitionKey.getPartition() + '/' + partitionKey.getBatch(),
               counterBatches);
-          incramentCounter(PartitionDriver.class.getCanonicalName(),
-              Counter.PARTITIONS_SKIPPED, 1, partitionKey.getPartition(),
-              counterPartitions);
+          incramentCounter(Counter.PARTITIONS_SKIPPED, 1,
+              partitionKey.getPartition(), counterPartitions);
         }
       }
     }
-    incramentCounter(PartitionDriver.class.getCanonicalName(), Counter.BATCHES,
-        counterBatches.size());
-    incramentCounter(PartitionDriver.class.getCanonicalName(),
-        Counter.PARTITIONS, counterPartitions.size());
 
     Job job = null;
-    boolean jobSuccess = false;
-    if (!pathStagingsPartitioning.isEmpty()) {
+    boolean jobSuccess = partitionKeys.isEmpty();
+    if (!partitionKeys.isEmpty()) {
       job = Job.getInstance(getConf());
       job.setJobName(getClass().getSimpleName());
       job.getConfiguration().set(
           FileOutputCommitter.SUCCESSFUL_JOB_OUTPUT_DIR_MARKER,
           Boolean.FALSE.toString());
-      for (Path pathStaging : pathStagingsPartitioning.keySet()) {
-        if (PartitionInputFormat.supports(
-            pathStagingsPartitioning.get(pathStaging).getType(),
-            pathStagingsPartitioning.get(pathStaging).getCodec())) {
-          MultipleInputs.addInputPath(job, pathStaging, PartitionInputFormat
-              .get(pathStagingsPartitioning.get(pathStaging).getType(),
-                  pathStagingsPartitioning.get(pathStaging).getCodec()));
+      for (PartitionKey partitionKey : partitionKeys.values()) {
+        if (PartitionInputFormat.supports(partitionKey.getType(),
+            partitionKey.getCodec())) {
+          MultipleInputs.addInputPath(
+              job,
+              new Path(new StringBuilder(512).append(hdfsStagingPath)
+                  .append('/').append(Counter.BATCHES_SUCCESSFUL.getPath())
+                  .append('/').append(partitionKey.getPathBatch()).toString()),
+              PartitionInputFormat.get(partitionKey.getType(),
+                  partitionKey.getCodec()));
         }
       }
       job.setMapOutputKeyClass(PartitionKey.class);
@@ -194,7 +183,7 @@ public class PartitionDriver extends Driver {
       SequenceFileOutputFormat.setOutputCompressionType(job,
           CompressionType.NONE);
       FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
-      MultipleOutputs.addNamedOutput(job, NAMED_OUTPUT,
+      MultipleOutputs.addNamedOutput(job, NAMED_OUTPUT_SEQUENCE,
           SequenceFileOutputFormat.class, PartitionKey.class, Text.class);
       job.setJarByClass(PartitionDriver.class);
       jobSuccess = job.waitForCompletion(log.isInfoEnabled());
@@ -204,32 +193,32 @@ public class PartitionDriver extends Driver {
       }
     }
 
-    counterBatches.clear();
-    counterPartitions.clear();
-    for (Path pathStaging : pathStagingsPartitioning.keySet()) {
-      PartitionKey partitionKey = pathStagingsPartitioning.get(pathStaging);
-      String pathPartionedPrefix = new StringBuffer(512)
-          .append(hdfsPartitioningPath).append('/').append(NAMED_OUTPUT)
-          .append('/').append(MapReduceUtil.getCodecString(getConf()))
-          .append('/').toString();
-      for (String partition : partitionKey.getPartitions()) {
-        Path pathPartitioned = new Path(new StringBuffer(512)
-            .append(pathPartionedPrefix).append(partition).append('/')
-            .append(partitionKey.getBatch()).toString());
-        boolean partitioned = HDFSClientUtil.listFiles(hdfs, pathPartitioned,
+    for (String partitionKeyBatch : partitionKeys.keySet()) {
+      for (PartitionKey partitionKey : PartitionKey.getKeys(partitionKeyBatch)) {
+        Path pathStaging = new Path(new StringBuffer(512)
+            .append(hdfsStagingPath).append('/')
+            .append(Counter.BATCHES_SUCCESSFUL.getPath())
+            .append(partitionKey.getPathBatch()).toString());
+        Path pathPartition = new Path(new StringBuffer(512)
+            .append(hdfsPartitioningPath)
+            .append(
+                partitionKey.type(NAMED_OUTPUT_SEQUENCE)
+                    .codec(MapReduceUtil.getCodecString(getConf()))
+                    .getPathPartition()).toString());
+        boolean partitioned = HDFSClientUtil.listFiles(hdfs, pathPartition,
             false).size() > 0;
-        PartitionFlag.update(hdfs, new Path(pathStaging.getParent(),
-            partitionKey.getBatch()), partitioned ? PartitionFlag._PROCESS
-            : PartitionFlag._FAILED);
-        incramentCounter(PartitionDriver.class.getCanonicalName(),
-            partitioned ? Counter.BATCHES_SUCCESSFUL : Counter.BATCHES_FAILED,
-            1, pathPartitioned.toString(), counterBatches);
-        incramentCounter(PartitionDriver.class.getCanonicalName(),
-            partitioned ? Counter.PARTITIONS_SUCCESSFUL
-                : Counter.PARTITIONS_FAILED, 1, partitionKey.getPartition(),
+        PartitionFlag.update(hdfs, pathStaging,
+            partitioned ? PartitionFlag._PROCESS : PartitionFlag._FAILED);
+        incramentCounter(partitioned ? Counter.BATCHES_SUCCESSFUL
+            : Counter.BATCHES_FAILED, 1, partitionKey.getPartition() + '/'
+            + partitionKey.getBatch(), counterBatches);
+        incramentCounter(partitioned ? Counter.PARTITIONS_SUCCESSFUL
+            : Counter.PARTITIONS_FAILED, 1, partitionKey.getPartition(),
             counterPartitions);
       }
     }
+    incramentCounter(Counter.BATCHES, counterBatches.size());
+    incramentCounter(Counter.PARTITIONS, counterPartitions.size());
 
     return jobSuccess ? RETURN_SUCCESS : RETURN_FAILURE_RUNTIME;
 

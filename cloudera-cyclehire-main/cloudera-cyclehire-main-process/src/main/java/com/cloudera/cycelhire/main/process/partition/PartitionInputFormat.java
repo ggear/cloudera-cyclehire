@@ -10,10 +10,9 @@ import com.google.common.collect.ImmutableMap;
 
 public class PartitionInputFormat {
 
-  // TODO
   private static Map<String, ImmutableMap<String, ? extends Class<? extends FileInputFormat<PartitionKey, Text>>>> INPUT_FORMATS = ImmutableMap
       .of("tar", ImmutableMap.of("gz", PartitionInputFormatTarGzip.class),
-          "xml_test", ImmutableMap.of("deflate", PartitionInputFormatXML.class));
+          "xml", ImmutableMap.of("deflate", PartitionInputFormatXML.class));
 
   public static boolean supports(String type, String codec) {
     return INPUT_FORMATS.containsKey(type)

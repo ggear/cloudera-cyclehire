@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
@@ -22,12 +25,17 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
 
   public static final String CODEC_NONE_LABEL = "deflate";
 
-  public static final Pattern REGEX_RECORD = Pattern
-      .compile("([1-9][0-9]{9})_livecyclehireupdates\\.xml");
+  public static final String TOKEN_PARTITION_YEAR = "year";
+  public static final String TOKEN_PARTITION_MONTH = "month";
+  public static final String TOKEN_NAME = "livecyclehireupdates";
+
+  public static final Pattern REGEX_RECORD = Pattern.compile("([1-9][0-9]{9})_"
+      + TOKEN_NAME + "\\.xml");
   public static final Pattern REGEX_BATCH = Pattern
-      .compile("([1-9][0-9]{9})_([1-9][0-9]{9})_livecyclehireupdates\\.([a-z]+)\\.?([a-z]*)");
+      .compile("([1-9][0-9]{9})_([1-9][0-9]{9})_" + TOKEN_NAME
+          + "\\.([a-z]+)\\.?([a-z]*)");
   public static final Pattern REGEX_PATH = Pattern
-      .compile(".*\\/([a-z]+)\\/([a-z]+)\\/(year=[1-2][0-9]{3}\\/month=[1-9][0-9]?)\\/([1-9][0-9]{9}_[1-9][0-9]{9}_livecyclehireupdates\\.[a-z]+\\.?[a-z]*)\\/([1-9][0-9]{9}_?[1-9]?[0-9]{0,9}_livecyclehireupdates\\.[a-z]+\\.?[a-z]*).*");
+      .compile(".*\\/([a-zA-Z0-9_]+)\\/([a-zA-Z0-9_]+)\\/(.*)\\/(.*\\.[a-z]+\\.?[a-z]*)\\/(.*\\.[a-z]+\\.?[a-z]*).*");
 
   private static final long EPOCH_MIN = 1280448000000L;
   private static final long EPOCH_MAX = System.currentTimeMillis() + 100L
@@ -47,13 +55,34 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   transient private Matcher recordMatcher = null;
   transient private Matcher batchMatcher = null;
 
+  public static List<PartitionKey> getKeys(String batch) {
+    return getKeys(batch, null);
+  }
+
   public static List<PartitionKey> getKeys(String batch, String record) {
+    Set<String> batches = new HashSet<String>();
     List<PartitionKey> keys = new ArrayList<PartitionKey>();
-    for (String partition : new PartitionKey().batch(batch).record(record)
-        .getPartitions()) {
-      keys.add(new PartitionKey().batch(batch).record(record)
-          .partition(partition));
+    if (record != null) {
+      for (String partition : new PartitionKey().batch(batch).record(record)
+          .getPartitions()) {
+        PartitionKey key = new PartitionKey().batch(batch).record(record)
+            .partition(partition);
+        batches.add(key.getPathBatch());
+        keys.add(key);
+      }
     }
+    for (String partition : new PartitionKey().batch(batch).getPartitions()) {
+      PartitionKey key = new PartitionKey().batch(batch).partition(partition);
+      if (!batches.contains(key.getPathBatch())) {
+        keys.add(key);
+      }
+    }
+    Collections.sort(keys, new Comparator<PartitionKey>() {
+      @Override
+      public int compare(PartitionKey one, PartitionKey two) {
+        return one.getPathBatch().compareTo(two.getPathBatch());
+      }
+    });
     return keys;
   }
 
@@ -62,12 +91,15 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
 
   public PartitionKey batch(String batch) {
     this.batch = batch == null ? "" : batch;
+    batchMatcher = null;
     return this;
   }
 
   public PartitionKey record(String record) {
     this.record = record == null ? "" : record;
-    if (getMatcherRecord() == null && REGEX_BATCH.matcher(record).matches()) {
+    recordMatcher = null;
+    if (getMatcherRecord() == null
+        && REGEX_BATCH.matcher(this.record).matches()) {
       this.record = "";
     }
     if (this.epochGet == 0L && getMatcherRecord() != null) {
@@ -215,10 +247,13 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
               .getTimeInMillis()
           && calendarMax.getTimeInMillis() <= calendarMaxRange
               .getTimeInMillis()) {
+        calendarMin.setTime(DateUtils.truncate(calendarMin, Calendar.MONTH)
+            .getTime());
         while (calendarMin.getTimeInMillis() == calendarMax.getTimeInMillis()
             || calendarMin.before(calendarMax)) {
-          partitions.add("year=" + calendarMin.get(Calendar.YEAR) + "/month="
-              + (calendarMin.get(Calendar.MONTH) + 1));
+          partitions.add(TOKEN_PARTITION_YEAR + "="
+              + calendarMin.get(Calendar.YEAR) + "/" + TOKEN_PARTITION_MONTH
+              + "=" + (calendarMin.get(Calendar.MONTH) + 1));
           calendarMin.add(Calendar.MONTH, 1);
         }
       }
@@ -238,15 +273,23 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   }
 
   public String getPath() {
+    return new StringBuilder(512).append(getPathBatch()).append('/')
+        .append(getRecord()).toString();
+  }
+
+  public String getPathBatch() {
+    return new StringBuilder(512).append(getPathPartition()).append('/')
+        .append(getBatch()).toString();
+  }
+
+  public String getPathPartition() {
     return new StringBuilder(512).append('/').append(getType()).append('/')
-        .append(getCodec()).append('/').append(getPartition()).append('/')
-        .append(getBatch()).append('/').append(getRecord()).toString();
+        .append(getCodec()).append('/').append(getPartition()).toString();
   }
 
   protected static Calendar getCalendarMonth(long epoch) {
     Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
     calendar.setTimeInMillis(epoch);
-    DateUtils.truncate(calendar, Calendar.MONTH);
     return calendar;
   }
 

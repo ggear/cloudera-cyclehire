@@ -1,7 +1,9 @@
 package com.cloudera.cycelhire.main.process.stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -59,7 +61,7 @@ public class StageDriver extends Driver {
         Counter.BATCHES_SUCCESSFUL, Counter.BATCHES,
         Counter.PARTITIONS_SKIPPED, Counter.PARTITIONS_FAILED,
         Counter.PARTITIONS_SUCCESSFUL, Counter.PARTITIONS }) {
-      incramentCounter(StageDriver.class.getCanonicalName(), counter, 0);
+      incramentCounter(counter, 0);
     }
   }
 
@@ -118,66 +120,68 @@ public class StageDriver extends Driver {
     Set<String> counterFiles = new HashSet<String>();
     Set<String> counterBatches = new HashSet<String>();
     Set<String> counterPartitions = new HashSet<String>();
+    List<PartitionKey> counterPartitionKeys = new ArrayList<PartitionKey>();
     for (Path pathLanding : HDFSClientUtil.listFiles(hdfs, hdfsLandingPath,
         true)) {
       if (!PartitionFlag.isValue(pathLanding.getName())) {
         String pathLandingString = pathLanding.toString();
-        String hdfsLandingPathString = hdfsLandingPath.toString();
-        String pathLandingRelative = pathLandingString.substring(
-            pathLandingString.indexOf(hdfsLandingPathString)
-                + hdfsLandingPathString.length() + 1,
-            pathLandingString.length());
         if (PartitionFlag.list(hdfs, pathLanding, PartitionFlag._SUCCESS)) {
           for (PartitionKey partitionKey : PartitionKey.getKeys(pathLanding
               .getParent().getName(), pathLanding.getName())) {
+            boolean pathValid = partitionKey.isValid()
+                && hdfs.exists(new Path(pathLanding.getParent(), partitionKey
+                    .getRecord()));
             Path pathStaging = new Path(new StringBuilder(512)
-                .append(hdfsStagingPath).append('/')
+                .append(hdfsStagingPath)
+                .append('/')
+                .append(
+                    pathValid ? Counter.BATCHES_SUCCESSFUL.getPath()
+                        : Counter.BATCHES_FAILED.getPath()).append('/')
                 .append(partitionKey.getPath()).toString());
             if (PartitionFlag.list(hdfs, pathStaging).isEmpty()) {
-              if (partitionKey.isValid()) {
+              if (pathValid) {
                 HDFSClientUtil.createSymlinkOrCopy(hdfs, pathLanding,
                     pathStaging);
-                PartitionFlag.update(hdfs, pathStaging.getParent(),
-                    PartitionFlag._PARTITION);
               } else {
-                // TODO: symlink to /erroneous, add _FAILED, check to skip
-                System.out.println("Errored file: " + pathLandingRelative);
+                hdfs.createNewFile(pathStaging);
               }
-              incramentCounter(StageDriver.class.getCanonicalName(),
-                  partitionKey.isValid() ? Counter.FILES_SUCCESSFUL
-                      : Counter.FILES_FAILED, 1, pathLandingRelative,
-                  counterFiles);
-              incramentCounter(StageDriver.class.getCanonicalName(),
-                  partitionKey.isValid() ? Counter.BATCHES_SUCCESSFUL
-                      : Counter.BATCHES_FAILED, 1, partitionKey.getPartition()
-                      + partitionKey.getBatch(), counterBatches);
-              incramentCounter(StageDriver.class.getCanonicalName(),
-                  partitionKey.isValid() ? Counter.PARTITIONS_SUCCESSFUL
-                      : Counter.PARTITIONS_FAILED, 1,
-                  partitionKey.getPartition(), counterPartitions);
-            } else {
-              incramentCounter(StageDriver.class.getCanonicalName(),
-                  Counter.FILES_SKIPPED, 1, pathLandingRelative, counterFiles);
-              incramentCounter(StageDriver.class.getCanonicalName(),
-                  Counter.BATCHES_SKIPPED, 1, partitionKey.getPartition()
-                      + partitionKey.getBatch(), counterBatches);
-              incramentCounter(StageDriver.class.getCanonicalName(),
-                  Counter.PARTITIONS_SKIPPED, 1, partitionKey.getPartition(),
+              PartitionFlag.update(hdfs, pathStaging.getParent(),
+                  pathValid ? PartitionFlag._PARTITION : PartitionFlag._FAILED);
+              incramentCounter(pathValid ? Counter.FILES_SUCCESSFUL
+                  : Counter.FILES_FAILED, 1, pathLandingString, counterFiles);
+              incramentCounter(pathValid ? Counter.BATCHES_SUCCESSFUL
+                  : Counter.BATCHES_FAILED, 1, partitionKey.getPartition()
+                  + '/' + partitionKey.getBatch(), counterBatches);
+              incramentCounter(pathValid ? Counter.PARTITIONS_SUCCESSFUL
+                  : Counter.PARTITIONS_FAILED, 1, partitionKey.getPartition(),
                   counterPartitions);
+            } else {
+              counterPartitionKeys.add(partitionKey);
+              incramentCounter(Counter.FILES_SKIPPED, 1, pathLandingString,
+                  counterFiles);
             }
           }
         } else {
-          incramentCounter(StageDriver.class.getCanonicalName(),
-              Counter.FILES_SKIPPED, 1, pathLandingRelative, counterFiles);
+          incramentCounter(Counter.FILES_SKIPPED, 1, pathLandingString,
+              counterFiles);
         }
       }
     }
-    incramentCounter(StageDriver.class.getCanonicalName(), Counter.FILES,
-        counterFiles.size());
-    incramentCounter(StageDriver.class.getCanonicalName(), Counter.BATCHES,
-        counterBatches.size());
-    incramentCounter(StageDriver.class.getCanonicalName(), Counter.PARTITIONS,
-        counterPartitions.size());
+    for (PartitionKey partitionKey : counterPartitionKeys) {
+      if (!counterBatches.contains(partitionKey.getPartition() + '/'
+          + partitionKey.getBatch())) {
+        incramentCounter(Counter.BATCHES_SKIPPED, 1,
+            partitionKey.getPartition() + '/' + partitionKey.getBatch(),
+            counterBatches);
+      }
+      if (!counterPartitions.contains(partitionKey.getPartition())) {
+        incramentCounter(Counter.PARTITIONS_SKIPPED, 1,
+            partitionKey.getPartition(), counterPartitions);
+      }
+    }
+    incramentCounter(Counter.FILES, counterFiles.size());
+    incramentCounter(Counter.BATCHES, counterBatches.size());
+    incramentCounter(Counter.PARTITIONS, counterPartitions.size());
 
     return RETURN_SUCCESS;
 
