@@ -42,8 +42,8 @@ public class CopyDriver extends Driver {
 
   private static final Logger log = LoggerFactory.getLogger(CopyDriver.class);
 
-  private Path hdfsLandingPath;
-  private List<FileSetCopy> localLandingFileSets;
+  private Path hdfsLandedPath;
+  private List<FileSetCopy> localLandedFileSets;
 
   private Map<Long, FileSystem> fileSystems = new HashMap<Long, FileSystem>();
 
@@ -72,7 +72,7 @@ public class CopyDriver extends Driver {
 
   @Override
   public String[] paramaters() {
-    return new String[] { "local-dir-landing ...", "hdfs-dir-landing" };
+    return new String[] { "local-dir-landed ...", "hdfs-dir-landed" };
   }
 
   @Override
@@ -83,7 +83,7 @@ public class CopyDriver extends Driver {
         Counter.FILES }) {
       incramentCounter(counter, 0);
     }
-    localLandingFileSets = new ArrayList<FileSetCopy>();
+    localLandedFileSets = new ArrayList<FileSetCopy>();
   }
 
   @Override
@@ -95,77 +95,77 @@ public class CopyDriver extends Driver {
 
     FileSystem hdfs = getFileSystem();
 
-    hdfsLandingPath = new Path(arguments[arguments.length - 1]);
-    if (hdfs.exists(hdfsLandingPath)) {
-      if (!hdfs.isDirectory(hdfsLandingPath)) {
-        throw new Exception("HDFS landing directory [" + hdfsLandingPath
+    hdfsLandedPath = new Path(arguments[arguments.length - 1]);
+    if (hdfs.exists(hdfsLandedPath)) {
+      if (!hdfs.isDirectory(hdfsLandedPath)) {
+        throw new Exception("HDFS landed directory [" + hdfsLandedPath
             + "] is not a directory");
       }
       if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
           .getCurrentUser().getUserName(), UserGroupInformation
-          .getCurrentUser().getGroupNames(), hdfsLandingPath, FsAction.ALL)) {
-        throw new Exception("HDFS landing directory [" + hdfsLandingPath
+          .getCurrentUser().getGroupNames(), hdfsLandedPath, FsAction.ALL)) {
+        throw new Exception("HDFS landed directory [" + hdfsLandedPath
             + "] has too restrictive permissions to read/write as user ["
             + UserGroupInformation.getCurrentUser().getUserName() + "]");
       }
     } else {
-      hdfs.mkdirs(hdfsLandingPath, new FsPermission(FsAction.ALL,
+      hdfs.mkdirs(hdfsLandedPath, new FsPermission(FsAction.ALL,
           FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
     }
     if (log.isInfoEnabled()) {
-      log.info("HDFS landing directory [" + hdfsLandingPath + "] validated");
+      log.info("HDFS landed directory [" + hdfsLandedPath + "] validated");
     }
 
-    List<File> localLandingDirs = new ArrayList<File>();
+    List<File> localLandedDirs = new ArrayList<File>();
     for (int i = 0; i < arguments.length - 1; i++) {
       File file = new File(arguments[i]);
       if (!file.exists() || !file.canRead() || !file.isDirectory()) {
         throw new Exception("Local directory [" + arguments[i]
             + "] cannot be read");
       }
-      localLandingDirs.add(file);
+      localLandedDirs.add(file);
     }
     boolean isDirIncluded = getConf().getBoolean(CONF_DIR_INCLUDE, false);
     boolean isFileQueue = getConf().get(CONF_THREAD_QUEUE,
         CONF_THREAD_QUEUE_FILE).equals(CONF_THREAD_QUEUE_FILE);
-    for (File localLandingDir : localLandingDirs) {
-      FileSetCopy localLandingFileSet = new FileSetCopy(
-          hdfsLandingPath.toString()
-              + (isDirIncluded ? "/" + localLandingDir.getName() : ""));
-      localLandingFileSets.add(localLandingFileSet);
-      for (File localLandingFile : localLandingDir.listFiles()) {
-        if (localLandingFile.isFile() && localLandingFile.canRead()) {
-          localLandingFileSet.addFile(localLandingFile);
+    for (File localLandedDir : localLandedDirs) {
+      FileSetCopy localLandedFileSet = new FileSetCopy(
+          hdfsLandedPath.toString()
+              + (isDirIncluded ? "/" + localLandedDir.getName() : ""));
+      localLandedFileSets.add(localLandedFileSet);
+      for (File localLandedFile : localLandedDir.listFiles()) {
+        if (localLandedFile.isFile() && localLandedFile.canRead()) {
+          localLandedFileSet.addFile(localLandedFile);
           if (isFileQueue) {
-            localLandingFileSets.add(localLandingFileSet = new FileSetCopy(
-                hdfsLandingPath.toString()
-                    + (isDirIncluded ? "/" + localLandingDir.getName() : "")));
+            localLandedFileSets.add(localLandedFileSet = new FileSetCopy(
+                hdfsLandedPath.toString()
+                    + (isDirIncluded ? "/" + localLandedDir.getName() : "")));
           }
         }
       }
     }
-    Set<String> hdfsLandingNamespace = new HashSet<String>();
-    List<String> hdfsLandingNamespaceClash = new ArrayList<String>();
-    for (int i = 0; i < localLandingFileSets.size(); i++) {
-      if (localLandingFileSets.get(i).getFiles().isEmpty()) {
-        localLandingFileSets.remove(i);
+    Set<String> hdfsLandedNamespace = new HashSet<String>();
+    List<String> hdfsLandedNamespaceClash = new ArrayList<String>();
+    for (int i = 0; i < localLandedFileSets.size(); i++) {
+      if (localLandedFileSets.get(i).getFiles().isEmpty()) {
+        localLandedFileSets.remove(i);
       } else if (!isDirIncluded) {
-        for (File file : localLandingFileSets.get(i).getFiles()) {
-          if (hdfsLandingNamespace.contains(file.getName())) {
-            hdfsLandingNamespaceClash.add(file.getName());
+        for (File file : localLandedFileSets.get(i).getFiles()) {
+          if (hdfsLandedNamespace.contains(file.getName())) {
+            hdfsLandedNamespaceClash.add(file.getName());
           } else {
-            hdfsLandingNamespace.add(file.getName());
+            hdfsLandedNamespace.add(file.getName());
           }
         }
       }
     }
-    if (!hdfsLandingNamespaceClash.isEmpty()) {
+    if (!hdfsLandedNamespaceClash.isEmpty()) {
       throw new Exception("File namespace clashes detected with "
-          + hdfsLandingNamespaceClash
+          + hdfsLandedNamespaceClash
           + ", consider including directories in ingress path or file renaming");
     }
     if (log.isInfoEnabled()) {
-      log.info("Local landing directories " + localLandingDirs + " validated");
+      log.info("Local landed directories " + localLandedDirs + " validated");
     }
 
     return RETURN_SUCCESS;
@@ -179,12 +179,12 @@ public class CopyDriver extends Driver {
     ExecutorService fileSetCopyExecutor = new ThreadPoolExecutor(numberThreads,
         numberThreads, 0L, TimeUnit.SECONDS,
         new LinkedBlockingQueue<Runnable>());
-    for (FileSetCopy fileSetCopy : localLandingFileSets) {
+    for (FileSetCopy fileSetCopy : localLandedFileSets) {
       fileSetCopyFutures.add(fileSetCopyExecutor.submit(fileSetCopy));
     }
     fileSetCopyExecutor.shutdown();
     if (!fileSetCopyExecutor.awaitTermination(
-        getConf().getInt(CONF_TIMEOUT_SECS, 600) * localLandingFileSets.size(),
+        getConf().getInt(CONF_TIMEOUT_SECS, 600) * localLandedFileSets.size(),
         TimeUnit.SECONDS)) {
       fileSetCopyExecutor.shutdownNow();
     }

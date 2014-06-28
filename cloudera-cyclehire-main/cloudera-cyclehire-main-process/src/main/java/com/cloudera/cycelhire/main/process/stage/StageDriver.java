@@ -26,8 +26,8 @@ public class StageDriver extends Driver {
 
   private static final Logger log = LoggerFactory.getLogger(StageDriver.class);
 
-  private Path hdfsLandingPath;
-  private Path hdfsStagingPath;
+  private Path hdfsLandedPath;
+  private Path hdfsStagedPath;
 
   public StageDriver() {
     super();
@@ -39,7 +39,7 @@ public class StageDriver extends Driver {
 
   @Override
   public String description() {
-    return "Stage a set of files in batch corelated partitions";
+    return "Stage a set of files";
   }
 
   @Override
@@ -49,7 +49,7 @@ public class StageDriver extends Driver {
 
   @Override
   public String[] paramaters() {
-    return new String[] { "hdfs-dir-landing", "hdfs-dir-staging" };
+    return new String[] { "hdfs-dir-landed", "hdfs-dir-staged" };
   }
 
   @Override
@@ -74,38 +74,38 @@ public class StageDriver extends Driver {
 
     FileSystem hdfs = FileSystem.newInstance(getConf());
 
-    hdfsLandingPath = new Path(arguments[0]);
-    if (!hdfs.exists(hdfsLandingPath)
+    hdfsLandedPath = new Path(arguments[0]);
+    if (!hdfs.exists(hdfsLandedPath)
         || !HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
             .getCurrentUser().getUserName(), UserGroupInformation
-            .getCurrentUser().getGroupNames(), hdfsLandingPath, FsAction.READ)) {
-      throw new Exception("HDFS landing directory [" + hdfsLandingPath
+            .getCurrentUser().getGroupNames(), hdfsLandedPath, FsAction.READ)) {
+      throw new Exception("HDFS landed directory [" + hdfsLandedPath
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
     if (log.isInfoEnabled()) {
-      log.info("HDFS landing directory [" + hdfsLandingPath + "] validated");
+      log.info("HDFS landed directory [" + hdfsLandedPath + "] validated");
     }
 
-    hdfsStagingPath = new Path(arguments[1]);
-    if (hdfs.exists(hdfsStagingPath)) {
-      if (!hdfs.isDirectory(hdfsStagingPath)) {
-        throw new Exception("HDFS staging directory [" + hdfsStagingPath
+    hdfsStagedPath = new Path(arguments[1]);
+    if (hdfs.exists(hdfsStagedPath)) {
+      if (!hdfs.isDirectory(hdfsStagedPath)) {
+        throw new Exception("HDFS staged directory [" + hdfsStagedPath
             + "] is not a directory");
       }
       if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
           .getCurrentUser().getUserName(), UserGroupInformation
-          .getCurrentUser().getGroupNames(), hdfsStagingPath, FsAction.ALL)) {
-        throw new Exception("HDFS staging directory [" + hdfsStagingPath
+          .getCurrentUser().getGroupNames(), hdfsStagedPath, FsAction.ALL)) {
+        throw new Exception("HDFS staged directory [" + hdfsStagedPath
             + "] has too restrictive permissions to read/write as user ["
             + UserGroupInformation.getCurrentUser().getUserName() + "]");
       }
     } else {
-      hdfs.mkdirs(hdfsStagingPath, new FsPermission(FsAction.ALL,
+      hdfs.mkdirs(hdfsStagedPath, new FsPermission(FsAction.ALL,
           FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
     }
     if (log.isInfoEnabled()) {
-      log.info("HDFS staging directory [" + hdfsStagingPath + "] validated");
+      log.info("HDFS staged directory [" + hdfsStagedPath + "] validated");
     }
 
     return RETURN_SUCCESS;
@@ -121,35 +121,35 @@ public class StageDriver extends Driver {
     Set<String> counterBatches = new HashSet<String>();
     Set<String> counterPartitions = new HashSet<String>();
     List<PartitionKey> counterPartitionKeys = new ArrayList<PartitionKey>();
-    for (Path pathLanding : HDFSClientUtil.listFiles(hdfs, hdfsLandingPath,
+    for (Path pathLanded : HDFSClientUtil.listFiles(hdfs, hdfsLandedPath,
         true)) {
-      if (!PartitionFlag.isValue(pathLanding.getName())) {
-        String pathLandingString = pathLanding.toString();
-        if (PartitionFlag.list(hdfs, pathLanding, PartitionFlag._SUCCESS)) {
-          for (PartitionKey partitionKey : PartitionKey.getKeys(pathLanding
-              .getParent().getName(), pathLanding.getName())) {
+      if (!PartitionFlag.isValue(pathLanded.getName())) {
+        String pathLandedString = pathLanded.toString();
+        if (PartitionFlag.list(hdfs, pathLanded, PartitionFlag._SUCCESS)) {
+          for (PartitionKey partitionKey : PartitionKey.getKeys(pathLanded
+              .getParent().getName(), pathLanded.getName())) {
             boolean pathValid = partitionKey.isValid()
-                && hdfs.exists(new Path(pathLanding.getParent(), partitionKey
+                && hdfs.exists(new Path(pathLanded.getParent(), partitionKey
                     .getRecord()));
-            Path pathStaging = new Path(new StringBuilder(
+            Path pathStaged = new Path(new StringBuilder(
                 PartitionKey.PATH_NOMINAL_LENGTH)
-                .append(hdfsStagingPath)
+                .append(hdfsStagedPath)
                 .append('/')
                 .append(
                     pathValid ? Counter.BATCHES_SUCCESSFUL.getPath()
                         : Counter.BATCHES_FAILED.getPath()).append('/')
                 .append(partitionKey.getPath()).toString());
-            if (PartitionFlag.list(hdfs, pathStaging).isEmpty()) {
+            if (PartitionFlag.list(hdfs, pathStaged).isEmpty()) {
               if (pathValid) {
-                HDFSClientUtil.createSymlinkOrCopy(hdfs, pathLanding,
-                    pathStaging);
+                HDFSClientUtil.createSymlinkOrCopy(hdfs, pathLanded,
+                    pathStaged);
               } else {
-                hdfs.createNewFile(pathStaging);
+                hdfs.createNewFile(pathStaged);
               }
-              PartitionFlag.update(hdfs, pathStaging.getParent(),
+              PartitionFlag.update(hdfs, pathStaged.getParent(),
                   pathValid ? PartitionFlag._PARTITION : PartitionFlag._FAILED);
               incramentCounter(pathValid ? Counter.FILES_SUCCESSFUL
-                  : Counter.FILES_FAILED, 1, pathLandingString, counterFiles);
+                  : Counter.FILES_FAILED, 1, pathLandedString, counterFiles);
               incramentCounter(pathValid ? Counter.BATCHES_SUCCESSFUL
                   : Counter.BATCHES_FAILED, 1, partitionKey.getPartition()
                   + '/' + partitionKey.getBatch(), counterBatches);
@@ -158,12 +158,12 @@ public class StageDriver extends Driver {
                   counterPartitions);
             } else {
               counterPartitionKeys.add(partitionKey);
-              incramentCounter(Counter.FILES_SKIPPED, 1, pathLandingString,
+              incramentCounter(Counter.FILES_SKIPPED, 1, pathLandedString,
                   counterFiles);
             }
           }
         } else {
-          incramentCounter(Counter.FILES_SKIPPED, 1, pathLandingString,
+          incramentCounter(Counter.FILES_SKIPPED, 1, pathLandedString,
               counterFiles);
         }
       }

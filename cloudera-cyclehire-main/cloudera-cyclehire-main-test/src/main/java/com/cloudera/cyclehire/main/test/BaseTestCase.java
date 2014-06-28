@@ -20,12 +20,12 @@ public abstract class BaseTestCase implements BaseTest {
       .getPathLocal("target/test-data/some/non/existant/dir");
   public static final String PATH_HDFS_DIR_NON_EXISTANT = BaseTestCase
       .getPathHDFS("some/non/existant/dir");
-  public static final String PATH_HDFS_DIR_RAW_LANDING = BaseTestCase
-      .getPathHDFS("tmp/cyclehire/raw/landing");
-  public static final String PATH_HDFS_DIR_RAW_STAGING = BaseTestCase
-      .getPathHDFS("tmp/cyclehire/raw/staging");
-  public static final String PATH_HDFS_DIR_RAW_PARTITIONING = BaseTestCase
-      .getPathHDFS("tmp/cyclehire/raw/partition");
+  public static final String PATH_HDFS_DIR_RAW_LANDED = BaseTestCase
+      .getPathHDFS("tmp/cyclehire/raw/landed");
+  public static final String PATH_HDFS_DIR_RAW_STAGED = BaseTestCase
+      .getPathHDFS("tmp/cyclehire/raw/staged");
+  public static final String PATH_HDFS_DIR_RAW_PARTITIONED = BaseTestCase
+      .getPathHDFS("tmp/cyclehire/raw/partitioned");
 
   public static String PATH_LOCAL_DIR_TAR = BaseTestCase
       .getPathLocal(DataConstants.PATH_LOCAL_TAR);

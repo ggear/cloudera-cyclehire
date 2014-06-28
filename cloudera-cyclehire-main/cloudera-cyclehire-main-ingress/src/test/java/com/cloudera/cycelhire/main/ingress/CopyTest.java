@@ -90,24 +90,24 @@ public class CopyTest extends EmbeddedCoreTestCase {
         Driver.RETURN_FAILURE_RUNTIME,
         copyDriver.runner(new String[] {
             BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         copyDriver.runner(new String[] {
             BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT,
             BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         copyDriver.runner(new String[] {
             BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT,
             BaseTestCase.PATH_LOCAL_DIR_TAR,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIR_TAR,
             BaseTestCase.PATH_LOCAL_DIR_TAR,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
   }
 
   @Test
@@ -119,9 +119,9 @@ public class CopyTest extends EmbeddedCoreTestCase {
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIR_TAR,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
     fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
-        BaseTestCase.PATH_HDFS_DIR_RAW_LANDING), true);
+        BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
     Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
     Assert.assertEquals(
         0L,
@@ -149,9 +149,9 @@ public class CopyTest extends EmbeddedCoreTestCase {
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIR_TAR,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
     fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
-        BaseTestCase.PATH_HDFS_DIR_RAW_LANDING), true);
+        BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
     Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
     Assert.assertEquals(
         0L,
@@ -188,9 +188,9 @@ public class CopyTest extends EmbeddedCoreTestCase {
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIR_TAR,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
     fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
-        BaseTestCase.PATH_HDFS_DIR_RAW_LANDING), true);
+        BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
     Assert.assertEquals(fileCountInput * 2 - fileCountFailed,
         fileOutputs.size());
     Assert.assertEquals(
@@ -227,13 +227,13 @@ public class CopyTest extends EmbeddedCoreTestCase {
       Assert.assertEquals(
           Driver.RETURN_SUCCESS,
           copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIRS_XML[0],
-              BaseTestCase.PATH_HDFS_DIR_RAW_LANDING }));
+              BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
       Assert.assertEquals(
           1,
           getFileSystem().listStatus(
-              new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDING)).length);
+              new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDED)).length);
       fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
-          BaseTestCase.PATH_HDFS_DIR_RAW_LANDING), true);
+          BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
       Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
       Assert.assertEquals(
           0L,
@@ -261,13 +261,13 @@ public class CopyTest extends EmbeddedCoreTestCase {
       Assert.assertEquals(
           Driver.RETURN_SUCCESS,
           copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIRS_XML[0],
-              BaseTestCase.PATH_HDFS_DIR_RAW_LANDING }));
+              BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
       Assert.assertEquals(
           1,
           getFileSystem().listStatus(
-              new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDING)).length);
+              new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDED)).length);
       fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
-          BaseTestCase.PATH_HDFS_DIR_RAW_LANDING), true);
+          BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
       Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
       Assert.assertEquals(
           0L,
@@ -294,7 +294,7 @@ public class CopyTest extends EmbeddedCoreTestCase {
 
       Path dirSkipped = getFileSystem().listStatus(
           getFileSystem().listStatus(
-              new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDING))[0].getPath())[0]
+              new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDED))[0].getPath())[0]
           .getPath();
       int fileCountSuccessful = HDFSClientUtil.listFiles(getFileSystem(),
           dirSkipped, true).size() / 2;
@@ -307,13 +307,13 @@ public class CopyTest extends EmbeddedCoreTestCase {
       Assert.assertEquals(
           Driver.RETURN_SUCCESS,
           copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIRS_XML[0],
-              BaseTestCase.PATH_HDFS_DIR_RAW_LANDING }));
+              BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
       Assert.assertEquals(
           1,
           getFileSystem().listStatus(
-              new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDING)).length);
+              new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDED)).length);
       fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
-          BaseTestCase.PATH_HDFS_DIR_RAW_LANDING), true);
+          BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
       Assert.assertEquals(fileCountInput * 2 - fileCountFailed,
           fileOutputs.size());
       Assert.assertEquals(

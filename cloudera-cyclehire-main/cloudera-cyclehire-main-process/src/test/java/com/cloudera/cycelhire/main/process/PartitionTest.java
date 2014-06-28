@@ -33,8 +33,8 @@ public class PartitionTest extends BaseTest {
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         stageDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDING,
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED,
+            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED }));
   }
 
   @Test
@@ -42,18 +42,18 @@ public class PartitionTest extends BaseTest {
     Assert.assertEquals(Driver.RETURN_FAILURE_RUNTIME,
         partitionDriver.runner(new String[0]));
     Assert.assertEquals(Driver.RETURN_FAILURE_RUNTIME, partitionDriver
-        .runner(new String[] { BaseTestCase.PATH_HDFS_DIR_RAW_STAGING }));
+        .runner(new String[] { BaseTestCase.PATH_HDFS_DIR_RAW_STAGED }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         partitionDriver.runner(new String[] {
             BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT,
-            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         partitionDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGING,
-            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING,
-            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
+            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED,
+            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED }));
   }
 
   @Test
@@ -63,8 +63,8 @@ public class PartitionTest extends BaseTest {
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         partitionDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGING,
-            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
+            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED }));
     Assert.assertEquals(
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
@@ -121,8 +121,8 @@ public class PartitionTest extends BaseTest {
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         partitionDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGING,
-            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
+            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED }));
     long batchesCount = partitionDriver.getCounter(
         PartitionDriver.class.getCanonicalName(), Counter.BATCHES).longValue();
     long partitionsCount = partitionDriver.getCounter(
@@ -179,8 +179,8 @@ public class PartitionTest extends BaseTest {
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         partitionDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGING,
-            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
+            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED }));
     Assert.assertEquals(
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
@@ -238,22 +238,22 @@ public class PartitionTest extends BaseTest {
 
     partitionDriver.reset();
 
-    List<Path> stagingPaths = HDFSClientUtil.listFiles(getFileSystem(),
-        new Path(BaseTestCase.PATH_HDFS_DIR_RAW_STAGING,
+    List<Path> stagedPaths = HDFSClientUtil.listFiles(getFileSystem(),
+        new Path(BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
             Counter.BATCHES_SUCCESSFUL.getPath()), true);
-    Collections.sort(stagingPaths);
-    Path stagingPathToDelete = stagingPaths.get(3).getParent();
-    getFileSystem().delete(stagingPathToDelete, true);
+    Collections.sort(stagedPaths);
+    Path stagedPathToDelete = stagedPaths.get(3).getParent();
+    getFileSystem().delete(stagedPathToDelete, true);
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         stageDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDING,
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED,
+            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED }));
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         partitionDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGING,
-            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONING }));
+            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
+            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED }));
     Assert.assertEquals(
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
