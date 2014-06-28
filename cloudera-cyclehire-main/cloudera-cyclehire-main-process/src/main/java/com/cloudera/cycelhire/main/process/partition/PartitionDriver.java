@@ -167,9 +167,10 @@ public class PartitionDriver extends Driver {
             partitionKey.getCodec())) {
           MultipleInputs.addInputPath(
               job,
-              new Path(new StringBuilder(512).append(hdfsStagingPath)
-                  .append('/').append(Counter.BATCHES_SUCCESSFUL.getPath())
-                  .append('/').append(partitionKey.getPathBatch()).toString()),
+              new Path(new StringBuilder(PartitionKey.PATH_NOMINAL_LENGTH)
+                  .append(hdfsStagingPath).append('/')
+                  .append(Counter.BATCHES_SUCCESSFUL.getPath()).append('/')
+                  .append(partitionKey.getPathBatch()).toString()),
               PartitionInputFormat.get(partitionKey.getType(),
                   partitionKey.getCodec()));
         }
@@ -195,11 +196,12 @@ public class PartitionDriver extends Driver {
 
     for (String partitionKeyBatch : partitionKeys.keySet()) {
       for (PartitionKey partitionKey : PartitionKey.getKeys(partitionKeyBatch)) {
-        Path pathStaging = new Path(new StringBuffer(512)
-            .append(hdfsStagingPath).append('/')
-            .append(Counter.BATCHES_SUCCESSFUL.getPath())
+        Path pathStaging = new Path(new StringBuffer(
+            PartitionKey.PATH_NOMINAL_LENGTH).append(hdfsStagingPath)
+            .append('/').append(Counter.BATCHES_SUCCESSFUL.getPath())
             .append(partitionKey.getPathBatch()).toString());
-        Path pathPartition = new Path(new StringBuffer(512)
+        Path pathPartition = new Path(new StringBuffer(
+            PartitionKey.PATH_NOMINAL_LENGTH)
             .append(hdfsPartitioningPath)
             .append(
                 partitionKey.type(NAMED_OUTPUT_SEQUENCE)

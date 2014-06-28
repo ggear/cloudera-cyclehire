@@ -131,7 +131,8 @@ public class StageDriver extends Driver {
             boolean pathValid = partitionKey.isValid()
                 && hdfs.exists(new Path(pathLanding.getParent(), partitionKey
                     .getRecord()));
-            Path pathStaging = new Path(new StringBuilder(512)
+            Path pathStaging = new Path(new StringBuilder(
+                PartitionKey.PATH_NOMINAL_LENGTH)
                 .append(hdfsStagingPath)
                 .append('/')
                 .append(

@@ -25,6 +25,8 @@ import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
 
 public class PartitionKey implements WritableComparable<PartitionKey> {
 
+  public static final int PATH_NOMINAL_LENGTH = 512;
+
   public static final String TOKEN_PARTITION_YEAR = "year";
   public static final String TOKEN_PARTITION_MONTH = "month";
   public static final String TOKEN_NAME = "livecyclehireupdates";
@@ -274,18 +276,19 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   }
 
   public String getPath() {
-    return new StringBuilder(512).append(getPathBatch()).append('/')
-        .append(getRecord()).toString();
+    return new StringBuilder(PATH_NOMINAL_LENGTH).append(getPathBatch())
+        .append('/').append(getRecord()).toString();
   }
 
   public String getPathBatch() {
-    return new StringBuilder(512).append(getPathPartition()).append('/')
-        .append(getBatch()).toString();
+    return new StringBuilder(PATH_NOMINAL_LENGTH).append(getPathPartition())
+        .append('/').append(getBatch()).toString();
   }
 
   public String getPathPartition() {
-    return new StringBuilder(512).append('/').append(getType()).append('/')
-        .append(getCodec()).append('/').append(getPartition()).toString();
+    return new StringBuilder(PATH_NOMINAL_LENGTH).append('/').append(getType())
+        .append('/').append(getCodec()).append('/').append(getPartition())
+        .toString();
   }
 
   protected static Calendar getCalendarMonth(long epoch) {
@@ -331,7 +334,7 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
 
   @Override
   public String toString() {
-    StringBuilder string = new StringBuilder();
+    StringBuilder string = new StringBuilder(128);
     string.append("[batch=");
     string.append(batch);
     string.append(", record=");

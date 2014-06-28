@@ -160,7 +160,7 @@ public abstract class Driver extends Configured implements Tool {
     }
     if (returnValue != RETURN_SUCCESS) {
       if (log.isInfoEnabled()) {
-        StringBuilder optionsAndParamaters = new StringBuilder();
+        StringBuilder optionsAndParamaters = new StringBuilder(256);
         for (int i = 0; i < options().length; i++) {
           optionsAndParamaters.append(" [-D" + options()[i] + "]");
         }
@@ -269,7 +269,7 @@ public abstract class Driver extends Configured implements Tool {
   }
 
   private static String formatTime(long time) {
-    StringBuilder string = new StringBuilder();
+    StringBuilder string = new StringBuilder(128);
     int factor;
     String unit;
     if (time < 0) {

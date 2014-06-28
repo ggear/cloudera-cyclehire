@@ -291,7 +291,7 @@ public class CopyDriver extends Driver {
 
     @Override
     public String toString() {
-      StringBuilder string = new StringBuilder();
+      StringBuilder string = new StringBuilder(128);
       string.append("{");
       string.append(dir);
       string.append(", [");
