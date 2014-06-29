@@ -74,7 +74,7 @@ public class PartitionDriver extends Driver {
         Counter.BATCHES_FAILED, Counter.BATCHES_SUCCESSFUL, Counter.BATCHES,
         Counter.PARTITIONS_SKIPPED, Counter.PARTITIONS_FAILED,
         Counter.PARTITIONS_SUCCESSFUL, Counter.PARTITIONS, Counter.RECORDS }) {
-      incramentCounter(counter, 0);
+      incrementCounter(counter, 0);
     }
   }
 
@@ -103,13 +103,14 @@ public class PartitionDriver extends Driver {
     hdfsPartitionedPath = new Path(arguments[1]);
     if (hdfs.exists(hdfsPartitionedPath)) {
       if (!hdfs.isDirectory(hdfsPartitionedPath)) {
-        throw new Exception("HDFS partitioned directory [" + hdfsPartitionedPath
-            + "] is not a directory");
+        throw new Exception("HDFS partitioned directory ["
+            + hdfsPartitionedPath + "] is not a directory");
       }
       if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
           .getCurrentUser().getUserName(), UserGroupInformation
           .getCurrentUser().getGroupNames(), hdfsPartitionedPath, FsAction.ALL)) {
-        throw new Exception("HDFS partitioned directory [" + hdfsPartitionedPath
+        throw new Exception("HDFS partitioned directory ["
+            + hdfsPartitionedPath
             + "] has too restrictive permissions to read/write as user ["
             + UserGroupInformation.getCurrentUser().getUserName() + "]");
       }
@@ -143,10 +144,10 @@ public class PartitionDriver extends Driver {
             partitionKeys.put(partitionKey.getBatch(), partitionKey);
           }
         } else {
-          incramentCounter(Counter.BATCHES_SKIPPED, 1,
+          incrementCounter(Counter.BATCHES_SKIPPED, 1,
               partitionKey.getPartition() + '/' + partitionKey.getBatch(),
               counterBatches);
-          incramentCounter(Counter.PARTITIONS_SKIPPED, 1,
+          incrementCounter(Counter.PARTITIONS_SKIPPED, 1,
               partitionKey.getPartition(), counterPartitions);
         }
       }
@@ -208,17 +209,17 @@ public class PartitionDriver extends Driver {
         boolean partitioned = HDFSClientUtil.listFiles(hdfs, pathPartitioned,
             false).size() > 0;
         PartitionFlag.update(hdfs, pathStaged,
-            partitioned ? PartitionFlag._PROCESS : PartitionFlag._FAILED);
-        incramentCounter(partitioned ? Counter.BATCHES_SUCCESSFUL
+            partitioned ? PartitionFlag._CLENSE : PartitionFlag._FAILED);
+        incrementCounter(partitioned ? Counter.BATCHES_SUCCESSFUL
             : Counter.BATCHES_FAILED, 1, partitionKey.getPartition() + '/'
             + partitionKey.getBatch(), counterBatches);
-        incramentCounter(partitioned ? Counter.PARTITIONS_SUCCESSFUL
+        incrementCounter(partitioned ? Counter.PARTITIONS_SUCCESSFUL
             : Counter.PARTITIONS_FAILED, 1, partitionKey.getPartition(),
             counterPartitions);
       }
     }
-    incramentCounter(Counter.BATCHES, counterBatches.size());
-    incramentCounter(Counter.PARTITIONS, counterPartitions.size());
+    incrementCounter(Counter.BATCHES, counterBatches.size());
+    incrementCounter(Counter.PARTITIONS, counterPartitions.size());
 
     return jobSuccess ? RETURN_SUCCESS : RETURN_FAILURE_RUNTIME;
 

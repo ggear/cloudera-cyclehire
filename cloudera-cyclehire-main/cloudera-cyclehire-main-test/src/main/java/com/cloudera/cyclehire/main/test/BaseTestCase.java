@@ -26,6 +26,8 @@ public abstract class BaseTestCase implements BaseTest {
       .getPathHDFS("tmp/cyclehire/raw/staged");
   public static final String PATH_HDFS_DIR_RAW_PARTITIONED = BaseTestCase
       .getPathHDFS("tmp/cyclehire/raw/partitioned");
+  public static final String PATH_HDFS_DIR_PROCESSED_CLEANSED = BaseTestCase
+      .getPathHDFS("tmp/cyclehire/processed");
 
   public static String PATH_LOCAL_DIR_TAR = BaseTestCase
       .getPathLocal(DataConstants.PATH_LOCAL_TAR);

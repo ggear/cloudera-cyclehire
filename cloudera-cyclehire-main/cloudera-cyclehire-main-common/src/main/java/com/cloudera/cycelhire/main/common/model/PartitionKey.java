@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,9 +85,6 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
       }
     });
     return keys;
-  }
-
-  public PartitionKey() {
   }
 
   public PartitionKey batch(String batch) {
@@ -174,8 +170,8 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
       return false;
     }
     if (epochGet != 0L
-        && (epochGet > EPOCH_MAX || epochGet < EPOCH_MIN || epochRecord != 0L
-            && epochGet != epochRecord || epochGet > epochBatchMax || epochGet < epochBatchMin)) {
+        && (epochGet > EPOCH_MAX || epochGet < EPOCH_MIN
+            || epochGet > epochBatchMax || epochGet < epochBatchMin)) {
       return false;
     }
     if (epochUpdate != 0L
@@ -340,9 +336,9 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
     string.append(", record=");
     string.append(record);
     string.append(", get=");
-    string.append(epochGet == 0 ? "" : new Date(epochGet));
+    string.append(epochGet);
     string.append(", update=");
-    string.append(epochUpdate == 0 ? "" : new Date(epochUpdate));
+    string.append(epochUpdate);
     string.append("]");
     return string.toString();
   }
@@ -366,8 +362,8 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   @Override
   public void readFields(DataInput in) throws IOException {
     version = in.readByte();
-    record = WritableUtils.readString(in);
     batch = WritableUtils.readString(in);
+    record = WritableUtils.readString(in);
     epochGet = WritableUtils.readVLong(in);
     epochUpdate = WritableUtils.readVLong(in);
   }
@@ -375,8 +371,8 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   @Override
   public void write(DataOutput out) throws IOException {
     out.writeByte(version);
-    WritableUtils.writeString(out, record);
     WritableUtils.writeString(out, batch);
+    WritableUtils.writeString(out, record);
     WritableUtils.writeVLong(out, epochGet);
     WritableUtils.writeVLong(out, epochUpdate);
   }
@@ -385,10 +381,8 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   public int compareTo(PartitionKey that) {
     int compare = epochUpdate > that.epochUpdate ? +1
         : epochUpdate < that.epochUpdate ? -1 : 0;
-    compare = compare == 0 ? epochGet > that.epochGet ? +1
+    return compare == 0 ? epochGet > that.epochGet ? +1
         : epochGet < that.epochGet ? -1 : 0 : compare;
-    compare = compare == 0 ? record.compareTo(that.record) : compare;
-    return compare == 0 ? batch.compareTo(that.batch) : compare;
   }
 
 }

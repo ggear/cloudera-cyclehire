@@ -61,7 +61,7 @@ public class StageDriver extends Driver {
         Counter.BATCHES_SUCCESSFUL, Counter.BATCHES,
         Counter.PARTITIONS_SKIPPED, Counter.PARTITIONS_FAILED,
         Counter.PARTITIONS_SUCCESSFUL, Counter.PARTITIONS }) {
-      incramentCounter(counter, 0);
+      incrementCounter(counter, 0);
     }
   }
 
@@ -121,8 +121,7 @@ public class StageDriver extends Driver {
     Set<String> counterBatches = new HashSet<String>();
     Set<String> counterPartitions = new HashSet<String>();
     List<PartitionKey> counterPartitionKeys = new ArrayList<PartitionKey>();
-    for (Path pathLanded : HDFSClientUtil.listFiles(hdfs, hdfsLandedPath,
-        true)) {
+    for (Path pathLanded : HDFSClientUtil.listFiles(hdfs, hdfsLandedPath, true)) {
       if (!PartitionFlag.isValue(pathLanded.getName())) {
         String pathLandedString = pathLanded.toString();
         if (PartitionFlag.list(hdfs, pathLanded, PartitionFlag._SUCCESS)) {
@@ -141,29 +140,29 @@ public class StageDriver extends Driver {
                 .append(partitionKey.getPath()).toString());
             if (PartitionFlag.list(hdfs, pathStaged).isEmpty()) {
               if (pathValid) {
-                HDFSClientUtil.createSymlinkOrCopy(hdfs, pathLanded,
-                    pathStaged);
+                HDFSClientUtil
+                    .createSymlinkOrCopy(hdfs, pathLanded, pathStaged);
               } else {
                 hdfs.createNewFile(pathStaged);
               }
               PartitionFlag.update(hdfs, pathStaged.getParent(),
                   pathValid ? PartitionFlag._PARTITION : PartitionFlag._FAILED);
-              incramentCounter(pathValid ? Counter.FILES_SUCCESSFUL
+              incrementCounter(pathValid ? Counter.FILES_SUCCESSFUL
                   : Counter.FILES_FAILED, 1, pathLandedString, counterFiles);
-              incramentCounter(pathValid ? Counter.BATCHES_SUCCESSFUL
+              incrementCounter(pathValid ? Counter.BATCHES_SUCCESSFUL
                   : Counter.BATCHES_FAILED, 1, partitionKey.getPartition()
                   + '/' + partitionKey.getBatch(), counterBatches);
-              incramentCounter(pathValid ? Counter.PARTITIONS_SUCCESSFUL
+              incrementCounter(pathValid ? Counter.PARTITIONS_SUCCESSFUL
                   : Counter.PARTITIONS_FAILED, 1, partitionKey.getPartition(),
                   counterPartitions);
             } else {
               counterPartitionKeys.add(partitionKey);
-              incramentCounter(Counter.FILES_SKIPPED, 1, pathLandedString,
+              incrementCounter(Counter.FILES_SKIPPED, 1, pathLandedString,
                   counterFiles);
             }
           }
         } else {
-          incramentCounter(Counter.FILES_SKIPPED, 1, pathLandedString,
+          incrementCounter(Counter.FILES_SKIPPED, 1, pathLandedString,
               counterFiles);
         }
       }
@@ -171,18 +170,18 @@ public class StageDriver extends Driver {
     for (PartitionKey partitionKey : counterPartitionKeys) {
       if (!counterBatches.contains(partitionKey.getPartition() + '/'
           + partitionKey.getBatch())) {
-        incramentCounter(Counter.BATCHES_SKIPPED, 1,
+        incrementCounter(Counter.BATCHES_SKIPPED, 1,
             partitionKey.getPartition() + '/' + partitionKey.getBatch(),
             counterBatches);
       }
       if (!counterPartitions.contains(partitionKey.getPartition())) {
-        incramentCounter(Counter.PARTITIONS_SKIPPED, 1,
+        incrementCounter(Counter.PARTITIONS_SKIPPED, 1,
             partitionKey.getPartition(), counterPartitions);
       }
     }
-    incramentCounter(Counter.FILES, counterFiles.size());
-    incramentCounter(Counter.BATCHES, counterBatches.size());
-    incramentCounter(Counter.PARTITIONS, counterPartitions.size());
+    incrementCounter(Counter.FILES, counterFiles.size());
+    incrementCounter(Counter.BATCHES, counterBatches.size());
+    incrementCounter(Counter.PARTITIONS, counterPartitions.size());
 
     return RETURN_SUCCESS;
 

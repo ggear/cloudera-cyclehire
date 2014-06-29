@@ -62,7 +62,8 @@ public class PartitionInputFormatTarGzip extends
         if (stream != null) {
           if ((entry = stream.getNextTarEntry()) != null) {
             if (entry.isDirectory()
-                || !(partitionKey = new PartitionKey().path(path.toString()))
+                || !(partitionKey = new PartitionKey().batch(
+                    path.getParent().getName()).record(entry.getName()))
                     .isValid()) {
               return nextKeyValue();
             } else {

@@ -108,9 +108,9 @@ public class PartitionKeyTest {
         new PartitionKey().batch(TAR_REPO).epochGet(PARTITION_EPOCH_MAX + 1)
             .isValid());
     Assert.assertEquals(false, new PartitionKey().batch(TAR_REPO).record(FILE)
-        .epochGet(EPOCH_GET + 1).isValid());
+        .epochGet(EPOCH_GET * 2).isValid());
     Assert.assertEquals(false, new PartitionKey().batch(TAR_REPO).record(FILE)
-        .epochGet(EPOCH_GET - 1).isValid());
+        .epochGet(EPOCH_GET * -1L).isValid());
     Assert.assertEquals(false,
         new PartitionKey().batch(TAR_REPO).partition("some-rubbish").isValid());
     Assert.assertEquals(

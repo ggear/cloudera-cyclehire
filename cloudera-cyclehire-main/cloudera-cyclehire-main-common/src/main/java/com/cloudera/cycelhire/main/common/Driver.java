@@ -239,12 +239,12 @@ public abstract class Driver extends Configured implements Tool {
     }
   }
 
-  public Long incramentCounter(Enum<?> counter, int incrament) {
-    return incramentCounter(this.getClass().getCanonicalName(), counter,
+  public Long incrementCounter(Enum<?> counter, int incrament) {
+    return incrementCounter(this.getClass().getCanonicalName(), counter,
         incrament);
   }
 
-  public Long incramentCounter(String group, Enum<?> counter, int incrament) {
+  public Long incrementCounter(String group, Enum<?> counter, int incrament) {
     if (this.counters.get(group) == null) {
       this.counters.put(group, new LinkedHashMap<Enum<?>, Long>());
     }
@@ -254,16 +254,16 @@ public abstract class Driver extends Configured implements Tool {
             .get(counter)) + incrament);
   }
 
-  public Long incramentCounter(Enum<?> counter, int incrament, String tag,
+  public Long incrementCounter(Enum<?> counter, int incrament, String tag,
       Set<String> set) {
-    return incramentCounter(this.getClass().getCanonicalName(), counter,
+    return incrementCounter(this.getClass().getCanonicalName(), counter,
         incrament, tag, set);
   }
 
-  public Long incramentCounter(String group, Enum<?> counter, int incrament,
+  public Long incrementCounter(String group, Enum<?> counter, int incrament,
       String tag, Set<String> set) {
     if (set.add(tag)) {
-      return incramentCounter(group, counter, incrament);
+      return incrementCounter(group, counter, incrament);
     }
     return counters.get(group).get(counter);
   }
