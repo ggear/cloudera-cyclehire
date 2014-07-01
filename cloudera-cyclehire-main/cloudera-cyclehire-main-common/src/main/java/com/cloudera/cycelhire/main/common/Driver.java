@@ -202,10 +202,14 @@ public abstract class Driver extends Configured implements Tool {
         .get(group).get(counter);
   }
 
-  protected void importCounters(Map<String, Map<Enum<?>, Long>> counters) {
+  protected void importCountersAll(Map<String, Map<Enum<?>, Long>> counters) {
     for (String group : counters.keySet()) {
       importCounters(group, counters.get(group));
     }
+  }
+
+  protected void importCounters(Map<Enum<?>, Long> counters) {
+    importCounters(this.getClass().getCanonicalName(), counters);
   }
 
   protected void importCounters(String group, Map<Enum<?>, Long> counters) {
@@ -220,6 +224,11 @@ public abstract class Driver extends Configured implements Tool {
                 .get(group).get(value)) + counters.get(value));
       }
     }
+  }
+
+  protected void importCounters(Job job, Enum<?>[] values) throws IOException,
+      InterruptedException {
+    importCounters(this.getClass().getCanonicalName(), job, values);
   }
 
   protected void importCounters(String group, Job job, Enum<?>[] values)

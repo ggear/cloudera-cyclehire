@@ -211,8 +211,8 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
 
   public String getPartition() {
     Set<String> partitions = getPartitions();
-    return partitions.size() == 1 ? partitions.iterator().next()
-        : PartitionFlag._UNKNOWN.toString();
+    return partition == null ? partitions.size() == 1 ? partitions.iterator()
+        .next() : PartitionFlag._UNKNOWN.toString() : partition;
   }
 
   public Set<String> getPartitions() {
@@ -362,10 +362,10 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   @Override
   public void readFields(DataInput in) throws IOException {
     version = in.readByte();
-    batch = WritableUtils.readString(in);
-    record = WritableUtils.readString(in);
-    epochGet = WritableUtils.readVLong(in);
-    epochUpdate = WritableUtils.readVLong(in);
+    batch(WritableUtils.readString(in));
+    record(WritableUtils.readString(in));
+    epochGet(WritableUtils.readVLong(in));
+    epochUpdate(WritableUtils.readVLong(in));
   }
 
   @Override

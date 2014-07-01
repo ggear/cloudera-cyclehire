@@ -14,9 +14,6 @@ import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
 public class PartitionMapper extends
     Mapper<PartitionKey, Text, PartitionKey, Text> {
 
-  public static final String RECORD_COLUMN_DELIM = "\u0001";
-  public static final String RECORD_COLUMN_DELIM_ESCAPED = "\\u0001";
-
   public static final int RECORD_BUFFER_SIZE_DATA = 500000;
   public static final int RECORD_BUFFER_SIZE_METADATA = 256;
 
@@ -39,41 +36,35 @@ public class PartitionMapper extends
   @Override
   protected void map(PartitionKey key, Text value, Context context)
       throws IOException, InterruptedException {
-    try {
-      // Control characters are not allowed "in spirit" in XML, so default java
-      // implementations and a multiple scan/copy OK given a rare positive match
-      // Also permit this slight modification (escaping) but leave source data
-      // otherwise intact for full history
-      if (value.find(RECORD_COLUMN_DELIM) != -1) {
-        value.set(value.toString().replace(RECORD_COLUMN_DELIM,
-            RECORD_COLUMN_DELIM_ESCAPED));
-      }
-      // 1-copy of O(RECORD_BUFFER_SIZE_DATA) sized value data, naive
-      // implementations can easily result in 3-copy
-      byte[] valueMetaData = new StringBuilder(RECORD_BUFFER_SIZE_METADATA)
-          .append(RECORD_COLUMN_DELIM).append(key.getBatch())
-          .append(RECORD_COLUMN_DELIM).append(key.getRecord()).toString()
-          .getBytes("UTF-8");
-      value.append(valueMetaData, 0, valueMetaData.length);
-      multipleOutputs
-          .write(
-              PartitionDriver.NAMED_OUTPUT_SEQUENCE,
-              key,
-              value,
-              new StringBuilder(RECORD_BUFFER_SIZE_METADATA)
-                  .append(pathPrefix)
-                  .append(
-                      key.type(PartitionDriver.NAMED_OUTPUT_SEQUENCE)
-                          .codec(
-                              MapReduceUtil.getCodecString(context
-                                  .getConfiguration())).getPathPartition())
-                  .append('/').append(key.getBatch()).append(pathSuffix)
-                  .toString());
-
-    } catch (IllegalArgumentException exception) {
-      // necessary for MRUnit to work with MultipleOutputs
-      context.write(key, value);
+    // Control characters are not allowed "in spirit" in XML, so default java
+    // implementations and a multiple scan/copy OK given a rare positive match
+    // Also permit this slight modification (escaping) but leave source data
+    // otherwise intact for full history
+    if (value.find(MapReduceUtil.RECORD_COLUMN_DELIM) != -1) {
+      value.set(value.toString().replace(MapReduceUtil.RECORD_COLUMN_DELIM,
+          MapReduceUtil.RECORD_COLUMN_DELIM_ESCAPED));
     }
+    // 1-copy of O(RECORD_BUFFER_SIZE_DATA) sized value data, naive
+    // implementations can easily result in 3-copy
+    byte[] valueMetaData = new StringBuilder(RECORD_BUFFER_SIZE_METADATA)
+        .append(MapReduceUtil.RECORD_COLUMN_DELIM).append(key.getBatch())
+        .append(MapReduceUtil.RECORD_COLUMN_DELIM).append(key.getRecord())
+        .toString().getBytes("UTF-8");
+    value.append(valueMetaData, 0, valueMetaData.length);
+    multipleOutputs
+        .write(
+            PartitionDriver.NAMED_OUTPUT_SEQUENCE,
+            key,
+            value,
+            new StringBuilder(RECORD_BUFFER_SIZE_METADATA)
+                .append(pathPrefix)
+                .append(
+                    key.type(PartitionDriver.NAMED_OUTPUT_SEQUENCE)
+                        .codec(
+                            MapReduceUtil.getCodecString(context
+                                .getConfiguration())).getPathPartition())
+                .append('/').append(key.getBatch()).append(pathSuffix)
+                .toString());
     context.getCounter(Counter.RECORDS).increment(1);
   }
 }

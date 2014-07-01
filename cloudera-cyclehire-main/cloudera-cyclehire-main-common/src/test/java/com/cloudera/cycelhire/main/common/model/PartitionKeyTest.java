@@ -361,20 +361,11 @@ public class PartitionKeyTest {
                 + TAR_REPO + '/' + TAR_REPO + "-some-extra-extension")
             .getPath());
     Assert.assertEquals(
-        '/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
-            + PartitionFlag._UNKNOWN.toString() + '/' + TAR_REPO + '/'
-            + TAR_REPO,
+        '/' + TAR_EXTENSION + '/' + TAR_CODEC + "/some-rubbish/" + TAR_REPO
+            + '/' + TAR_REPO,
         new PartitionKey().path(
             "file:///some/dir/" + PartitionFlag._UNKNOWN.toString() + '/'
                 + TAR_CODEC + "/some-rubbish/" + TAR_REPO + '/' + TAR_REPO
-                + "-some-extra-extension").getPath());
-    Assert.assertEquals(
-        '/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'
-            + PartitionFlag._UNKNOWN.toString() + '/' + TAR_REPO + '/'
-            + TAR_REPO,
-        new PartitionKey().path(
-            "file:///some/dir/" + PartitionFlag._UNKNOWN.toString() + '/'
-                + TAR_CODEC + "/some/rubbish/" + TAR_REPO + '/' + TAR_REPO
                 + "-some-extra-extension").getPath());
     Assert.assertEquals(
         '/' + TAR_EXTENSION + '/' + TAR_CODEC + '/'

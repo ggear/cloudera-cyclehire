@@ -1,8 +1,10 @@
 package com.cloudera.cycelhire.main.process.partition;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -135,13 +137,15 @@ public class PartitionDriver extends Driver {
     Set<String> counterBatches = new HashSet<String>();
     Set<String> counterPartitions = new HashSet<String>();
     Map<String, PartitionKey> partitionKeys = new HashMap<String, PartitionKey>();
+    List<Path> partitionPaths = new ArrayList<Path>();
     for (Path pathStaged : HDFSClientUtil.listFiles(hdfs, hdfsStagedPath, true)) {
       if (!PartitionFlag.isValue(pathStaged.getName())) {
         PartitionKey partitionKey = new PartitionKey().path(pathStaged
             .toString());
         if (PartitionFlag.list(hdfs, pathStaged, PartitionFlag._PARTITION)) {
-          if (!partitionKeys.containsKey(partitionKey.getBatch())) {
-            partitionKeys.put(partitionKey.getBatch(), partitionKey);
+          partitionPaths.add(pathStaged);
+          if (!partitionKeys.containsKey(partitionKey.getRecord())) {
+            partitionKeys.put(partitionKey.getRecord(), partitionKey);
           }
         } else {
           incrementCounter(Counter.BATCHES_SKIPPED, 1,
@@ -188,17 +192,15 @@ public class PartitionDriver extends Driver {
       job.setJarByClass(PartitionDriver.class);
       jobSuccess = job.waitForCompletion(log.isInfoEnabled());
       if (job != null) {
-        importCounters(PartitionDriver.class.getCanonicalName(), job,
-            new Counter[] { Counter.RECORDS });
+        importCounters(job, new Counter[] { Counter.RECORDS });
       }
     }
 
-    for (String partitionKeyBatch : partitionKeys.keySet()) {
-      for (PartitionKey partitionKey : PartitionKey.getKeys(partitionKeyBatch)) {
-        Path pathStaged = new Path(new StringBuffer(
-            PartitionKey.PATH_NOMINAL_LENGTH).append(hdfsStagedPath)
-            .append('/').append(Counter.BATCHES_SUCCESSFUL.getPath())
-            .append(partitionKey.getPathBatch()).toString());
+    for (Path pathStaged : partitionPaths) {
+      if (PartitionFlag.list(hdfs, pathStaged, PartitionFlag._PARTITION)) {
+        PartitionKey partitionKey = new PartitionKey()
+            .path(pathStaged.toString()).type(NAMED_OUTPUT_SEQUENCE)
+            .codec(MapReduceUtil.getCodecString(getConf()));
         Path pathPartitioned = new Path(new StringBuffer(
             PartitionKey.PATH_NOMINAL_LENGTH)
             .append(hdfsPartitionedPath)

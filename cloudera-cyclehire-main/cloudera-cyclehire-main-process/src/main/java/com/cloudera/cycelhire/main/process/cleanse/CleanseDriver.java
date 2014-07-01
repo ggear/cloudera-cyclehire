@@ -1,8 +1,10 @@
-package com.cloudera.cycelhire.main.process.clense;
+package com.cloudera.cycelhire.main.process.cleanse;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -35,21 +37,22 @@ import com.cloudera.cycelhire.main.common.model.PartitionKey;
 import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
 import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
 
-public class ClenseDriver extends Driver {
+public class CleanseDriver extends Driver {
 
   public static final String NAMED_OUTPUT_SEQUENCE = "sequence";
 
-  private static final Logger log = LoggerFactory.getLogger(ClenseDriver.class);
+  private static final Logger log = LoggerFactory
+      .getLogger(CleanseDriver.class);
 
   private Path hdfsStagedPath;
   private Path hdfsPartitionedPath;
   private Path hdfsCleansedPath;
 
-  public ClenseDriver() {
+  public CleanseDriver() {
     super();
   }
 
-  public ClenseDriver(Configuration confguration) {
+  public CleanseDriver(Configuration confguration) {
     super(confguration);
   }
 
@@ -152,13 +155,29 @@ public class ClenseDriver extends Driver {
     Set<String> counterBatches = new HashSet<String>();
     Set<String> counterPartitions = new HashSet<String>();
     Map<String, PartitionKey> partitionKeys = new HashMap<String, PartitionKey>();
+    List<Path> partitionPaths = new ArrayList<Path>();
     for (Path pathStaged : HDFSClientUtil.listFiles(hdfs, hdfsStagedPath, true)) {
       if (!PartitionFlag.isValue(pathStaged.getName())) {
         PartitionKey partitionKey = new PartitionKey().path(pathStaged
             .toString());
         if (PartitionFlag.list(hdfs, pathStaged, PartitionFlag._CLENSE)) {
-          if (!partitionKeys.containsKey(partitionKey.getBatch())) {
+          partitionPaths.add(pathStaged);
+          if (!partitionKeys.containsKey(partitionKey.getPartition())) {
             partitionKeys.put(partitionKey.getPartition(), partitionKey);
+            for (Counter counter : new Counter[] { Counter.RECORDS_MALFORMED,
+                Counter.RECORDS_DUPLICATE, Counter.RECORDS_CLEANSED }) {
+              Path pathCleansed = new Path(new StringBuilder(
+                  PartitionKey.PATH_NOMINAL_LENGTH)
+                  .append(hdfsCleansedPath)
+                  .append('/')
+                  .append(counter.getPath())
+                  .append(
+                      new PartitionKey().path(pathStaged.toString())
+                          .type(NAMED_OUTPUT_SEQUENCE)
+                          .codec(MapReduceUtil.getCodecString(getConf()))
+                          .getPathPartition()).toString());
+              hdfs.delete(pathCleansed, true);
+            }
           }
         } else {
           incrementCounter(Counter.BATCHES_SKIPPED, 1,
@@ -204,43 +223,45 @@ public class ClenseDriver extends Driver {
       FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
       MultipleOutputs.addNamedOutput(job, NAMED_OUTPUT_SEQUENCE,
           SequenceFileOutputFormat.class, PartitionKey.class, Text.class);
+      ClenseReducerPartitioner.setPartitions(job.getConfiguration(),
+          partitionKeys.keySet());
       job.setNumReduceTasks(partitionKeys.size());
-      job.setJarByClass(ClenseDriver.class);
+      job.setJarByClass(CleanseDriver.class);
       jobSuccess = job.waitForCompletion(log.isInfoEnabled());
       if (job != null) {
-        importCounters(ClenseDriver.class.getCanonicalName(), job,
-            new Counter[] { Counter.RECORDS });
+        importCounters(job, new Counter[] { Counter.RECORDS_MALFORMED,
+            Counter.RECORDS_DUPLICATE, Counter.RECORDS_CLEANSED,
+            Counter.RECORDS });
       }
     }
 
-    // for (String partitionKeyBatch : partitionKeys.keySet()) {
-    // for (PartitionKey partitionKey : PartitionKey.getKeys(partitionKeyBatch))
-    // {
-    // Path pathStaged = new Path(new StringBuffer(
-    // PartitionKey.PATH_NOMINAL_LENGTH).append(hdfsStagedPath)
-    // .append('/').append(Counter.BATCHES_SUCCESSFUL.getPath())
-    // .append(partitionKey.getPathBatch()).toString());
-    // Path pathPartitioned = new Path(new StringBuffer(
-    // PartitionKey.PATH_NOMINAL_LENGTH)
-    // .append(hdfsPartitionedPath)
-    // .append(
-    // partitionKey.type(NAMED_OUTPUT_SEQUENCE)
-    // .codec(MapReduceUtil.getCodecString(getConf()))
-    // .getPathPartition()).toString());
-    // boolean partitioned = HDFSClientUtil.listFiles(hdfs, pathPartitioned,
-    // false).size() > 0;
-    // PartitionFlag.update(hdfs, pathStaged,
-    // partitioned ? PartitionFlag._CLENSE : PartitionFlag._FAILED);
-    // incramentCounter(partitioned ? Counter.BATCHES_SUCCESSFUL
-    // : Counter.BATCHES_FAILED, 1, partitionKey.getPartition() + '/'
-    // + partitionKey.getBatch(), counterBatches);
-    // incramentCounter(partitioned ? Counter.PARTITIONS_SUCCESSFUL
-    // : Counter.PARTITIONS_FAILED, 1, partitionKey.getPartition(),
-    // counterPartitions);
-    // }
-    // }
-    // incramentCounter(Counter.BATCHES, counterBatches.size());
-    // incramentCounter(Counter.PARTITIONS, counterPartitions.size());
+    for (Path pathStaged : partitionPaths) {
+      if (PartitionFlag.list(hdfs, pathStaged, PartitionFlag._CLENSE)) {
+        PartitionKey partitionKey = new PartitionKey()
+            .path(pathStaged.toString()).type(NAMED_OUTPUT_SEQUENCE)
+            .codec(MapReduceUtil.getCodecString(getConf()));
+        boolean cleansed = false;
+        for (Counter counter : new Counter[] { Counter.RECORDS_MALFORMED,
+            Counter.RECORDS_DUPLICATE, Counter.RECORDS_CLEANSED }) {
+          Path pathCleansed = new Path(new StringBuilder(
+              PartitionKey.PATH_NOMINAL_LENGTH).append(hdfsCleansedPath)
+              .append('/').append(counter.getPath())
+              .append(partitionKey.getPathPartition()).toString());
+          cleansed = cleansed
+              || HDFSClientUtil.listFiles(hdfs, pathCleansed, false).size() > 0;
+        }
+        PartitionFlag.update(hdfs, pathStaged,
+            cleansed ? PartitionFlag._SUCCESS : PartitionFlag._FAILED);
+        incrementCounter(cleansed ? Counter.BATCHES_SUCCESSFUL
+            : Counter.BATCHES_FAILED, 1, partitionKey.getPartition() + '/'
+            + partitionKey.getBatch(), counterBatches);
+        incrementCounter(cleansed ? Counter.PARTITIONS_SUCCESSFUL
+            : Counter.PARTITIONS_FAILED, 1, partitionKey.getPartition(),
+            counterPartitions);
+      }
+    }
+    incrementCounter(Counter.BATCHES, counterBatches.size());
+    incrementCounter(Counter.PARTITIONS, counterPartitions.size());
 
     return jobSuccess ? RETURN_SUCCESS : RETURN_FAILURE_RUNTIME;
 
@@ -252,7 +273,7 @@ public class ClenseDriver extends Driver {
   }
 
   public static void main(String... arguments) throws Exception {
-    System.exit(new ClenseDriver().runner(arguments));
+    System.exit(new CleanseDriver().runner(arguments));
   }
 
 }

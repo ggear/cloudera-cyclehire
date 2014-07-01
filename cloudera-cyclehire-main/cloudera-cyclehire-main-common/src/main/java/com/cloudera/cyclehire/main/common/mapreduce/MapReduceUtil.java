@@ -8,6 +8,9 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class MapReduceUtil {
 
+  public static final String RECORD_COLUMN_DELIM = "\u0001";
+  public static final String RECORD_COLUMN_DELIM_ESCAPED = "\\u0001";
+
   public static final String CODEC_NONE = "none";
 
   public static String getCodecString(Configuration configuration) {

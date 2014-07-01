@@ -22,7 +22,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class PartitionValue {
+public class PartitionRecord {
 
   public static final String COLUMNS_RECORD = "station";
   public static final Set<String> COLUMNS_RECORD_DETAIL = new LinkedHashSet<String>(
@@ -37,18 +37,20 @@ public class PartitionValue {
 
   private PartitionKey key;
   private String xml;
+  private List<List<String>> table;
 
-  public PartitionValue key(PartitionKey key) {
+  public PartitionRecord key(PartitionKey key) {
     this.key = key;
     return this;
   }
 
-  public PartitionValue xml(String xml) {
+  public PartitionRecord xml(String xml) {
     this.xml = xml;
+    this.table = null;
     return this;
   }
 
-  public PartitionValue epochUpdate(String xml) {
+  public PartitionRecord epochUpdate(String xml) {
     xml(xml);
     long epochUpdate = key == null ? 0L : key.getEpochGet();
     try {
@@ -67,56 +69,61 @@ public class PartitionValue {
   }
 
   public boolean isValid() {
-    return key != null && xml != null && xml.length() > 0;
+    return key != null && xml != null && xml.length() > 0
+        && !getTable().isEmpty();
   }
 
   public List<List<String>> getTable() {
-    final List<List<String>> table = new ArrayList<List<String>>();
-    try {
-      if (xml != null) {
-        XML_SAX.newSAXParser().parse(new InputSource(new StringReader(xml)),
-            new DefaultHandler() {
+    if (this.table == null) {
+      final List<List<String>> table = new ArrayList<List<String>>();
+      try {
+        if (xml != null) {
+          XML_SAX.newSAXParser().parse(new InputSource(new StringReader(xml)),
+              new DefaultHandler() {
 
-              private String name;
-              private Map<String, String> tokens;
+                private String name;
+                private Map<String, String> tokens;
 
-              @Override
-              public void startElement(String uri, String localName,
-                  String qName, Attributes attributes) throws SAXException {
-                if (COLUMNS_RECORD.equals(qName)) {
-                  tokens = new HashMap<String, String>();
-                } else if (COLUMNS_RECORD_DETAIL.contains(qName)) {
-                  name = qName;
-                }
-              }
-
-              @Override
-              public void characters(char[] ch, int start, int length)
-                  throws SAXException {
-                if (name != null) {
-                  tokens.put(name, new String(ch, start, length));
-                }
-              }
-
-              @Override
-              public void endElement(String uri, String localName, String qName)
-                  throws SAXException {
-                if (COLUMNS_RECORD.equals(qName)) {
-                  List<String> row = new ArrayList<String>();
-                  table.add(row);
-                  for (String column : COLUMNS_RECORD_DETAIL) {
-                    row.add(tokens.containsKey(column) ? tokens.get(column)
-                        : "");
+                @Override
+                public void startElement(String uri, String localName,
+                    String qName, Attributes attributes) throws SAXException {
+                  if (COLUMNS_RECORD.equals(qName)) {
+                    tokens = new HashMap<String, String>();
+                  } else if (COLUMNS_RECORD_DETAIL.contains(qName)) {
+                    name = qName;
                   }
-                } else if (COLUMNS_RECORD_DETAIL.contains(qName)) {
-                  name = null;
                 }
-              }
 
-            });
+                @Override
+                public void characters(char[] ch, int start, int length)
+                    throws SAXException {
+                  if (name != null) {
+                    tokens.put(name, new String(ch, start, length));
+                  }
+                }
+
+                @Override
+                public void endElement(String uri, String localName,
+                    String qName) throws SAXException {
+                  if (COLUMNS_RECORD.equals(qName)) {
+                    List<String> row = new ArrayList<String>();
+                    table.add(row);
+                    for (String column : COLUMNS_RECORD_DETAIL) {
+                      row.add(tokens.containsKey(column) ? tokens.get(column)
+                          : "");
+                    }
+                  } else if (COLUMNS_RECORD_DETAIL.contains(qName)) {
+                    name = null;
+                  }
+                }
+
+              });
+        }
+      } catch (ParserConfigurationException | SAXException | IOException e) {
+        table.clear();
+      } finally {
+        this.table = table;
       }
-    } catch (ParserConfigurationException | SAXException | IOException e) {
-      table.clear();
     }
     return table;
   }

@@ -1,0 +1,35 @@
+Implementation:
+- Documentation - slides, script
+- Zookeeper - locking, co-ordination
+- Oozie - job workflow, directory listeners
+- Flume - neartime ingest
+- Kite - abstract client
+- Hive - batch reporting
+- Pig - batch transformation
+- Impala - discovery, reporting, joining
+- Spark - trending, corelations
+- Search - search by address
+- HBase - realtime lookup
+- Test - stress/load test
+
+Integrations:
+- Tableau/Qlikview - visulisation
+- Informatica/Talend/Pentaho - ETL
+- SAS/RevAnalyics - analytics
+
+Questions:
+- What is the quality of the data?
+- Is the snapshot updated every 2 min?
+- What is the availability of the service?
+- What does a time lapse heat map look like?
+- What does the usage model by time, time/day, day/year look like?
+- How much does weather/strike/events strike etc influence usage?
+- What is the pricing elasticity?
+- Are different tariffs required?
+- What is the availability now for this location?
+- How many journeys are their currently being made?
+- Do we need more bikes/stations?
+- Where to put new bike stations?
+- How can we optimise the bike redistribution?
+- How many journeys will there be at this time?
+- What bikes/slots will be available on a given time/station? 

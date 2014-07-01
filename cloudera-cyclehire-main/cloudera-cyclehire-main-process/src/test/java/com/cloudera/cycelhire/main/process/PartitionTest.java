@@ -110,6 +110,8 @@ public class PartitionTest extends BaseTest {
             Counter.PARTITIONS_SUCCESSFUL) > 0);
     Assert.assertTrue(partitionDriver.getCounter(
         PartitionDriver.class.getCanonicalName(), Counter.PARTITIONS) > 0);
+    Assert.assertTrue(partitionDriver.getCounter(
+        PartitionDriver.class.getCanonicalName(), Counter.RECORDS) > 0);
 
   }
 
@@ -173,6 +175,8 @@ public class PartitionTest extends BaseTest {
             Counter.PARTITIONS_SUCCESSFUL) > 0);
     Assert.assertTrue(partitionDriver.getCounter(
         PartitionDriver.class.getCanonicalName(), Counter.PARTITIONS) > 0);
+    Assert.assertTrue(partitionDriver.getCounter(
+        PartitionDriver.class.getCanonicalName(), Counter.RECORDS) > 0);
 
     partitionDriver.reset();
 
@@ -235,6 +239,8 @@ public class PartitionTest extends BaseTest {
         partitionsCount,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue());
+    Assert.assertEquals(new Long(0), partitionDriver.getCounter(
+        PartitionDriver.class.getCanonicalName(), Counter.RECORDS));
 
     partitionDriver.reset();
 
@@ -308,6 +314,8 @@ public class PartitionTest extends BaseTest {
         partitionsCount,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue());
+    Assert.assertTrue(partitionDriver.getCounter(
+        PartitionDriver.class.getCanonicalName(), Counter.RECORDS) > 0);
 
   }
 

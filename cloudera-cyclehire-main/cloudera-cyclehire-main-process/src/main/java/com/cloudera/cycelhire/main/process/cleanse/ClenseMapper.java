@@ -1,4 +1,4 @@
-package com.cloudera.cycelhire.main.process.clense;
+package com.cloudera.cycelhire.main.process.cleanse;
 
 import java.io.IOException;
 
@@ -6,7 +6,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import com.cloudera.cycelhire.main.common.model.PartitionKey;
-import com.cloudera.cycelhire.main.common.model.PartitionValue;
+import com.cloudera.cycelhire.main.common.model.PartitionRecord;
 
 public class ClenseMapper extends
     Mapper<PartitionKey, Text, PartitionKey, Text> {
@@ -14,7 +14,7 @@ public class ClenseMapper extends
   @Override
   protected void map(PartitionKey key, Text value, Context context)
       throws IOException, InterruptedException {
-    context.write(new PartitionValue().key(key).epochUpdate(value.toString())
+    context.write(new PartitionRecord().key(key).epochUpdate(value.toString())
         .getKey(), value);
   }
 
