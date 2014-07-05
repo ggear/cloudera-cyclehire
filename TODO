@@ -22,7 +22,7 @@ Questions:
 - Is the snapshot updated every 2 min?
 - What is the availability of the service?
 - What does a time lapse heat map look like?
-- What does the usage model by time, time/day, day/year look like?
+- What does the usage model by time, time/day, day/year, station, locale look like?
 - How much does weather/strike/events strike etc influence usage?
 - What is the pricing elasticity?
 - Are different tariffs required?

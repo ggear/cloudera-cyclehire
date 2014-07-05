@@ -11,8 +11,3 @@ for (( i=1; i<$#; i++ )); do
 	fi
 	done
 done
-
-
-
-
-
