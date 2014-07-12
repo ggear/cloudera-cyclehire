@@ -2,11 +2,11 @@
 <configuration>
 	<property>
 		<name>hive.exec.mode.local.auto</name>
-		<value>false</value>
+		<value>true</value>
 	</property>
 	<property>
 		<name>javax.jdo.option.ConnectionURL</name>
-		<value>jdbc:derby:memory:metastore;create=true</value>
+		<value>jdbc:derby:;databaseName=${dir.working.target.derby.db}/metastore_db;create=true</value>
 	</property>
 	<property>
 		<name>hive.metastore.warehouse.dir</name>

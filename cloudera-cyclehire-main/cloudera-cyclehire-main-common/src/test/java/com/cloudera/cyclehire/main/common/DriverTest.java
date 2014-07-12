@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cloudera.cyclehire.main.common.Driver;
 import com.cloudera.cyclehire.main.test.EmbeddedCoreTestCase;
 
 public class DriverTest extends EmbeddedCoreTestCase {

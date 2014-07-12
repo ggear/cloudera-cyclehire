@@ -44,13 +44,13 @@ public class PartitionDriver extends Driver {
       Counter.PARTITIONS_FAILED, Counter.PARTITIONS_SUCCESSFUL,
       Counter.PARTITIONS, Counter.RECORDS };
 
-  public static final String NAMED_OUTPUT_SEQUENCE = "sequence";
+  public static final String OUTPUT_FORMAT = "sequence";
 
   private static final Logger log = LoggerFactory
       .getLogger(PartitionDriver.class);
 
-  private Path hdfsStagedPath;
-  private Path hdfsPartitionedPath;
+  private Path inputStagedPath;
+  private Path inputPartitionedPath;
 
   public PartitionDriver() {
     super();
@@ -92,39 +92,40 @@ public class PartitionDriver extends Driver {
 
     FileSystem hdfs = FileSystem.newInstance(getConf());
 
-    hdfsStagedPath = new Path(arguments[0]);
-    if (!hdfs.exists(hdfsStagedPath)
+    inputStagedPath = new Path(arguments[0]);
+    if (!hdfs.exists(inputStagedPath)
         || !HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
             .getCurrentUser().getUserName(), UserGroupInformation
-            .getCurrentUser().getGroupNames(), hdfsStagedPath, FsAction.READ)) {
-      throw new Exception("HDFS staged directory [" + hdfsStagedPath
+            .getCurrentUser().getGroupNames(), inputStagedPath, FsAction.READ)) {
+      throw new Exception("HDFS staged directory [" + inputStagedPath
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
     if (log.isInfoEnabled()) {
-      log.info("HDFS staged directory [" + hdfsStagedPath + "] validated");
+      log.info("HDFS staged directory [" + inputStagedPath + "] validated");
     }
 
-    hdfsPartitionedPath = new Path(arguments[1]);
-    if (hdfs.exists(hdfsPartitionedPath)) {
-      if (!hdfs.isDirectory(hdfsPartitionedPath)) {
+    inputPartitionedPath = new Path(arguments[1]);
+    if (hdfs.exists(inputPartitionedPath)) {
+      if (!hdfs.isDirectory(inputPartitionedPath)) {
         throw new Exception("HDFS partitioned directory ["
-            + hdfsPartitionedPath + "] is not a directory");
+            + inputPartitionedPath + "] is not a directory");
       }
-      if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
-          .getCurrentUser().getUserName(), UserGroupInformation
-          .getCurrentUser().getGroupNames(), hdfsPartitionedPath, FsAction.ALL)) {
+      if (!HDFSClientUtil
+          .canDoAction(hdfs, UserGroupInformation.getCurrentUser()
+              .getUserName(), UserGroupInformation.getCurrentUser()
+              .getGroupNames(), inputPartitionedPath, FsAction.ALL)) {
         throw new Exception("HDFS partitioned directory ["
-            + hdfsPartitionedPath
+            + inputPartitionedPath
             + "] has too restrictive permissions to read/write as user ["
             + UserGroupInformation.getCurrentUser().getUserName() + "]");
       }
     } else {
-      hdfs.mkdirs(hdfsPartitionedPath, new FsPermission(FsAction.ALL,
+      hdfs.mkdirs(inputPartitionedPath, new FsPermission(FsAction.ALL,
           FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
     }
     if (log.isInfoEnabled()) {
-      log.info("HDFS partitioned directory [" + hdfsPartitionedPath
+      log.info("HDFS partitioned directory [" + inputPartitionedPath
           + "] validated");
     }
 
@@ -139,16 +140,17 @@ public class PartitionDriver extends Driver {
 
     Set<String> counterBatches = new HashSet<String>();
     Set<String> counterPartitions = new HashSet<String>();
+    List<Path> stagedPaths = new ArrayList<Path>();
     Map<String, PartitionKey> partitionKeys = new HashMap<String, PartitionKey>();
-    List<Path> partitionPaths = new ArrayList<Path>();
-    for (Path pathStaged : HDFSClientUtil.listFiles(hdfs, hdfsStagedPath, true)) {
-      if (!PartitionFlag.isValue(pathStaged.getName())) {
-        PartitionKey partitionKey = new PartitionKey().path(pathStaged
+    for (Path stagedPath : HDFSClientUtil
+        .listFiles(hdfs, inputStagedPath, true)) {
+      if (!PartitionFlag.isValue(stagedPath.getName())) {
+        PartitionKey partitionKey = new PartitionKey().path(stagedPath
             .toString());
-        if (PartitionFlag.list(hdfs, pathStaged, PartitionFlag._PARTITION)) {
-          partitionPaths.add(pathStaged);
-          if (!partitionKeys.containsKey(partitionKey.getRecord())) {
-            partitionKeys.put(partitionKey.getRecord(), partitionKey);
+        if (PartitionFlag.list(hdfs, stagedPath, PartitionFlag._PARTITION)) {
+          stagedPaths.add(stagedPath);
+          if (!partitionKeys.containsKey(partitionKey.getBatch())) {
+            partitionKeys.put(partitionKey.getBatch(), partitionKey);
           }
         } else {
           incrementCounter(Counter.BATCHES_SKIPPED, 1,
@@ -174,8 +176,8 @@ public class PartitionDriver extends Driver {
           MultipleInputs.addInputPath(
               job,
               new Path(new StringBuilder(PartitionKey.PATH_NOMINAL_LENGTH)
-                  .append(hdfsStagedPath).append('/')
-                  .append(Counter.BATCHES_SUCCESSFUL.getPath()).append('/')
+                  .append(inputStagedPath).append('/')
+                  .append(Counter.BATCHES_SUCCESSFUL.getPath())
                   .append(partitionKey.getPathBatch()).toString()),
               PartitionInputFormat.get(partitionKey.getType(),
                   partitionKey.getCodec()));
@@ -186,11 +188,12 @@ public class PartitionDriver extends Driver {
       job.setMapperClass(PartitionMapper.class);
       job.setNumReduceTasks(0);
       LazyOutputFormatNoCheck.setOutputFormatClass(job, TextOutputFormat.class);
-      FileOutputFormat.setOutputPath(job, hdfsPartitionedPath);
+      FileOutputFormat.setOutputPath(job, new Path(inputPartitionedPath,
+          Counter.BATCHES_SUCCESSFUL.getPath()));
       SequenceFileOutputFormat.setOutputCompressionType(job,
           CompressionType.NONE);
       FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
-      MultipleOutputs.addNamedOutput(job, NAMED_OUTPUT_SEQUENCE,
+      MultipleOutputs.addNamedOutput(job, OUTPUT_FORMAT,
           SequenceFileOutputFormat.class, PartitionKey.class, Text.class);
       job.setJarByClass(PartitionDriver.class);
       jobSuccess = job.waitForCompletion(log.isInfoEnabled());
@@ -199,29 +202,32 @@ public class PartitionDriver extends Driver {
       }
     }
 
-    for (Path pathStaged : partitionPaths) {
-      if (PartitionFlag.list(hdfs, pathStaged, PartitionFlag._PARTITION)) {
-        PartitionKey partitionKey = new PartitionKey()
-            .path(pathStaged.toString()).type(NAMED_OUTPUT_SEQUENCE)
-            .codec(MapReduceUtil.getCodecString(getConf()));
-        Path pathPartitioned = new Path(new StringBuffer(
-            PartitionKey.PATH_NOMINAL_LENGTH)
-            .append(hdfsPartitionedPath)
-            .append(
-                partitionKey.type(NAMED_OUTPUT_SEQUENCE)
-                    .codec(MapReduceUtil.getCodecString(getConf()))
-                    .getPathPartition()).toString());
-        boolean partitioned = HDFSClientUtil.listFiles(hdfs, pathPartitioned,
-            false).size() > 0;
-        PartitionFlag.update(hdfs, pathStaged,
-            partitioned ? PartitionFlag._CLENSE : PartitionFlag._FAILED);
-        incrementCounter(partitioned ? Counter.BATCHES_SUCCESSFUL
-            : Counter.BATCHES_FAILED, 1, partitionKey.getPartition() + '/'
-            + partitionKey.getBatch(), counterBatches);
-        incrementCounter(partitioned ? Counter.PARTITIONS_SUCCESSFUL
-            : Counter.PARTITIONS_FAILED, 1, partitionKey.getPartition(),
-            counterPartitions);
+    for (Path stagedPath : stagedPaths) {
+      PartitionKey partitionKey = new PartitionKey()
+          .path(stagedPath.toString()).type(OUTPUT_FORMAT)
+          .codec(MapReduceUtil.getCodecString(getConf()));
+      Path partitionedPath = new Path(new StringBuffer(
+          PartitionKey.PATH_NOMINAL_LENGTH)
+          .append(inputPartitionedPath)
+          .append('/')
+          .append(Counter.BATCHES_SUCCESSFUL.getPath())
+          .append(
+              partitionKey.type(OUTPUT_FORMAT)
+                  .codec(MapReduceUtil.getCodecString(getConf()))
+                  .getPathPartition()).toString());
+      boolean partitioned = HDFSClientUtil.listFiles(hdfs, partitionedPath,
+          false).size() > 0;
+      if (partitioned) {
+        PartitionFlag.update(hdfs, partitionedPath, PartitionFlag._SUCCESS);
       }
+      PartitionFlag.update(hdfs, stagedPath,
+          partitioned ? PartitionFlag._CLEANSE : PartitionFlag._FAILED);
+      incrementCounter(partitioned ? Counter.BATCHES_SUCCESSFUL
+          : Counter.BATCHES_FAILED, 1, partitionKey.getPartition() + '/'
+          + partitionKey.getBatch(), counterBatches);
+      incrementCounter(partitioned ? Counter.PARTITIONS_SUCCESSFUL
+          : Counter.PARTITIONS_FAILED, 1, partitionKey.getPartition(),
+          counterPartitions);
     }
     incrementCounter(Counter.BATCHES, counterBatches.size());
     incrementCounter(Counter.PARTITIONS, counterPartitions.size());

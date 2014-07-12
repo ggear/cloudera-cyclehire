@@ -11,7 +11,7 @@ import org.apache.hadoop.fs.Path;
 
 public enum PartitionFlag {
 
-  _SUCCESS, _PARTITION, _CLENSE, _FAILED, _UNKNOWN, _LOCKED;
+  _UNKNOWN, _FAILED, _LOCKED, _SUCCESS, _PARTITION, _CLEANSE;
 
   public static boolean isValue(String value) {
     if (value != null) {
@@ -26,14 +26,20 @@ public enum PartitionFlag {
 
   public static boolean list(FileSystem hdfs, Path path,
       PartitionFlag partitionFlag) throws IOException {
-    FileStatus pathStatus = hdfs.getFileStatus(path);
-    if (pathStatus != null && !isValue(path.getName())) {
-      if (!pathStatus.isDirectory()) {
-        pathStatus = hdfs.getFileStatus(path.getParent());
+    try {
+      FileStatus pathStatus = hdfs.getFileStatus(path);
+      if (pathStatus != null && !isValue(path.getName())) {
+        if (!pathStatus.isDirectory()) {
+          pathStatus = hdfs.getFileStatus(path.getParent());
+        }
+        if (hdfs
+            .exists(new Path(pathStatus.getPath(), partitionFlag.toString()))) {
+          return true;
+        }
       }
-      if (hdfs.exists(new Path(pathStatus.getPath(), partitionFlag.toString()))) {
-        return true;
-      }
+    } catch (FileNotFoundException fileNotFoundException) {
+      // ignore exception, not great to use exceptions as flow control but
+      // better than another round trip to the name node
     }
     return false;
   }

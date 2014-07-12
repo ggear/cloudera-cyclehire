@@ -66,14 +66,6 @@ public class StageTest extends BaseTest {
                 Counter.FILES_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.FILES_SUCCESSFUL));
-    Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.FILES_SKIPPED) > 0);
-    Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.FILES_FAILED) > 0);
-    Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.FILES_SUCCESSFUL) > 0);
-    Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.FILES) > 0);
     Assert.assertEquals(
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
@@ -83,14 +75,6 @@ public class StageTest extends BaseTest {
                 Counter.BATCHES_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.BATCHES_SUCCESSFUL));
-    Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.BATCHES_SKIPPED) > 0);
-    Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.BATCHES_FAILED) > 0);
-    Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.BATCHES_SUCCESSFUL) > 0);
-    Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.BATCHES) > 0);
     Assert.assertEquals(
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
@@ -100,15 +84,6 @@ public class StageTest extends BaseTest {
                 Counter.PARTITIONS_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_SUCCESSFUL));
-    Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.PARTITIONS_SKIPPED) > 0);
-    Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.PARTITIONS_FAILED) > 0);
-    Assert
-        .assertTrue(stageDriver.getCounter(
-            StageDriver.class.getCanonicalName(), Counter.PARTITIONS_SUCCESSFUL) > 0);
-    Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.PARTITIONS) > 0);
 
   }
 

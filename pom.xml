@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cloudera</groupId>
 	<artifactId>cloudera-cyclehire</artifactId>
@@ -40,11 +41,7 @@
 		<maven.assembly.skip>false</maven.assembly.skip>
 
 		<java.version>1.7</java.version>
-<!--		
-		<hadoop-cdh.version>4</hadoop-cdh.version>
-		<hadoop.version>2.0.0-cdh4.6.0</hadoop.version>
-		<hadoop-hive.version>0.10.0-cdh4.6.0</hadoop-hive.version>
--->
+
 		<hadoop-cdh.version>5</hadoop-cdh.version>
 		<hadoop.version>2.3.0-cdh5.0.2</hadoop.version>
 		<hadoop-hive.version>0.12.0-cdh5.0.2</hadoop-hive.version>

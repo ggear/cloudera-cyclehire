@@ -7,10 +7,8 @@ import java.io.IOException;
 
 import junit.framework.Assert;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
 public class EmbeddedHiveTestCaseTest extends EmbeddedHiveTestCase {
 
   public EmbeddedHiveTestCaseTest() throws IOException {
@@ -36,6 +34,7 @@ public class EmbeddedHiveTestCaseTest extends EmbeddedHiveTestCase {
         executeAndFetchOne("SELECT count(1) AS cnt FROM somedata"));
     Assert.assertEquals("2",
         executeAndFetchOne("SELECT col1 FROM somedata WHERE col2 = 2"));
+    Assert.assertEquals(1, executeAndFetchAll("SHOW TABLES").size());
     execute("DROP TABLE somedata");
 
   }

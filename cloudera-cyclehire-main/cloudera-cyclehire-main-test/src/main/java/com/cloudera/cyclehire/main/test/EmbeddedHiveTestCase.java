@@ -36,6 +36,9 @@ public abstract class EmbeddedHiveTestCase extends EmbeddedCoreTestCase {
   public void setUp() throws Exception {
     super.setUp();
     hive = new HiveServer.HiveServerHandler(getConf());
+    for (String table : executeAndFetchAll("SHOW TABLES")) {
+      execute("DROP TABLE " + table);
+    }
   }
 
   @After

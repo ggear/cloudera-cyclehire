@@ -3,14 +3,18 @@ Implementation:
 - Zookeeper - locking, co-ordination
 - Oozie - job workflow, directory listeners
 - Flume - neartime ingest
+- Kafka - event distribution
 - Kite - abstract client
 - Hive - batch reporting
 - Pig - batch transformation
 - Impala - discovery, reporting, joining
 - Spark - trending, corelations
-- Search - search by address
+- Search - streaming, graph, mllib
 - HBase - realtime lookup
+- Jetty - web-app, restful API
+- Navigator - metadata attach
 - Test - stress/load test
+- Optimise - shorten for micro batches
 
 Integrations:
 - Tableau/Qlikview - visulisation

@@ -2,8 +2,6 @@
 -- Schema Create
 --
 
-DROP TABLE somedata;
-
 CREATE TABLE IF NOT EXISTS somedata (
 	col1 INT,
 	col2 INT

@@ -51,9 +51,9 @@ public class CleanseDriver extends Driver {
   private static final Logger log = LoggerFactory
       .getLogger(CleanseDriver.class);
 
-  private Path hdfsStagedPath;
-  private Path hdfsPartitionedPath;
-  private Path hdfsCleansedPath;
+  private Path inputStagedPath;
+  private Path inputPartitionedPath;
+  private Path inputCleansedPath;
 
   public CleanseDriver() {
     super();
@@ -96,53 +96,53 @@ public class CleanseDriver extends Driver {
 
     FileSystem hdfs = FileSystem.newInstance(getConf());
 
-    hdfsStagedPath = new Path(arguments[0]);
-    if (!hdfs.exists(hdfsStagedPath)
+    inputStagedPath = new Path(arguments[0]);
+    if (!hdfs.exists(inputStagedPath)
         || !HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
             .getCurrentUser().getUserName(), UserGroupInformation
-            .getCurrentUser().getGroupNames(), hdfsStagedPath, FsAction.READ)) {
-      throw new Exception("HDFS staged directory [" + hdfsStagedPath
+            .getCurrentUser().getGroupNames(), inputStagedPath, FsAction.READ)) {
+      throw new Exception("HDFS staged directory [" + inputStagedPath
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
     if (log.isInfoEnabled()) {
-      log.info("HDFS staged directory [" + hdfsStagedPath + "] validated");
+      log.info("HDFS staged directory [" + inputStagedPath + "] validated");
     }
 
-    hdfsPartitionedPath = new Path(arguments[1]);
-    if (!hdfs.exists(hdfsPartitionedPath)
+    inputPartitionedPath = new Path(arguments[1]);
+    if (!hdfs.exists(inputPartitionedPath)
         || !HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
             .getCurrentUser().getUserName(), UserGroupInformation
-            .getCurrentUser().getGroupNames(), hdfsPartitionedPath,
+            .getCurrentUser().getGroupNames(), inputPartitionedPath,
             FsAction.READ)) {
-      throw new Exception("HDFS partitioned directory [" + hdfsPartitionedPath
+      throw new Exception("HDFS partitioned directory [" + inputPartitionedPath
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
     if (log.isInfoEnabled()) {
-      log.info("HDFS partitioned directory [" + hdfsPartitionedPath
+      log.info("HDFS partitioned directory [" + inputPartitionedPath
           + "] validated");
     }
 
-    hdfsCleansedPath = new Path(arguments[2]);
-    if (hdfs.exists(hdfsCleansedPath)) {
-      if (!hdfs.isDirectory(hdfsCleansedPath)) {
-        throw new Exception("HDFS cleansed directory [" + hdfsCleansedPath
+    inputCleansedPath = new Path(arguments[2]);
+    if (hdfs.exists(inputCleansedPath)) {
+      if (!hdfs.isDirectory(inputCleansedPath)) {
+        throw new Exception("HDFS cleansed directory [" + inputCleansedPath
             + "] is not a directory");
       }
       if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
           .getCurrentUser().getUserName(), UserGroupInformation
-          .getCurrentUser().getGroupNames(), hdfsCleansedPath, FsAction.ALL)) {
-        throw new Exception("HDFS cleansed directory [" + hdfsCleansedPath
+          .getCurrentUser().getGroupNames(), inputCleansedPath, FsAction.ALL)) {
+        throw new Exception("HDFS cleansed directory [" + inputCleansedPath
             + "] has too restrictive permissions to read/write as user ["
             + UserGroupInformation.getCurrentUser().getUserName() + "]");
       }
     } else {
-      hdfs.mkdirs(hdfsCleansedPath, new FsPermission(FsAction.ALL,
+      hdfs.mkdirs(inputCleansedPath, new FsPermission(FsAction.ALL,
           FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
     }
     if (log.isInfoEnabled()) {
-      log.info("HDFS cleansed directory [" + hdfsCleansedPath + "] validated");
+      log.info("HDFS cleansed directory [" + inputCleansedPath + "] validated");
     }
 
     return RETURN_SUCCESS;
@@ -156,29 +156,30 @@ public class CleanseDriver extends Driver {
 
     Set<String> counterBatches = new HashSet<String>();
     Set<String> counterPartitions = new HashSet<String>();
+    List<Path> stagedPaths = new ArrayList<Path>();
     Map<String, PartitionKey> partitionKeys = new HashMap<String, PartitionKey>();
-    List<Path> partitionPaths = new ArrayList<Path>();
-    for (Path pathStaged : HDFSClientUtil.listFiles(hdfs, hdfsStagedPath, true)) {
-      if (!PartitionFlag.isValue(pathStaged.getName())) {
-        PartitionKey partitionKey = new PartitionKey().path(pathStaged
+    for (Path stagedPath : HDFSClientUtil
+        .listFiles(hdfs, inputStagedPath, true)) {
+      if (!PartitionFlag.isValue(stagedPath.getName())) {
+        PartitionKey partitionKey = new PartitionKey().path(stagedPath
             .toString());
-        if (PartitionFlag.list(hdfs, pathStaged, PartitionFlag._CLENSE)) {
-          partitionPaths.add(pathStaged);
+        if (PartitionFlag.list(hdfs, stagedPath, PartitionFlag._CLEANSE)) {
+          stagedPaths.add(stagedPath);
           if (!partitionKeys.containsKey(partitionKey.getPartition())) {
             partitionKeys.put(partitionKey.getPartition(), partitionKey);
             for (Counter counter : new Counter[] { Counter.RECORDS_MALFORMED,
                 Counter.RECORDS_DUPLICATE, Counter.RECORDS_CLEANSED }) {
-              Path pathCleansed = new Path(new StringBuilder(
+              Path cleansedPath = new Path(new StringBuilder(
                   PartitionKey.PATH_NOMINAL_LENGTH)
-                  .append(hdfsCleansedPath)
+                  .append(inputCleansedPath)
                   .append('/')
                   .append(counter.getPath())
                   .append(
-                      new PartitionKey().path(pathStaged.toString())
+                      new PartitionKey().path(stagedPath.toString())
                           .type(NAMED_OUTPUT_SEQUENCE)
                           .codec(MapReduceUtil.getCodecString(getConf()))
                           .getPathPartition()).toString());
-              hdfs.delete(pathCleansed, true);
+              hdfs.delete(cleansedPath, true);
             }
           }
         } else {
@@ -204,8 +205,9 @@ public class CleanseDriver extends Driver {
         FileInputFormat.addInputPath(
             job,
             new Path(new StringBuilder(PartitionKey.PATH_NOMINAL_LENGTH)
-                .append(hdfsPartitionedPath)
+                .append(inputPartitionedPath)
                 .append('/')
+                .append(Counter.BATCHES_SUCCESSFUL.getPath())
                 .append(
                     partitionKey.type(NAMED_OUTPUT_SEQUENCE)
                         .codec(MapReduceUtil.getCodecString(getConf()))
@@ -219,7 +221,7 @@ public class CleanseDriver extends Driver {
       job.setSortComparatorClass(ClenseReducerSorter.class);
       job.setReducerClass(ClenseReducer.class);
       LazyOutputFormatNoCheck.setOutputFormatClass(job, TextOutputFormat.class);
-      FileOutputFormat.setOutputPath(job, hdfsCleansedPath);
+      FileOutputFormat.setOutputPath(job, inputCleansedPath);
       SequenceFileOutputFormat.setOutputCompressionType(job,
           CompressionType.NONE);
       FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
@@ -237,30 +239,30 @@ public class CleanseDriver extends Driver {
       }
     }
 
-    for (Path pathStaged : partitionPaths) {
-      if (PartitionFlag.list(hdfs, pathStaged, PartitionFlag._CLENSE)) {
-        PartitionKey partitionKey = new PartitionKey()
-            .path(pathStaged.toString()).type(NAMED_OUTPUT_SEQUENCE)
-            .codec(MapReduceUtil.getCodecString(getConf()));
-        boolean cleansed = false;
-        for (Counter counter : new Counter[] { Counter.RECORDS_MALFORMED,
-            Counter.RECORDS_DUPLICATE, Counter.RECORDS_CLEANSED }) {
-          Path pathCleansed = new Path(new StringBuilder(
-              PartitionKey.PATH_NOMINAL_LENGTH).append(hdfsCleansedPath)
-              .append('/').append(counter.getPath())
-              .append(partitionKey.getPathPartition()).toString());
-          cleansed = cleansed
-              || HDFSClientUtil.listFiles(hdfs, pathCleansed, false).size() > 0;
+    for (Path stagedPath : stagedPaths) {
+      PartitionKey partitionKey = new PartitionKey()
+          .path(stagedPath.toString()).type(NAMED_OUTPUT_SEQUENCE)
+          .codec(MapReduceUtil.getCodecString(getConf()));
+      boolean cleansed = false;
+      for (Counter counter : new Counter[] { Counter.RECORDS_MALFORMED,
+          Counter.RECORDS_DUPLICATE, Counter.RECORDS_CLEANSED }) {
+        Path cleansedPath = new Path(new StringBuilder(
+            PartitionKey.PATH_NOMINAL_LENGTH).append(inputCleansedPath)
+            .append('/').append(counter.getPath())
+            .append(partitionKey.getPathPartition()).toString());
+        if (HDFSClientUtil.listFiles(hdfs, cleansedPath, false).size() > 0) {
+          cleansed = true;
+          PartitionFlag.update(hdfs, cleansedPath, PartitionFlag._SUCCESS);
         }
-        PartitionFlag.update(hdfs, pathStaged,
-            cleansed ? PartitionFlag._SUCCESS : PartitionFlag._FAILED);
-        incrementCounter(cleansed ? Counter.BATCHES_SUCCESSFUL
-            : Counter.BATCHES_FAILED, 1, partitionKey.getPartition() + '/'
-            + partitionKey.getBatch(), counterBatches);
-        incrementCounter(cleansed ? Counter.PARTITIONS_SUCCESSFUL
-            : Counter.PARTITIONS_FAILED, 1, partitionKey.getPartition(),
-            counterPartitions);
       }
+      PartitionFlag.update(hdfs, stagedPath, cleansed ? PartitionFlag._SUCCESS
+          : PartitionFlag._FAILED);
+      incrementCounter(cleansed ? Counter.BATCHES_SUCCESSFUL
+          : Counter.BATCHES_FAILED, 1, partitionKey.getPartition() + '/'
+          + partitionKey.getBatch(), counterBatches);
+      incrementCounter(cleansed ? Counter.PARTITIONS_SUCCESSFUL
+          : Counter.PARTITIONS_FAILED, 1, partitionKey.getPartition(),
+          counterPartitions);
     }
     incrementCounter(Counter.BATCHES, counterBatches.size());
     incrementCounter(Counter.PARTITIONS, counterPartitions.size());

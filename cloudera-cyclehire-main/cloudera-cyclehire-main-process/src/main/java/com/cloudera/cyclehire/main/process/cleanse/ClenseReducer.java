@@ -19,7 +19,7 @@ public class ClenseReducer extends
   public static final int RECORD_BUFFER_SIZE_DATA = 500000;
   public static final int RECORD_BUFFER_SIZE_METADATA = 256;
 
-  private static final String pathPrefix = "./";
+  private static final String PATH_PREFIX = "./";
 
   private MultipleOutputs<PartitionKey, Text> multipleOutputs;
 
@@ -67,10 +67,10 @@ public class ClenseReducer extends
           key,
           value,
           new StringBuilder(RECORD_BUFFER_SIZE_METADATA)
-              .append(pathPrefix)
+              .append(PATH_PREFIX)
               .append(counter.getPath())
               .append(
-                  key.type(PartitionDriver.NAMED_OUTPUT_SEQUENCE)
+                  key.type(PartitionDriver.OUTPUT_FORMAT)
                       .codec(
                           MapReduceUtil.getCodecString(context
                               .getConfiguration())).getPathPartition())

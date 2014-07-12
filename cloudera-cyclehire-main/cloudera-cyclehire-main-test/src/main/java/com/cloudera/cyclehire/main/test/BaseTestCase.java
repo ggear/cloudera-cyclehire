@@ -3,16 +3,19 @@ package com.cloudera.cyclehire.main.test;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.permission.FsPermission;
 
 import com.cloudera.cyclehire.data.DataConstants;
+import com.google.common.io.Files;
 
 public abstract class BaseTestCase implements BaseTest {
 
@@ -26,7 +29,7 @@ public abstract class BaseTestCase implements BaseTest {
       .getPathHDFS("tmp/cyclehire/raw/staged");
   public static final String PATH_HDFS_DIR_RAW_PARTITIONED = BaseTestCase
       .getPathHDFS("tmp/cyclehire/raw/partitioned");
-  public static final String PATH_HDFS_DIR_PROCESSED_CLEANSED = BaseTestCase
+  public static final String PATH_HDFS_DIR_PROCESSED = BaseTestCase
       .getPathHDFS("tmp/cyclehire/processed");
 
   public static String PATH_LOCAL_DIR_TAR = BaseTestCase
@@ -46,15 +49,23 @@ public abstract class BaseTestCase implements BaseTest {
     System.setProperty("java.security.krb5.realm", "CDHCLUSTER.com");
     System.setProperty("java.security.krb5.kdc", "kdc.cdhcluster.com");
     System.setProperty("java.security.krb5.conf", "/dev/null");
-
-    System.setProperty("derby.stream.error.file",
-        BaseTest.PATH_LOCAL_WORKING_DIR + "/target/derby.log");
-
     System.setProperty("dir.working", BaseTest.PATH_LOCAL_WORKING_DIR);
     System.setProperty("dir.working.target",
         BaseTest.PATH_LOCAL_WORKING_DIR_TARGET);
     System.setProperty("dir.working.target.hdfs",
         BaseTest.PATH_LOCAL_WORKING_DIR_TARGET_HDFS);
+    System.setProperty("dir.working.target.derby",
+        BaseTest.PATH_LOCAL_WORKING_DIR + "/target/derby");
+    System.setProperty("dir.working.target.derby.db",
+        System.getProperty("dir.working.target.derby") + "/db");
+    System.setProperty("derby.stream.error.file",
+        System.getProperty("dir.working.target.derby") + "/derby.log");
+    File derbyDir = new File(System.getProperty("dir.working.target.derby.db"));
+    try {
+      FileUtils.deleteDirectory(derbyDir);
+      derbyDir.mkdirs();
+    } catch (IOException e) {
+    }
   }
 
   public static void initHadoopHome(String hadoopHome) {
@@ -111,6 +122,23 @@ public abstract class BaseTestCase implements BaseTest {
     return pathRelativeToHDFSRootLessLeadingSlashes.equals("") ? PATH_HDFS
         : new Path(PATH_HDFS, pathRelativeToHDFSRootLessLeadingSlashes).toUri()
             .toString();
+  }
+
+  public static void addJartoHadoopClasspath(Class<?> clazz) {
+    try {
+      File source = new File(clazz.getProtectionDomain().getCodeSource()
+          .getLocation().toURI());
+      File destination = new File(System.getenv(ENV_HADOOP_HOME), "lib");
+      if (destination.exists() && destination.isDirectory()
+          && destination.canWrite()) {
+        Files.copy(source, new File(destination, source.getName()));
+      } else {
+        throw new RuntimeException("Could copy JAR [" + source
+            + "] to Hadoop lib [" + destination + "]");
+      }
+    } catch (IOException | URISyntaxException exception) {
+      throw new RuntimeException("Could not add JAR to classpath", exception);
+    }
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })

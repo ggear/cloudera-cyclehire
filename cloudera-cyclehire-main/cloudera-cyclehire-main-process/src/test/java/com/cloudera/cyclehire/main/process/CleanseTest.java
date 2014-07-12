@@ -56,21 +56,21 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.runner(new String[] {
             BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT,
             BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED,
-            BaseTestCase.PATH_HDFS_DIR_PROCESSED_CLEANSED }));
+            BaseTestCase.PATH_HDFS_DIR_PROCESSED }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         cleanseDriver.runner(new String[] {
             BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
             BaseTestCase.PATH_HDFS_DIR_NON_EXISTANT,
-            BaseTestCase.PATH_HDFS_DIR_PROCESSED_CLEANSED }));
+            BaseTestCase.PATH_HDFS_DIR_PROCESSED }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         cleanseDriver.runner(new String[] {
             BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
             BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED,
-            BaseTestCase.PATH_HDFS_DIR_PROCESSED_CLEANSED,
+            BaseTestCase.PATH_HDFS_DIR_PROCESSED,
             BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED,
-            BaseTestCase.PATH_HDFS_DIR_PROCESSED_CLEANSED }));
+            BaseTestCase.PATH_HDFS_DIR_PROCESSED }));
   }
 
   @Test
@@ -82,7 +82,7 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.runner(new String[] {
             BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
             BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED,
-            BaseTestCase.PATH_HDFS_DIR_PROCESSED_CLEANSED }));
+            BaseTestCase.PATH_HDFS_DIR_PROCESSED }));
     Assert.assertEquals(
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
@@ -92,54 +92,6 @@ public class CleanseTest extends BaseTest {
                 Counter.BATCHES_FAILED)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.BATCHES_SUCCESSFUL));
-    Assert.assertTrue(cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.BATCHES_SKIPPED)
-        .longValue() > 0);
-    Assert.assertEquals(new Long(0), cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.BATCHES_FAILED));
-    Assert
-        .assertTrue(cleanseDriver.getCounter(
-            CleanseDriver.class.getCanonicalName(), Counter.BATCHES_SUCCESSFUL) > 0);
-    Assert.assertTrue(cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.BATCHES) > 0);
-    Assert.assertEquals(
-        cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS).longValue(),
-        cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED)
-            + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-                Counter.PARTITIONS_FAILED)
-            + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-                Counter.PARTITIONS_SUCCESSFUL));
-    Assert.assertTrue(cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.PARTITIONS_SKIPPED)
-        .longValue() > 0);
-    Assert.assertEquals(new Long(0), cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.PARTITIONS_FAILED));
-    Assert
-        .assertTrue(cleanseDriver.getCounter(
-            CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SUCCESSFUL) > 0);
-    Assert.assertTrue(cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.PARTITIONS) > 0);
-    Assert.assertEquals(
-        cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.RECORDS).longValue(),
-        cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.RECORDS_MALFORMED)
-            + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-                Counter.RECORDS_DUPLICATE)
-            + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-                Counter.RECORDS_CLEANSED));
-    Assert.assertTrue(cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.RECORDS_MALFORMED)
-        .longValue() > 0);
-    Assert.assertTrue(cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.RECORDS_DUPLICATE) > 0);
-    Assert.assertTrue(cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.RECORDS_CLEANSED) > 0);
-    Assert.assertTrue(cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.RECORDS) > 0);
 
   }
 
@@ -153,7 +105,7 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.runner(new String[] {
             BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
             BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED,
-            BaseTestCase.PATH_HDFS_DIR_PROCESSED_CLEANSED }));
+            BaseTestCase.PATH_HDFS_DIR_PROCESSED }));
     long batchesCount = cleanseDriver.getCounter(
         CleanseDriver.class.getCanonicalName(), Counter.BATCHES).longValue();
     long partitionsCount = cleanseDriver.getCounter(
@@ -223,7 +175,7 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.runner(new String[] {
             BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
             BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED,
-            BaseTestCase.PATH_HDFS_DIR_PROCESSED_CLEANSED }));
+            BaseTestCase.PATH_HDFS_DIR_PROCESSED }));
     Assert.assertEquals(
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
@@ -310,12 +262,13 @@ public class CleanseTest extends BaseTest {
         partitionDriver.runner(new String[] {
             BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
             BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED }));
+
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         cleanseDriver.runner(new String[] {
             BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
             BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED,
-            BaseTestCase.PATH_HDFS_DIR_PROCESSED_CLEANSED }));
+            BaseTestCase.PATH_HDFS_DIR_PROCESSED }));
     Assert.assertEquals(
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
@@ -377,12 +330,13 @@ public class CleanseTest extends BaseTest {
                 Counter.RECORDS_CLEANSED));
     Assert.assertEquals(new Long(0), cleanseDriver.getCounter(
         CleanseDriver.class.getCanonicalName(), Counter.RECORDS_MALFORMED));
-    Assert.assertEquals(new Long(1), cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.RECORDS_DUPLICATE));
+    Assert.assertTrue(cleanseDriver.getCounter(
+        CleanseDriver.class.getCanonicalName(), Counter.RECORDS_DUPLICATE) > 0);
     Assert.assertEquals(new Long(1), cleanseDriver.getCounter(
         CleanseDriver.class.getCanonicalName(), Counter.RECORDS_CLEANSED));
-    assertEquals(new Long(2), cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.RECORDS));
+    assertTrue(cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
+        Counter.RECORDS) > 0);
+
   }
 
 }

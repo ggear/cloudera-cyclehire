@@ -9,8 +9,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.cloudera.cyclehire.data.DataConstants;
-import com.cloudera.cyclehire.main.common.model.PartitionKey;
-import com.cloudera.cyclehire.main.common.model.PartitionRecord;
 import com.cloudera.cyclehire.main.test.BaseTestCase;
 
 public class PartitionRecordTest {

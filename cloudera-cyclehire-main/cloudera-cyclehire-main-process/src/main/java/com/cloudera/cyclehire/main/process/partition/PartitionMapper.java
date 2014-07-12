@@ -53,13 +53,13 @@ public class PartitionMapper extends
     value.append(valueMetaData, 0, valueMetaData.length);
     multipleOutputs
         .write(
-            PartitionDriver.NAMED_OUTPUT_SEQUENCE,
+            PartitionDriver.OUTPUT_FORMAT,
             key,
             value,
             new StringBuilder(RECORD_BUFFER_SIZE_METADATA)
                 .append(pathPrefix)
                 .append(
-                    key.type(PartitionDriver.NAMED_OUTPUT_SEQUENCE)
+                    key.type(PartitionDriver.OUTPUT_FORMAT)
                         .codec(
                             MapReduceUtil.getCodecString(context
                                 .getConfiguration())).getPathPartition())

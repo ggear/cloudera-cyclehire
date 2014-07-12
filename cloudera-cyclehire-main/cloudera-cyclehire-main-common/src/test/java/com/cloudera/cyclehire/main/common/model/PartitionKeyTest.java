@@ -12,8 +12,6 @@ import org.junit.Test;
 
 import com.cloudera.cyclehire.data.DataConstants;
 import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
-import com.cloudera.cyclehire.main.common.model.PartitionFlag;
-import com.cloudera.cyclehire.main.common.model.PartitionKey;
 
 public class PartitionKeyTest {
 

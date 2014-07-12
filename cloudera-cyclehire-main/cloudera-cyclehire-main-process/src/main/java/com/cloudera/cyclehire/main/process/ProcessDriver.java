@@ -13,10 +13,10 @@ import com.cloudera.cyclehire.main.process.stage.StageDriver;
 
 public class ProcessDriver extends Driver {
 
-  private String hdfsLandedPath;
-  private String hdfsStagedPath;
-  private String hdfsPartitionedPath;
-  private String hdfsCleansedPath;
+  private String inputLandedPath;
+  private String inputStagedPath;
+  private String inputPartitionedPath;
+  private String inputCleansedPath;
 
   public ProcessDriver() {
     super();
@@ -63,10 +63,10 @@ public class ProcessDriver extends Driver {
       throw new Exception("Invalid number of arguments");
     }
 
-    hdfsLandedPath = arguments[0];
-    hdfsStagedPath = arguments[1];
-    hdfsPartitionedPath = arguments[2];
-    hdfsCleansedPath = arguments[3];
+    inputLandedPath = arguments[0];
+    inputStagedPath = arguments[1];
+    inputPartitionedPath = arguments[2];
+    inputCleansedPath = arguments[3];
 
     return RETURN_SUCCESS;
   }
@@ -79,12 +79,12 @@ public class ProcessDriver extends Driver {
     Driver stageDriver = new StageDriver(getConf());
     Driver partitionDriver = new PartitionDriver(getConf());
     Driver cleanseDriver = new CleanseDriver(getConf());
-    if ((returnValue = stageDriver.run(new String[] { hdfsLandedPath,
-        hdfsStagedPath })) == RETURN_SUCCESS) {
-      if ((returnValue = partitionDriver.run(new String[] { hdfsStagedPath,
-          hdfsPartitionedPath })) == RETURN_SUCCESS) {
-        returnValue = cleanseDriver.run(new String[] { hdfsStagedPath,
-            hdfsPartitionedPath, hdfsCleansedPath });
+    if ((returnValue = stageDriver.run(new String[] { inputLandedPath,
+        inputStagedPath })) == RETURN_SUCCESS) {
+      if ((returnValue = partitionDriver.run(new String[] { inputStagedPath,
+          inputPartitionedPath })) == RETURN_SUCCESS) {
+        returnValue = cleanseDriver.run(new String[] { inputStagedPath,
+            inputPartitionedPath, inputCleansedPath });
       }
     }
 
