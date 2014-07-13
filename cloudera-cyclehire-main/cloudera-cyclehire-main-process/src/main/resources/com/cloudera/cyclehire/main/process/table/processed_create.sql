@@ -2,9 +2,6 @@
 -- Cyclehire Processed Schema Create
 --
 
---
--- Cyclehire Processed Delimited
---
 CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.table.modifier} (
   getDate BIGINT,
   updateDate BIGINT,
@@ -23,7 +20,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.tab
   docks INT,
   source STRING
 )
-COMMENT 'TFL Cyclehire data (${hiveconf:cyclehire.table.modifier})'
+COMMENT 'TFL Cyclehire processed data (${hiveconf:cyclehire.table.modifier})'
 PARTITIONED BY (
   year INT,
   month INT
