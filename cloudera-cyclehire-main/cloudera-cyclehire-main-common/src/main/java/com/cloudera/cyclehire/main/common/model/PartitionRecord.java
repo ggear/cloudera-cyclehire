@@ -24,11 +24,19 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class PartitionRecord {
 
-  public static final String COLUMNS_RECORD = "station";
-  public static final Set<String> COLUMNS_RECORD_DETAIL = new LinkedHashSet<String>(
+  private static final String XML_RECORDS = "stations";
+  private static final String XML_RECORDS_UPDATE = "lastUpdate";
+  public static final String XML_RECORD = "station";
+  public static final Set<String> XML_RECORD_COLUMNS = new LinkedHashSet<String>(
       Arrays.asList(new String[] { "id", "name", "terminalName", "lat", "long",
           "installed", "locked", "installDate", "removalDate", "temporary",
           "nbBikes", "nbEmptyDocks", "nbDocks" }));
+  public static final List<String> XML_RECORD_EMPTY = new ArrayList<>();
+  static {
+    for (int i = 0; i < XML_RECORD_COLUMNS.size(); i++) {
+      XML_RECORD_EMPTY.add("");
+    }
+  }
 
   private static final SAXParserFactory XML_SAX = SAXParserFactory
       .newInstance();
@@ -37,6 +45,7 @@ public class PartitionRecord {
 
   private PartitionKey key;
   private String xml;
+  private boolean isValid = false;
   private List<List<String>> table;
 
   public PartitionRecord key(PartitionKey key) {
@@ -57,7 +66,7 @@ public class PartitionRecord {
       if (xml != null) {
         epochUpdate = Long.parseLong(XML_EVENT
             .createXMLEventReader(new StringReader(this.xml)).nextTag()
-            .asStartElement().getAttributeByName(new QName("lastUpdate"))
+            .asStartElement().getAttributeByName(new QName(XML_RECORDS_UPDATE))
             .getValue());
       }
     } catch (NumberFormatException | XMLStreamException
@@ -70,7 +79,7 @@ public class PartitionRecord {
 
   public boolean isValid() {
     return key != null && xml != null && xml.length() > 0
-        && !getTable().isEmpty();
+        && !getTable().isEmpty() && isValid;
   }
 
   public List<List<String>> getTable() {
@@ -87,9 +96,22 @@ public class PartitionRecord {
                 @Override
                 public void startElement(String uri, String localName,
                     String qName, Attributes attributes) throws SAXException {
-                  if (COLUMNS_RECORD.equals(qName)) {
+                  if (XML_RECORDS.equals(qName)) {
+                    if (key != null) {
+                      try {
+                        if (!key.epochUpdate(
+                            Long.parseLong(attributes
+                                .getValue(XML_RECORDS_UPDATE))).isValid()) {
+                          throw new SAXException("Invalid key [" + key + "]");
+                        }
+                      } catch (NumberFormatException exception) {
+                        throw new SAXException("Invalid record timestamp ["
+                            + attributes.getValue(XML_RECORDS_UPDATE) + "]");
+                      }
+                    }
+                  } else if (XML_RECORD.equals(qName)) {
                     tokens = new HashMap<String, String>();
-                  } else if (COLUMNS_RECORD_DETAIL.contains(qName)) {
+                  } else if (XML_RECORD_COLUMNS.contains(qName)) {
                     name = qName;
                   }
                 }
@@ -105,14 +127,14 @@ public class PartitionRecord {
                 @Override
                 public void endElement(String uri, String localName,
                     String qName) throws SAXException {
-                  if (COLUMNS_RECORD.equals(qName)) {
+                  if (XML_RECORD.equals(qName)) {
                     List<String> row = new ArrayList<String>();
                     table.add(row);
-                    for (String column : COLUMNS_RECORD_DETAIL) {
+                    for (String column : XML_RECORD_COLUMNS) {
                       row.add(tokens.containsKey(column) ? tokens.get(column)
                           : "");
                     }
-                  } else if (COLUMNS_RECORD_DETAIL.contains(qName)) {
+                  } else if (XML_RECORD_COLUMNS.contains(qName)) {
                     name = null;
                   }
                 }
@@ -123,6 +145,9 @@ public class PartitionRecord {
         table.clear();
       } finally {
         this.table = table;
+        if (!(isValid = !table.isEmpty())) {
+          table.add(XML_RECORD_EMPTY);
+        }
       }
     }
     return table;

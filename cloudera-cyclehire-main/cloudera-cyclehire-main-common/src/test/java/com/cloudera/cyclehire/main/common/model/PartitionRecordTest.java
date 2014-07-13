@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,7 +26,11 @@ public class PartitionRecordTest {
     } catch (IOException e) {
     }
   }
-  private static int XML_RECORDS = XML.split("<id>").length - 1;
+  private static final int XML_RECORDS = XML.split("<id>").length - 1;
+  private static final List<List<String>> TABLE_EMPTY = new ArrayList<>();
+  static {
+    TABLE_EMPTY.add(PartitionRecord.XML_RECORD_EMPTY);
+  }
 
   @Test
   public void testInvalid() {
@@ -94,27 +100,23 @@ public class PartitionRecordTest {
 
   @Test
   public void testTable() {
-    Assert.assertEquals(0, new PartitionRecord().key(KEY).xml(null).getTable()
-        .size());
-    Assert.assertEquals(0, new PartitionRecord().key(KEY).xml("").getTable()
-        .size());
-    Assert.assertEquals(0, new PartitionRecord().key(KEY).xml("some-rubbish")
-        .getTable().size());
-    Assert.assertEquals(0,
-        new PartitionRecord().key(KEY).xml(XML + "some-rubbish").getTable()
-            .size());
-    Assert.assertEquals(0,
-        new PartitionRecord().key(KEY).xml("some-rubbish" + XML).getTable()
-            .size());
-    Assert.assertEquals(0,
-        new PartitionRecord().key(KEY).xml(XML.substring(0, 70)).getTable()
-            .size());
-    Assert.assertEquals(0,
-        new PartitionRecord().key(KEY).xml(XML.substring(0, 200)).getTable()
-            .size());
+    Assert.assertEquals(TABLE_EMPTY, new PartitionRecord().key(KEY).xml(null)
+        .getTable());
+    Assert.assertEquals(TABLE_EMPTY, new PartitionRecord().key(KEY).xml("")
+        .getTable());
+    Assert.assertEquals(TABLE_EMPTY,
+        new PartitionRecord().key(KEY).xml("some-rubbish").getTable());
+    Assert.assertEquals(TABLE_EMPTY,
+        new PartitionRecord().key(KEY).xml(XML + "some-rubbish").getTable());
+    Assert.assertEquals(TABLE_EMPTY,
+        new PartitionRecord().key(KEY).xml("some-rubbish" + XML).getTable());
+    Assert.assertEquals(TABLE_EMPTY,
+        new PartitionRecord().key(KEY).xml(XML.substring(0, 70)).getTable());
+    Assert.assertEquals(TABLE_EMPTY,
+        new PartitionRecord().key(KEY).xml(XML.substring(0, 200)).getTable());
     Assert.assertEquals(XML_RECORDS, new PartitionRecord().key(KEY).xml(XML)
         .getTable().size());
-    Assert.assertEquals(PartitionRecord.COLUMNS_RECORD_DETAIL.size(),
+    Assert.assertEquals(PartitionRecord.XML_RECORD_COLUMNS.size(),
         new PartitionRecord().key(KEY).xml(XML).getTable().get(0).size());
     Assert.assertEquals(
         XML_RECORDS,
@@ -125,7 +127,7 @@ public class PartitionRecordTest {
                     "<id>1</id><some-tag>some-value</some-tag>")).getTable()
             .size());
     Assert.assertEquals(
-        PartitionRecord.COLUMNS_RECORD_DETAIL.size(),
+        PartitionRecord.XML_RECORD_COLUMNS.size(),
         new PartitionRecord()
             .key(KEY)
             .xml(

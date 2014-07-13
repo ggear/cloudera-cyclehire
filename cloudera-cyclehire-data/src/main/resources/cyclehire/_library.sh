@@ -16,19 +16,19 @@ fi
 function _download_archive() {
 	cd $DIR_BASE/tar
 	rm -rvf *$DATA_SET_TAR_PART.tar.gz
-	wget -e robots=off -N -np -nH -nd -r -l 1 -A .tar.gz $DATA_SET_ARCHIVE_URL/$DATA_SET/tar
+	wget --wait=0.5 --waitretry=10 --random-wait --timeout=2 -e robots=off -N -np -nH -nd -r -l 1 -A .tar.gz $DATA_SET_ARCHIVE_URL/$DATA_SET/tar
 }
 
 function _download_archive_snapshot() {
 	_download_archive
 	cd $DIR_BASE/$DATA_SET_FORMAT
 	rm -rvf *.$DATA_SET_FORMAT
-	wget -e robots=off -N -np -nH -nd -r -l 1 -A .$DATA_SET_FORMAT $DATA_SET_ARCHIVE_URL/$DATA_SET/$DATA_SET_FORMAT
+	wget --wait=0.5 --waitretry=10 --random-wait --timeout=2 -e robots=off -N -np -nH -nd -r -l 1 -A .$DATA_SET_FORMAT $DATA_SET_ARCHIVE_URL/$DATA_SET/$DATA_SET_FORMAT
 }
 
 function _download_snapshot() {
 	cd $DIR_BASE/$DATA_SET_FORMAT
-	wget -T 10 -t 1 -O $(date +%s)_$DATA_SET_NAME.$DATA_SET_FORMAT $DATA_SET_URL
+	wget --wait=0.5 --waitretry=10 --random-wait --timeout=2 -T 10 -t 1 -O $(date +%s)_$DATA_SET_NAME.$DATA_SET_FORMAT $DATA_SET_URL
 }
 
 function _archive_snapshot() {

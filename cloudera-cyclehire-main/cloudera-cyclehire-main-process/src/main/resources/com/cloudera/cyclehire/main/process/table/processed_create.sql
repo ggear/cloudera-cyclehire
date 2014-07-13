@@ -6,6 +6,8 @@
 -- Cyclehire Processed Delimited
 --
 CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.table.modifier} (
+  getDate BIGINT,
+  updateDate BIGINT,
   id INT,
   name STRING,
   terminal STRING,
@@ -13,12 +15,13 @@ CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.tab
   longitude FLOAT,
   installed BOOLEAN,
   locked BOOLEAN,
-  installDate STRING,
-  removalDate STRING,
+  installDate BIGINT,
+  removalDate BIGINT,
   temporary BOOLEAN,
   bikes INT,
   empty INT,
-  docks INT
+  docks INT,
+  source STRING
 )
 COMMENT 'TFL Cyclehire data (${hiveconf:cyclehire.table.modifier})'
 PARTITIONED BY (
@@ -30,4 +33,3 @@ STORED AS SEQUENCEFILE
 LOCATION '${hiveconf:cyclehire.table.location}';
 
 MSCK REPAIR TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier};
-

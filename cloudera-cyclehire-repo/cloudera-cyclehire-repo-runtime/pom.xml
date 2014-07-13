@@ -71,7 +71,6 @@
 										dir="${project.build.directory}/${project.runtime-test-dir}/hadoop/bin-mapreduce1" />
 								</copy>
 							</target>
-							<skip>${maven.test.skip}</skip>
 						</configuration>
 						<goals>
 							<goal>run</goal>

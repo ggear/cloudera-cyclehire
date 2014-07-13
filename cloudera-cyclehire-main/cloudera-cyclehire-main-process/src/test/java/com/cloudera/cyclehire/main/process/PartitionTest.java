@@ -69,7 +69,7 @@ public class PartitionTest extends BaseTest {
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED)
+            Counter.BATCHES_TODO)
             + partitionDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
@@ -80,7 +80,7 @@ public class PartitionTest extends BaseTest {
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED)
+            Counter.PARTITIONS_TODO)
             + partitionDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
@@ -109,7 +109,7 @@ public class PartitionTest extends BaseTest {
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED)
+            Counter.BATCHES_TODO)
             + partitionDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
@@ -117,7 +117,7 @@ public class PartitionTest extends BaseTest {
                 PartitionDriver.class.getCanonicalName(),
                 Counter.BATCHES_SUCCESSFUL));
     Assert.assertTrue(partitionDriver.getCounter(
-        PartitionDriver.class.getCanonicalName(), Counter.BATCHES_SKIPPED)
+        PartitionDriver.class.getCanonicalName(), Counter.BATCHES_TODO)
         .longValue() > 0);
     Assert.assertTrue(partitionDriver.getCounter(
         PartitionDriver.class.getCanonicalName(), Counter.BATCHES_FAILED) > 0);
@@ -131,7 +131,7 @@ public class PartitionTest extends BaseTest {
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED)
+            Counter.PARTITIONS_TODO)
             + partitionDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
@@ -139,7 +139,7 @@ public class PartitionTest extends BaseTest {
                 PartitionDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_SUCCESSFUL));
     Assert.assertTrue(partitionDriver.getCounter(
-        PartitionDriver.class.getCanonicalName(), Counter.PARTITIONS_SKIPPED)
+        PartitionDriver.class.getCanonicalName(), Counter.PARTITIONS_TODO)
         .longValue() > 0);
     Assert
         .assertTrue(partitionDriver.getCounter(
@@ -164,7 +164,7 @@ public class PartitionTest extends BaseTest {
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED)
+            Counter.BATCHES_TODO)
             + partitionDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
@@ -174,7 +174,7 @@ public class PartitionTest extends BaseTest {
     Assert.assertEquals(
         batchesCount,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED).longValue());
+            Counter.BATCHES_TODO).longValue());
     Assert.assertEquals(
         0L,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
@@ -191,7 +191,7 @@ public class PartitionTest extends BaseTest {
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED)
+            Counter.PARTITIONS_TODO)
             + partitionDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
@@ -201,7 +201,7 @@ public class PartitionTest extends BaseTest {
     Assert.assertEquals(
         partitionsCount,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED).longValue());
+            Counter.PARTITIONS_TODO).longValue());
     Assert.assertEquals(
         0L,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
@@ -239,7 +239,7 @@ public class PartitionTest extends BaseTest {
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED)
+            Counter.BATCHES_TODO)
             + partitionDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
@@ -249,7 +249,7 @@ public class PartitionTest extends BaseTest {
     Assert.assertEquals(
         batchesCount - 1,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED).longValue());
+            Counter.BATCHES_TODO).longValue());
     Assert.assertEquals(
         0L,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
@@ -266,7 +266,7 @@ public class PartitionTest extends BaseTest {
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED)
+            Counter.PARTITIONS_TODO)
             + partitionDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
@@ -276,7 +276,7 @@ public class PartitionTest extends BaseTest {
     Assert.assertEquals(
         partitionsCount - 1,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED).longValue());
+            Counter.PARTITIONS_TODO).longValue());
     Assert.assertEquals(
         0L,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),

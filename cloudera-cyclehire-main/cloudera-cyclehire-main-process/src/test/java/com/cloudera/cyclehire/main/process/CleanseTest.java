@@ -87,7 +87,7 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED)
+            Counter.BATCHES_TODO)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -114,13 +114,13 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED)
+            Counter.BATCHES_TODO)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.BATCHES_SUCCESSFUL));
     Assert.assertTrue(cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.BATCHES_SKIPPED)
+        CleanseDriver.class.getCanonicalName(), Counter.BATCHES_TODO)
         .longValue() > 0);
     Assert.assertEquals(new Long(0), cleanseDriver.getCounter(
         CleanseDriver.class.getCanonicalName(), Counter.BATCHES_FAILED));
@@ -133,13 +133,13 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED)
+            Counter.PARTITIONS_TODO)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_SUCCESSFUL));
     Assert.assertTrue(cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.PARTITIONS_SKIPPED)
+        CleanseDriver.class.getCanonicalName(), Counter.PARTITIONS_TODO)
         .longValue() > 0);
     Assert.assertEquals(new Long(0), cleanseDriver.getCounter(
         CleanseDriver.class.getCanonicalName(), Counter.PARTITIONS_FAILED));
@@ -180,7 +180,7 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED)
+            Counter.BATCHES_TODO)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -188,7 +188,7 @@ public class CleanseTest extends BaseTest {
     Assert.assertEquals(
         batchesCount,
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED).longValue());
+            Counter.BATCHES_TODO).longValue());
     Assert.assertEquals(
         0L,
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -205,7 +205,7 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED)
+            Counter.PARTITIONS_TODO)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -213,7 +213,7 @@ public class CleanseTest extends BaseTest {
     Assert.assertEquals(
         partitionsCount,
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED).longValue());
+            Counter.PARTITIONS_TODO).longValue());
     Assert.assertEquals(
         0L,
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -273,7 +273,7 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED)
+            Counter.BATCHES_TODO)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -281,7 +281,7 @@ public class CleanseTest extends BaseTest {
     Assert.assertEquals(
         batchesCount - 1,
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED).longValue());
+            Counter.BATCHES_TODO).longValue());
     Assert.assertEquals(
         0L,
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -298,7 +298,7 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED)
+            Counter.PARTITIONS_TODO)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -306,7 +306,7 @@ public class CleanseTest extends BaseTest {
     Assert.assertEquals(
         partitionsCount - 1,
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED).longValue());
+            Counter.PARTITIONS_TODO).longValue());
     Assert.assertEquals(
         0L,
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),

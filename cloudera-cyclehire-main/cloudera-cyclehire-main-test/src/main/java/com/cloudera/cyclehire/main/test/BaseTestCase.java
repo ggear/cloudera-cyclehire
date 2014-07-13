@@ -3,7 +3,6 @@ package com.cloudera.cyclehire.main.test;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +14,6 @@ import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.permission.FsPermission;
 
 import com.cloudera.cyclehire.data.DataConstants;
-import com.google.common.io.Files;
 
 public abstract class BaseTestCase implements BaseTest {
 
@@ -122,23 +120,6 @@ public abstract class BaseTestCase implements BaseTest {
     return pathRelativeToHDFSRootLessLeadingSlashes.equals("") ? PATH_HDFS
         : new Path(PATH_HDFS, pathRelativeToHDFSRootLessLeadingSlashes).toUri()
             .toString();
-  }
-
-  public static void addJartoHadoopClasspath(Class<?> clazz) {
-    try {
-      File source = new File(clazz.getProtectionDomain().getCodeSource()
-          .getLocation().toURI());
-      File destination = new File(System.getenv(ENV_HADOOP_HOME), "lib");
-      if (destination.exists() && destination.isDirectory()
-          && destination.canWrite()) {
-        Files.copy(source, new File(destination, source.getName()));
-      } else {
-        throw new RuntimeException("Could copy JAR [" + source
-            + "] to Hadoop lib [" + destination + "]");
-      }
-    } catch (IOException | URISyntaxException exception) {
-      throw new RuntimeException("Could not add JAR to classpath", exception);
-    }
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })

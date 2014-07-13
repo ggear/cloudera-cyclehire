@@ -126,11 +126,7 @@ public class CopyTest extends EmbeddedCoreTestCase {
     Assert.assertEquals(
         0L,
         copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-            Counter.FILES_PENDING).longValue());
-    Assert.assertEquals(
-        0L,
-        copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-            Counter.FILES_SKIPPED).longValue());
+            Counter.FILES_TODO).longValue());
     Assert.assertEquals(
         0L,
         copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
@@ -154,13 +150,9 @@ public class CopyTest extends EmbeddedCoreTestCase {
         BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
     Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
     Assert.assertEquals(
-        0L,
-        copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-            Counter.FILES_PENDING).longValue());
-    Assert.assertEquals(
         fileCountInput,
         copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-            Counter.FILES_SKIPPED).longValue());
+            Counter.FILES_TODO).longValue());
     Assert.assertEquals(
         0L,
         copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
@@ -176,13 +168,13 @@ public class CopyTest extends EmbeddedCoreTestCase {
 
     copyDriver.reset();
 
-    Path dirSkipped = fileOutputs.get(0).getParent();
+    Path dirTodo = fileOutputs.get(0).getParent();
     int fileCountSuccessful = HDFSClientUtil.listFiles(getFileSystem(),
-        dirSkipped, true).size() / 2;
+        dirTodo, true).size() / 2;
     int fileCountFailed = 2;
-    int fileCountSkipped = fileOutputs.size() / 2 - fileCountSuccessful
+    int fileCountTodo = fileOutputs.size() / 2 - fileCountSuccessful
         - fileCountFailed;
-    getFileSystem().delete(dirSkipped, true);
+    getFileSystem().delete(dirTodo, true);
     getFileSystem().delete(fileOutputs.get(fileOutputs.size() - 4), true);
     getFileSystem().delete(fileOutputs.get(fileOutputs.size() - 1), true);
     Assert.assertEquals(
@@ -194,13 +186,9 @@ public class CopyTest extends EmbeddedCoreTestCase {
     Assert.assertEquals(fileCountInput * 2 - fileCountFailed,
         fileOutputs.size());
     Assert.assertEquals(
-        0L,
+        fileCountTodo,
         copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-            Counter.FILES_PENDING).longValue());
-    Assert.assertEquals(
-        fileCountSkipped,
-        copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-            Counter.FILES_SKIPPED).longValue());
+            Counter.FILES_TODO).longValue());
     Assert.assertEquals(
         fileCountFailed,
         copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
@@ -238,11 +226,7 @@ public class CopyTest extends EmbeddedCoreTestCase {
       Assert.assertEquals(
           0L,
           copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-              Counter.FILES_PENDING).longValue());
-      Assert.assertEquals(
-          0L,
-          copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-              Counter.FILES_SKIPPED).longValue());
+              Counter.FILES_TODO).longValue());
       Assert.assertEquals(
           0L,
           copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
@@ -270,13 +254,9 @@ public class CopyTest extends EmbeddedCoreTestCase {
           BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
       Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
       Assert.assertEquals(
-          0L,
-          copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-              Counter.FILES_PENDING).longValue());
-      Assert.assertEquals(
           fileCountInput,
           copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-              Counter.FILES_SKIPPED).longValue());
+              Counter.FILES_TODO).longValue());
       Assert.assertEquals(
           0L,
           copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
@@ -292,16 +272,16 @@ public class CopyTest extends EmbeddedCoreTestCase {
 
       copyDriver.reset();
 
-      Path dirSkipped = getFileSystem().listStatus(
+      Path dirTodo = getFileSystem().listStatus(
           getFileSystem().listStatus(
               new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDED))[0].getPath())[0]
           .getPath();
       int fileCountSuccessful = HDFSClientUtil.listFiles(getFileSystem(),
-          dirSkipped, true).size() / 2;
+          dirTodo, true).size() / 2;
       int fileCountFailed = 2;
-      int fileCountSkipped = fileOutputs.size() / 2 - fileCountSuccessful
+      int fileCountTodo = fileOutputs.size() / 2 - fileCountSuccessful
           - fileCountFailed;
-      getFileSystem().delete(dirSkipped, true);
+      getFileSystem().delete(dirTodo, true);
       getFileSystem().delete(fileOutputs.get(fileOutputs.size() - 4), true);
       getFileSystem().delete(fileOutputs.get(fileOutputs.size() - 1), true);
       Assert.assertEquals(
@@ -317,13 +297,9 @@ public class CopyTest extends EmbeddedCoreTestCase {
       Assert.assertEquals(fileCountInput * 2 - fileCountFailed,
           fileOutputs.size());
       Assert.assertEquals(
-          0L,
+          fileCountTodo,
           copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-              Counter.FILES_PENDING).longValue());
-      Assert.assertEquals(
-          fileCountSkipped,
-          copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-              Counter.FILES_SKIPPED).longValue());
+              Counter.FILES_TODO).longValue());
       Assert.assertEquals(
           fileCountFailed,
           copyDriver.getCounter(CopyDriver.class.getCanonicalName(),

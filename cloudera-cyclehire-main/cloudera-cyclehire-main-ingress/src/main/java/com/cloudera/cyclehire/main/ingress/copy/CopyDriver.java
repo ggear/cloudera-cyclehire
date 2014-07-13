@@ -78,9 +78,8 @@ public class CopyDriver extends Driver {
   @Override
   public void reset() {
     super.reset();
-    for (Counter counter : new Counter[] { Counter.FILES_PENDING,
-        Counter.FILES_SKIPPED, Counter.FILES_FAILED, Counter.FILES_SUCCESSFUL,
-        Counter.FILES }) {
+    for (Counter counter : new Counter[] { Counter.FILES_TODO,
+        Counter.FILES_FAILED, Counter.FILES_SUCCESSFUL, Counter.FILES }) {
       incrementCounter(counter, 0);
     }
     localLandedFileSets = new ArrayList<FileSetCopy>();
@@ -249,7 +248,7 @@ public class CopyDriver extends Driver {
     }
 
     public void addFile(File file) {
-      files.put(file, Counter.FILES_PENDING);
+      files.put(file, Counter.FILES_TODO);
     }
 
     @Override
@@ -272,7 +271,7 @@ public class CopyDriver extends Driver {
                   : getConf().getLong("fs.local.block.size", 33554432L))) {
             files.put(file, Counter.FILES_SUCCESSFUL);
           } else {
-            files.put(file, Counter.FILES_SKIPPED);
+            files.put(file, Counter.FILES_TODO);
           }
         } catch (Exception exception) {
           files.put(file, Counter.FILES_FAILED);

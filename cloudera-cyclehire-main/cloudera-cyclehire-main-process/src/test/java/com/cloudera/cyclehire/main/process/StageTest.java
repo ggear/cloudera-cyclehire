@@ -61,7 +61,7 @@ public class StageTest extends BaseTest {
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.FILES_SKIPPED)
+            Counter.FILES_TODO)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -70,7 +70,7 @@ public class StageTest extends BaseTest {
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED)
+            Counter.BATCHES_TODO)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -79,7 +79,7 @@ public class StageTest extends BaseTest {
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED)
+            Counter.PARTITIONS_TODO)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -107,13 +107,13 @@ public class StageTest extends BaseTest {
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.FILES_SKIPPED)
+            Counter.FILES_TODO)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.FILES_SUCCESSFUL));
     Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.FILES_SKIPPED) > 0);
+        StageDriver.class.getCanonicalName(), Counter.FILES_TODO) > 0);
     Assert.assertTrue(stageDriver.getCounter(
         StageDriver.class.getCanonicalName(), Counter.FILES_FAILED) > 0);
     Assert.assertTrue(stageDriver.getCounter(
@@ -124,13 +124,13 @@ public class StageTest extends BaseTest {
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED)
+            Counter.BATCHES_TODO)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.BATCHES_SUCCESSFUL));
     Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.BATCHES_SKIPPED) > 0);
+        StageDriver.class.getCanonicalName(), Counter.BATCHES_TODO) > 0);
     Assert.assertTrue(stageDriver.getCounter(
         StageDriver.class.getCanonicalName(), Counter.BATCHES_FAILED) > 0);
     Assert.assertTrue(stageDriver.getCounter(
@@ -141,13 +141,13 @@ public class StageTest extends BaseTest {
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED)
+            Counter.PARTITIONS_TODO)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_SUCCESSFUL));
     Assert.assertTrue(stageDriver.getCounter(
-        StageDriver.class.getCanonicalName(), Counter.PARTITIONS_SKIPPED) > 0);
+        StageDriver.class.getCanonicalName(), Counter.PARTITIONS_TODO) > 0);
     Assert.assertTrue(stageDriver.getCounter(
         StageDriver.class.getCanonicalName(), Counter.PARTITIONS_FAILED) > 0);
     Assert
@@ -167,7 +167,7 @@ public class StageTest extends BaseTest {
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.FILES_SKIPPED)
+            Counter.FILES_TODO)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -175,7 +175,7 @@ public class StageTest extends BaseTest {
     Assert.assertEquals(
         filesCount,
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.FILES_SKIPPED).longValue());
+            Counter.FILES_TODO).longValue());
     Assert.assertEquals(
         0L,
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -192,7 +192,7 @@ public class StageTest extends BaseTest {
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED)
+            Counter.BATCHES_TODO)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -200,7 +200,7 @@ public class StageTest extends BaseTest {
     Assert.assertEquals(
         batchesCount,
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED).longValue());
+            Counter.BATCHES_TODO).longValue());
     Assert.assertEquals(
         0L,
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -217,7 +217,7 @@ public class StageTest extends BaseTest {
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED)
+            Counter.PARTITIONS_TODO)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -225,7 +225,7 @@ public class StageTest extends BaseTest {
     Assert.assertEquals(
         partitionsCount,
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED).longValue());
+            Counter.PARTITIONS_TODO).longValue());
     Assert.assertEquals(
         0L,
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -258,7 +258,7 @@ public class StageTest extends BaseTest {
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.FILES_SKIPPED)
+            Counter.FILES_TODO)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -266,7 +266,7 @@ public class StageTest extends BaseTest {
     Assert.assertEquals(
         filesCount - filesCountDeleted,
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.FILES_SKIPPED).longValue());
+            Counter.FILES_TODO).longValue());
     Assert.assertEquals(
         0L,
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -283,7 +283,7 @@ public class StageTest extends BaseTest {
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED)
+            Counter.BATCHES_TODO)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -291,7 +291,7 @@ public class StageTest extends BaseTest {
     Assert.assertEquals(
         batchesCount - 1,
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.BATCHES_SKIPPED).longValue());
+            Counter.BATCHES_TODO).longValue());
     Assert.assertEquals(
         0L,
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -308,7 +308,7 @@ public class StageTest extends BaseTest {
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED)
+            Counter.PARTITIONS_TODO)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + stageDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -316,7 +316,7 @@ public class StageTest extends BaseTest {
     Assert.assertEquals(
         partitionsCount - 1,
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_SKIPPED).longValue());
+            Counter.PARTITIONS_TODO).longValue());
     Assert.assertEquals(
         0L,
         stageDriver.getCounter(StageDriver.class.getCanonicalName(),
