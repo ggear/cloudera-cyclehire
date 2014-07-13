@@ -1,8 +1,13 @@
 package com.cloudera.cyclehire.main.process;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.hadoop.hive.conf.HiveConf;
+import org.apache.hadoop.mapreduce.MRJobConfig;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,10 +23,12 @@ import com.google.common.collect.ImmutableMap;
 
 public class TableTest extends EmbeddedHiveTestCase {
 
-  private static final String PATH_HDFS_DIR_PARTITIONED = PATH_LOCAL_WORKING_DIR
-      + '/' + BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED + '/';
-  private static final String PATH_HDFS_DIR_PROCESSED = PATH_LOCAL_WORKING_DIR
-      + '/' + BaseTestCase.PATH_HDFS_DIR_PROCESSED + '/';
+  private static final String PATH_HDFS_DIR_PARTITIONED = "file://"
+      + PATH_LOCAL_WORKING_DIR + '/'
+      + BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED + '/';
+  private static final String PATH_HDFS_DIR_PROCESSED = "file://"
+      + PATH_LOCAL_WORKING_DIR + '/' + BaseTestCase.PATH_HDFS_DIR_PROCESSED
+      + '/';
 
   private static final Map<Counter, String[]> TABLES = ImmutableMap.of(
       Counter.BATCHES_SUCCESSFUL, new String[] { PATH_HDFS_DIR_PARTITIONED,
@@ -34,6 +41,28 @@ public class TableTest extends EmbeddedHiveTestCase {
           Table.DDL_LOCATION_PROCESSED_CREATE }, Counter.RECORDS_MALFORMED,
       new String[] { PATH_HDFS_DIR_PROCESSED,
           Table.DDL_LOCATION_PROCESSED_CREATE });
+
+  @SuppressWarnings("serial")
+  List<String[]> TABLES_REWRITE = new ArrayList<String[]>() {
+    {
+      add(new String[] { Counter.RECORDS_REWRITE.getPath(),
+          PATH_HDFS_DIR_PROCESSED,
+          Table.DDL_LOCATION_PROCESSED_REWRITE_SEQUENCE, "sequence", "false",
+          "none", "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK" });
+      add(new String[] { Counter.RECORDS_REWRITE.getPath(),
+          PATH_HDFS_DIR_PROCESSED,
+          Table.DDL_LOCATION_PROCESSED_REWRITE_SEQUENCE, "sequence", "true",
+          "snappy", "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK" });
+      add(new String[] { Counter.RECORDS_REWRITE.getPath(),
+          PATH_HDFS_DIR_PROCESSED, Table.DDL_LOCATION_PROCESSED_REWRITE_AVRO,
+          "avro", "false", "none", "org.apache.hadoop.io.compress.SnappyCodec",
+          "BLOCK" });
+      add(new String[] { Counter.RECORDS_REWRITE.getPath(),
+          PATH_HDFS_DIR_PROCESSED, Table.DDL_LOCATION_PROCESSED_REWRITE_AVRO,
+          "avro", "true", "snappy",
+          "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK" });
+    }
+  };
 
   public TableTest() throws IOException {
     super();
@@ -51,6 +80,9 @@ public class TableTest extends EmbeddedHiveTestCase {
             BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
             BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED,
             BaseTestCase.PATH_HDFS_DIR_PROCESSED }));
+    getConf().set(HiveConf.ConfVars.DYNAMICPARTITIONINGMODE.varname,
+        "nonstrict");
+    getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, "false");
   }
 
   @Test
@@ -69,6 +101,23 @@ public class TableTest extends EmbeddedHiveTestCase {
     }
     Assert
         .assertEquals(TABLES.size(), executeAndFetchAll("SHOW TABLES").size());
+
+    for (String[] attribute : TABLES_REWRITE) {
+      getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
+          attribute[0].replace('/', '_'));
+      getConf()
+          .set(
+              Table.DDL_CONFIG_TABLE_LOCATION,
+              attribute[1] + attribute[0] + '/' + attribute[3] + '/'
+                  + attribute[5]);
+      getConf().set(Table.DDL_CONFIG_TABLE_CODEC, attribute[5]);
+      getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, attribute[4]);
+      getConf().set(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, attribute[6]);
+      getConf().set(FileOutputFormat.COMPRESS_TYPE, attribute[7]);
+      execute(Table.DDL_LOCATION, attribute[2]);
+    }
+    Assert.assertEquals(TABLES.size() + TABLES_REWRITE.size(),
+        executeAndFetchAll("SHOW TABLES").size());
 
   }
 

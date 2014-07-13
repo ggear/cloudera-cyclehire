@@ -5,7 +5,7 @@
 CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.table.modifier} (
   getDate BIGINT,
   updateDate BIGINT,
-  id INT,
+  id SMALLINT,
   name STRING,
   terminal STRING,
   lattitude FLOAT,
@@ -15,15 +15,15 @@ CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.tab
   installDate BIGINT,
   removalDate BIGINT,
   temporary BOOLEAN,
-  bikes INT,
-  empty INT,
-  docks INT,
+  bikes SMALLINT,
+  empty SMALLINT,
+  docks SMALLINT,
   source STRING
 )
 COMMENT 'TFL Cyclehire processed data (${hiveconf:cyclehire.table.modifier})'
 PARTITIONED BY (
-  year INT,
-  month INT
+  year TINYINT,
+  month TINYINT
 )
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001'
 STORED AS SEQUENCEFILE

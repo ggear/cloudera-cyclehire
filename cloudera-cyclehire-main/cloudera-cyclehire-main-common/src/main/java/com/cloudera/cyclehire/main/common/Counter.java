@@ -13,7 +13,8 @@ public enum Counter {
 
   // Record counters
   RECORDS, RECORDS_CLEANSED("cleansed/canonical"), RECORDS_MALFORMED(
-      "erroneous/malformed"), RECORDS_DUPLICATE("erroneous/duplicate");
+      "erroneous/malformed"), RECORDS_DUPLICATE("erroneous/duplicate"), RECORDS_REWRITE(
+      "cleansed/rewrite");
 
   private String path = "";
 
