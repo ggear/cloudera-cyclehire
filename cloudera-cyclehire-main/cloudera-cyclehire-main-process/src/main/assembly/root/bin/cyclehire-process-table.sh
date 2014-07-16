@@ -7,33 +7,34 @@ export ROOT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..
 set -x
 
 CMD_LINE_ARGUMENTS="$1"
-ROOT_DIR_HDFS_PROCESSED=${2:-"$ROOT_DIR_HDFS_PROCESSED"}
+ROOT_DIR_HDFS_RAW_PARTITIONED=${2:-"$ROOT_DIR_HDFS_RAW_PARTITIONED"}
+ROOT_DIR_HDFS_PROCESSED=${3:-"$ROOT_DIR_HDFS_PROCESSED"}
 
 hive \
 	--hiveconf "cyclehire.table.modifier=valid" \
-	--hiveconf "cyclehire.table.location=$2/valid" \
+	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_RAW_PARTITIONED/valid/sequence/none" \
 	-f "$ROOT_DIR/lib/ddl/partitioned_create.ddl"
 
 hive \
 	--hiveconf "cyclehire.table.modifier=invalid" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/invalid" \
+	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_RAW_PARTITIONED/invalid/sequence/none" \
 	$CMD_LINE_ARGUMENTS \
 	-f "$ROOT_DIR/lib/ddl/partitioned_create.ddl"
 
-	hive \
+hive \
 	--hiveconf "cyclehire.table.modifier=cleansed_canonical" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/canonical" \
+	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/canonical/sequence/none" \
 	$CMD_LINE_ARGUMENTS \
 	-f "$ROOT_DIR/lib/ddl/processed_create.ddl"
 
 hive \
 	--hiveconf "cyclehire.table.modifier=erroneous_duplicate" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/erroneous/duplicate" \
+	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/erroneous/duplicate/sequence/none" \
 	$CMD_LINE_ARGUMENTS \
 	-f "$ROOT_DIR/lib/ddl/processed_create.ddl"
 
 hive \
 	--hiveconf "cyclehire.table.modifier=erroneous_malformed" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/erroneous/malformed" \
+	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/erroneous/malformed/sequence/none" \
 	$CMD_LINE_ARGUMENTS \
 	-f "$ROOT_DIR/lib/ddl/processed_create.ddl"
