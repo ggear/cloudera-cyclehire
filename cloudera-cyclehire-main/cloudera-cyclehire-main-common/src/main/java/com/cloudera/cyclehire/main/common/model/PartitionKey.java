@@ -252,7 +252,8 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
             || calendarMin.before(calendarMax)) {
           partitions.add(TOKEN_PARTITION_YEAR + "="
               + calendarMin.get(Calendar.YEAR) + "/" + TOKEN_PARTITION_MONTH
-              + "=" + (calendarMin.get(Calendar.MONTH) + 1));
+              + "="
+              + String.format("%02d", calendarMin.get(Calendar.MONTH) + 1));
           calendarMin.add(Calendar.MONTH, 1);
         }
       }

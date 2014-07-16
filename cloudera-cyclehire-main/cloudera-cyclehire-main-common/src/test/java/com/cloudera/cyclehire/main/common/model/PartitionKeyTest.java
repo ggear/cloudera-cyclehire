@@ -49,7 +49,7 @@ public class PartitionKeyTest {
     EPOCH_UPDATE = EPOCH_GET - 50000;
     Calendar calendar = PartitionKey.getCalendarMonth(EPOCH_GET);
     PARTITION.add("year=" + calendar.get(Calendar.YEAR) + "/month="
-        + (calendar.get(Calendar.MONTH) + 1));
+        + String.format("%02d", calendar.get(Calendar.MONTH) + 1));
     Matcher matcherBatch = PartitionKey.REGEX_BATCH.matcher(XML_REPO);
     matcherBatch.matches();
     PARTITION_EPOCH_MIN = 1000 * Long.parseLong(matcherBatch.group(1));
@@ -58,7 +58,7 @@ public class PartitionKeyTest {
     Calendar calendarMax = PartitionKey.getCalendarMonth(PARTITION_EPOCH_MAX);
     while (calendarMin.before(calendarMax)) {
       PARTITIONS.add("year=" + calendarMin.get(Calendar.YEAR) + "/month="
-          + (calendarMin.get(Calendar.MONTH) + 1));
+          + String.format("%02d", calendarMin.get(Calendar.MONTH) + 1));
       calendarMin.add(Calendar.MONTH, 1);
     }
   }
