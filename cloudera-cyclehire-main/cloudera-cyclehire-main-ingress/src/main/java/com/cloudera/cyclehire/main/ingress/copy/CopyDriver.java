@@ -264,11 +264,15 @@ public class CopyDriver extends Driver {
         Path fileFrom = new Path(file.getAbsolutePath());
         Path fileTo = new Path(dirTo, fileName);
         try {
+          int bytesPerChecksum = getConf().getInt("io.bytes.per.checksum", 512);
+          long bytesPerBlock = getConf().getLong("fs.local.block.size",
+              128000000L / bytesPerChecksum * bytesPerChecksum);
           if (HDFSClientUtil.copyFromLocalFile(hdfs, fileFrom, fileTo, true,
               fileSize, getConf().getInt("io.file.buffer.size", 8192),
               getConf().getInt("dfs.replication", 3),
-              getConf().getBoolean(CONF_BLOCK_SINGLE, false) ? fileSize + 1024
-                  : getConf().getLong("fs.local.block.size", 33554432L))) {
+              getConf().getBoolean(CONF_BLOCK_SINGLE, false) ? (fileSize
+                  / bytesPerBlock + 1)
+                  * bytesPerBlock : bytesPerBlock)) {
             files.put(file, Counter.FILES_SUCCESSFUL);
           } else {
             files.put(file, Counter.FILES_TODO);

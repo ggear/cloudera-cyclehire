@@ -175,43 +175,6 @@ public class TableTest extends EmbeddedHiveTestCase {
           .size() >= 0);
     }
 
-    getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, "false");
-
-    for (String[] attribute : TABLES) {
-      getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
-          attribute[0].replace('/', '_'));
-      getConf().set(
-          Table.DDL_CONFIG_TABLE_LOCATION,
-          attribute[1] + attribute[0] + '/' + PartitionDriver.OUTPUT_FORMAT
-              + '/' + MapReduceUtil.getCodecString(getConf()));
-      execute(Table.DDL_LOCATION, attribute[2]);
-    }
-
-    for (String[] attribute : TABLES_REWRITE) {
-      getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
-          attribute[0].replace('/', '_'));
-      getConf()
-          .set(
-              Table.DDL_CONFIG_TABLE_LOCATION,
-              attribute[1] + attribute[0] + '/' + attribute[3] + '/'
-                  + attribute[5]);
-      getConf().set(Table.DDL_CONFIG_TABLE_CODEC, attribute[5]);
-      getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, attribute[4]);
-      getConf().set(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, attribute[6]);
-      getConf().set(ParquetOutputFormat.COMPRESSION, attribute[8]);
-      getConf().set(FileOutputFormat.COMPRESS_TYPE, attribute[7]);
-      execute(Table.DDL_LOCATION, attribute[2]);
-    }
-
-    Assert.assertEquals(TABLES.size() + TABLES_REWRITE.size(),
-        executeAndFetchAll("SHOW TABLES").size());
-    for (String table : executeAndFetchAll("SHOW TABLES")) {
-      Assert
-          .assertTrue(executeAndFetchAll("SHOW PARTITIONS " + table).size() >= 0);
-      Assert.assertTrue(executeAndFetchAll("SELECT count(1) FROM " + table)
-          .size() >= 0);
-    }
-
   }
 
 }

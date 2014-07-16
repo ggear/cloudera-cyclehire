@@ -9,13 +9,15 @@ set -x
 CMD_LINE_ARGUMENTS="$1"
 ROOT_DIR_LOCAL_TAR=${2:-"$ROOT_DIR_LOCAL_TAR"}
 ROOT_DIR_HDFS_RAW_LANDED=${3:-"$ROOT_DIR_HDFS_RAW_LANDED"}
+LIBJARS="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /,/g')"
+export HADOOP_CLASSPATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
 
 hadoop \
-	jar "$ROOT_DIR/lib/jar/cloudera-cyclehire-main-ingress-*.jar" \
-	-libjars "$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /,/g')" \
-	com.cloudera.cyclehire.main.process.clean.CopyDriver \
+	jar "$ROOT_DIR"/lib/jar/cloudera-cyclehire-main-ingress-*.jar \
+	com.cloudera.cyclehire.main.ingress.copy.CopyDriver \
+	-libjars "$LIBJARS" \
 	-Ddir.include=false \
-	-Dblock.single=true \
+	-Dblock.single=false \
 	-Dtimeout.secs=1000 \
 	-Dthread.number=3 \
 	-Dthread.queue=file \
