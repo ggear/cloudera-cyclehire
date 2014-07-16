@@ -13,6 +13,14 @@
 		<version>0.0.2-SNAPSHOT</version>
 	</parent>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.twitter</groupId>
+			<artifactId>parquet-hadoop-bundle</artifactId>
+			<version>${hadoop-parquet.version}</version>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -75,6 +83,22 @@
 						<goals>
 							<goal>run</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/${project.runtime-test-dir}/hadoop/lib</outputDirectory>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

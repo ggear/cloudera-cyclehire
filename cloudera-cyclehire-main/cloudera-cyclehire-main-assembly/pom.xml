@@ -19,6 +19,14 @@
 			<artifactId>cloudera-cyclehire-main-ingress</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
 			<classifier>assembly</classifier>
+			<type>tar.gz</type>
+		</dependency>
+		<dependency>
+			<groupId>com.cloudera.cyclehire.main</groupId>
+			<artifactId>cloudera-cyclehire-main-process</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+			<classifier>assembly</classifier>
+			<type>tar.gz</type>
 		</dependency>
 	</dependencies>
 

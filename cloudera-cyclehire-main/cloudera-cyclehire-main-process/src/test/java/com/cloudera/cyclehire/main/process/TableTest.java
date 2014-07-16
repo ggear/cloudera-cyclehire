@@ -11,6 +11,8 @@ import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import parquet.hadoop.ParquetOutputFormat;
+
 import com.cloudera.cyclehire.main.common.Counter;
 import com.cloudera.cyclehire.main.common.Driver;
 import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
@@ -29,7 +31,7 @@ public class TableTest extends EmbeddedHiveTestCase {
       + '/';
 
   @SuppressWarnings("serial")
-  List<String[]> TABLES = new ArrayList<String[]>() {
+  private static final List<String[]> TABLES = new ArrayList<String[]>() {
     {
       add(new String[] { Counter.BATCHES_SUCCESSFUL.getPath(),
           PATH_HDFS_DIR_PARTITIONED, Table.DDL_LOCATION_PARTITIONED_CREATE });
@@ -45,24 +47,34 @@ public class TableTest extends EmbeddedHiveTestCase {
   };
 
   @SuppressWarnings("serial")
-  List<String[]> TABLES_REWRITE = new ArrayList<String[]>() {
+  private static final List<String[]> TABLES_REWRITE = new ArrayList<String[]>() {
     {
       add(new String[] { Counter.RECORDS_REWRITE.getPath(),
           PATH_HDFS_DIR_PROCESSED,
           Table.DDL_LOCATION_PROCESSED_REWRITE_SEQUENCE, "sequence", "false",
-          "none", "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK" });
+          "none", "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK",
+          "UNCOMPRESSED" });
       add(new String[] { Counter.RECORDS_REWRITE.getPath(),
           PATH_HDFS_DIR_PROCESSED,
           Table.DDL_LOCATION_PROCESSED_REWRITE_SEQUENCE, "sequence", "true",
-          "snappy", "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK" });
+          "lz4", "org.apache.hadoop.io.compress.Lz4Codec", "BLOCK", "LZ4" });
       add(new String[] { Counter.RECORDS_REWRITE.getPath(),
           PATH_HDFS_DIR_PROCESSED, Table.DDL_LOCATION_PROCESSED_REWRITE_AVRO,
           "avro", "false", "none", "org.apache.hadoop.io.compress.SnappyCodec",
-          "BLOCK" });
+          "BLOCK", "UNCOMPRESSED" });
       add(new String[] { Counter.RECORDS_REWRITE.getPath(),
           PATH_HDFS_DIR_PROCESSED, Table.DDL_LOCATION_PROCESSED_REWRITE_AVRO,
           "avro", "true", "snappy",
-          "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK" });
+          "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK", "SNAPPY" });
+      add(new String[] { Counter.RECORDS_REWRITE.getPath(),
+          PATH_HDFS_DIR_PROCESSED,
+          Table.DDL_LOCATION_PROCESSED_REWRITE_PARQUET, "parquet", "false",
+          "none", "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK",
+          "UNCOMPRESSED" });
+      add(new String[] { Counter.RECORDS_REWRITE.getPath(),
+          PATH_HDFS_DIR_PROCESSED,
+          Table.DDL_LOCATION_PROCESSED_REWRITE_PARQUET, "parquet", "true",
+          "gzip", "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK", "GZIP" });
     }
   };
 
@@ -114,6 +126,7 @@ public class TableTest extends EmbeddedHiveTestCase {
       getConf().set(Table.DDL_CONFIG_TABLE_CODEC, attribute[5]);
       getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, attribute[4]);
       getConf().set(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, attribute[6]);
+      getConf().set(ParquetOutputFormat.COMPRESSION, attribute[8]);
       getConf().set(FileOutputFormat.COMPRESS_TYPE, attribute[7]);
       execute(Table.DDL_LOCATION, attribute[2]);
     }
@@ -148,6 +161,7 @@ public class TableTest extends EmbeddedHiveTestCase {
       getConf().set(Table.DDL_CONFIG_TABLE_CODEC, attribute[5]);
       getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, attribute[4]);
       getConf().set(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, attribute[6]);
+      getConf().set(ParquetOutputFormat.COMPRESSION, attribute[8]);
       getConf().set(FileOutputFormat.COMPRESS_TYPE, attribute[7]);
       execute(Table.DDL_LOCATION, attribute[2]);
     }
@@ -184,6 +198,7 @@ public class TableTest extends EmbeddedHiveTestCase {
       getConf().set(Table.DDL_CONFIG_TABLE_CODEC, attribute[5]);
       getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, attribute[4]);
       getConf().set(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, attribute[6]);
+      getConf().set(ParquetOutputFormat.COMPRESSION, attribute[8]);
       getConf().set(FileOutputFormat.COMPRESS_TYPE, attribute[7]);
       execute(Table.DDL_LOCATION, attribute[2]);
     }

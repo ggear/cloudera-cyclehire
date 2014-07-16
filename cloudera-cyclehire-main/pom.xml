@@ -17,7 +17,7 @@
 		<module>cloudera-cyclehire-main-common</module>
 		<module>cloudera-cyclehire-main-ingress</module>
 		<module>cloudera-cyclehire-main-process</module>
-		<module>cloudera-cyclehire-main-science</module>
+		<module>cloudera-cyclehire-main-query</module>
 		<module>cloudera-cyclehire-main-egress</module>
 		<module>cloudera-cyclehire-main-assembly</module>
 		<module>cloudera-cyclehire-main-test-system</module>

@@ -53,7 +53,7 @@ public class CleanseDriver extends Driver {
 
   private Path inputStagedPath;
   private Path inputPartitionedPath;
-  private Path inputCleansedPath;
+  private Path inputProcessedPath;
 
   public CleanseDriver() {
     super();
@@ -76,7 +76,7 @@ public class CleanseDriver extends Driver {
   @Override
   public String[] paramaters() {
     return new String[] { "hdfs-dir-staged", "hdfs-dir-partitioned",
-        "hdfs-dir-cleansed" };
+        "hdfs-dir-processed" };
   }
 
   @Override
@@ -124,25 +124,26 @@ public class CleanseDriver extends Driver {
           + "] validated");
     }
 
-    inputCleansedPath = new Path(arguments[2]);
-    if (hdfs.exists(inputCleansedPath)) {
-      if (!hdfs.isDirectory(inputCleansedPath)) {
-        throw new Exception("HDFS cleansed directory [" + inputCleansedPath
+    inputProcessedPath = new Path(arguments[2]);
+    if (hdfs.exists(inputProcessedPath)) {
+      if (!hdfs.isDirectory(inputProcessedPath)) {
+        throw new Exception("HDFS processed directory [" + inputProcessedPath
             + "] is not a directory");
       }
       if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
           .getCurrentUser().getUserName(), UserGroupInformation
-          .getCurrentUser().getGroupNames(), inputCleansedPath, FsAction.ALL)) {
-        throw new Exception("HDFS cleansed directory [" + inputCleansedPath
+          .getCurrentUser().getGroupNames(), inputProcessedPath, FsAction.ALL)) {
+        throw new Exception("HDFS processed directory [" + inputProcessedPath
             + "] has too restrictive permissions to read/write as user ["
             + UserGroupInformation.getCurrentUser().getUserName() + "]");
       }
     } else {
-      hdfs.mkdirs(inputCleansedPath, new FsPermission(FsAction.ALL,
+      hdfs.mkdirs(inputProcessedPath, new FsPermission(FsAction.ALL,
           FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
     }
     if (log.isInfoEnabled()) {
-      log.info("HDFS cleansed directory [" + inputCleansedPath + "] validated");
+      log.info("HDFS processed directory [" + inputProcessedPath
+          + "] validated");
     }
 
     return RETURN_SUCCESS;
@@ -171,7 +172,7 @@ public class CleanseDriver extends Driver {
                 Counter.RECORDS_DUPLICATE, Counter.RECORDS_CLEANSED }) {
               Path cleansedPath = new Path(new StringBuilder(
                   PartitionKey.PATH_NOMINAL_LENGTH)
-                  .append(inputCleansedPath)
+                  .append(inputProcessedPath)
                   .append('/')
                   .append(counter.getPath())
                   .append(
@@ -220,7 +221,7 @@ public class CleanseDriver extends Driver {
       job.setSortComparatorClass(ClenseReducerSorter.class);
       job.setReducerClass(ClenseReducer.class);
       LazyOutputFormatNoCheck.setOutputFormatClass(job, TextOutputFormat.class);
-      FileOutputFormat.setOutputPath(job, inputCleansedPath);
+      FileOutputFormat.setOutputPath(job, inputProcessedPath);
       SequenceFileOutputFormat.setOutputCompressionType(job,
           CompressionType.NONE);
       FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
@@ -246,7 +247,7 @@ public class CleanseDriver extends Driver {
       for (Counter counter : new Counter[] { Counter.RECORDS_MALFORMED,
           Counter.RECORDS_DUPLICATE, Counter.RECORDS_CLEANSED }) {
         Path cleansedPath = new Path(new StringBuilder(
-            PartitionKey.PATH_NOMINAL_LENGTH).append(inputCleansedPath)
+            PartitionKey.PATH_NOMINAL_LENGTH).append(inputProcessedPath)
             .append('/').append(counter.getPath())
             .append(partitionKey.getPathPartition()).toString());
         if (HDFSClientUtil.listFiles(hdfs, cleansedPath, false).size() > 0) {

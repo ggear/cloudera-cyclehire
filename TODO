@@ -8,8 +8,8 @@ Implementation:
 - Hive - batch reporting
 - Pig - batch transformation
 - Impala - discovery, reporting, joining
-- Spark - trending, corelations
-- Search - streaming, graph, mllib
+- Spark - streaming, graph, mllib
+- Search - address search
 - HBase - realtime lookup
 - Jetty - web-app, restful API
 - Navigator - metadata attach

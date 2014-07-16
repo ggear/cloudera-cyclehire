@@ -3,7 +3,7 @@
 --
 
 CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.table.modifier}_avro_${hiveconf:cyclehire.table.codec}
-COMMENT 'TFL Cyclehire processed data (cleansed/rewrite)'
+COMMENT 'TFL Cyclehire processed data (${hiveconf:cyclehire.table.modifier})'
 PARTITIONED BY (
   year TINYINT,
   month TINYINT

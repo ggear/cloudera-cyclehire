@@ -16,7 +16,7 @@ public class ProcessDriver extends Driver {
   private String inputLandedPath;
   private String inputStagedPath;
   private String inputPartitionedPath;
-  private String inputCleansedPath;
+  private String inputProcessedPath;
 
   public ProcessDriver() {
     super();
@@ -39,7 +39,7 @@ public class ProcessDriver extends Driver {
   @Override
   public String[] paramaters() {
     return new String[] { "hdfs-dir-landed", "hdfs-dir-staged",
-        "hdfs-dir-partitioned", "hdfs-dir-cleansed" };
+        "hdfs-dir-partitioned", "hdfs-dir-processed" };
   }
 
   @Override
@@ -66,7 +66,7 @@ public class ProcessDriver extends Driver {
     inputLandedPath = arguments[0];
     inputStagedPath = arguments[1];
     inputPartitionedPath = arguments[2];
-    inputCleansedPath = arguments[3];
+    inputProcessedPath = arguments[3];
 
     return RETURN_SUCCESS;
   }
@@ -84,7 +84,7 @@ public class ProcessDriver extends Driver {
       if ((returnValue = partitionDriver.run(new String[] { inputStagedPath,
           inputPartitionedPath })) == RETURN_SUCCESS) {
         returnValue = cleanseDriver.run(new String[] { inputStagedPath,
-            inputPartitionedPath, inputCleansedPath });
+            inputPartitionedPath, inputProcessedPath });
       }
     }
 

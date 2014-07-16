@@ -28,49 +28,22 @@
 	</fileSets>
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>/lib/ingest/lib</outputDirectory>
-			<fileMode>0644</fileMode>
-			<directoryMode>0755</directoryMode>
-			<includes>
-				<include>
-					com.cloudera.cyclehire.main:cloudera-cyclehire-main-ingress
-				</include>
-			</includes>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory>/lib/ingest</outputDirectory>
-			<fileMode>0755</fileMode>
-			<directoryMode>0755</directoryMode>
+			<outputDirectory>/lib/ingress</outputDirectory>
 			<includes>
 				<include>
 					com.cloudera.cyclehire.main:cloudera-cyclehire-main-ingress
 				</include>
 			</includes>
 			<unpack>true</unpack>
-			<unpackOptions>
-				<includes>
-					<include>**/*.sh</include>
-				</includes>
-			</unpackOptions>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>/lib/ingest</outputDirectory>
-			<fileMode>0644</fileMode>
-			<directoryMode>0755</directoryMode>
+			<outputDirectory>/lib/process</outputDirectory>
 			<includes>
 				<include>
-					com.cloudera.cyclehire.main:cloudera-cyclehire-main-ingress
+					com.cloudera.cyclehire.main:cloudera-cyclehire-main-process
 				</include>
 			</includes>
 			<unpack>true</unpack>
-			<unpackOptions>
-				<excludes>
-					<exclude>META-INF/**</exclude>
-					<exclude>org/**</exclude>
-					<exclude>com/**</exclude>
-					<exclude>**/**.class</exclude>
-				</excludes>
-			</unpackOptions>
 		</dependencySet>
 	</dependencySets>
 </assembly>
