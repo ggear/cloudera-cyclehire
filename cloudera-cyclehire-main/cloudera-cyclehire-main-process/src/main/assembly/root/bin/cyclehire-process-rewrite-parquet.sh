@@ -14,6 +14,6 @@ hive \
 	--hiveconf "parquet.compression=SNAPPY" \
 	--hiveconf "cyclehire.table.codec=snappy" \
 	--hiveconf "cyclehire.table.modifier=cleansed_rewrite" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/canonical/parquet/snappy" \
+	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/parquet/snappy" \
 	$CMD_LINE_ARGUMENTS \
 	-f "$ROOT_DIR/lib/ddl/processed_rewrite_parquet.ddl"

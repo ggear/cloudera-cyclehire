@@ -15,6 +15,6 @@ hive \
 	--hiveconf "mapreduce.map.output.compress.codec=org.apache.hadoop.io.compress.SnappyCodec" \
 	--hiveconf "cyclehire.table.codec=snappy" \
 	--hiveconf "cyclehire.table.modifier=cleansed_rewrite" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/canonical/avro/snappy" \
+	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/avro/snappy" \
 	$CMD_LINE_ARGUMENTS \
 	-f "$ROOT_DIR/lib/ddl/processed_rewrite_avro.ddl"

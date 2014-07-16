@@ -16,6 +16,6 @@ hive \
 	--hiveconf "mapreduce.output.fileoutputformat.compress.type=BLOCK" \
 	--hiveconf "cyclehire.table.codec=snappy" \
 	--hiveconf "cyclehire.table.modifier=cleansed_rewrite" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/canonical/sequence/snappy" \
+	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/sequence/snappy" \
 	$CMD_LINE_ARGUMENTS \
 	-f "$ROOT_DIR/lib/ddl/processed_rewrite_sequence.ddl"
