@@ -17,7 +17,7 @@ hadoop \
 	com.cloudera.cyclehire.main.ingress.copy.CopyDriver \
 	-libjars "$LIBJARS" \
 	-Ddir.include=false \
-	-Dblock.single=false \
+	-Dblock.single=true \
 	-Dtimeout.secs=1000 \
 	-Dthread.number=3 \
 	-Dthread.queue=file \

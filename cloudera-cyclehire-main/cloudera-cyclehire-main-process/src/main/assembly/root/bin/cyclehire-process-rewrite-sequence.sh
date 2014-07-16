@@ -18,4 +18,4 @@ hive \
 	--hiveconf "cyclehire.table.modifier=cleansed_rewrite" \
 	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/canonical/sequence/snappy" \
 	$CMD_LINE_ARGUMENTS \
-	-f "$ROOT_DIR/lib/ddl/com/cloudera/cyclehire/main/process/table/processed_rewrite_sequence.ddl"
+	-f "$ROOT_DIR/lib/ddl/processed_rewrite_sequence.ddl"

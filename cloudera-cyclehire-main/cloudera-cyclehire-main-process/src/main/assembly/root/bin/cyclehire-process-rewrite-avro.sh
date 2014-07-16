@@ -17,4 +17,4 @@ hive \
 	--hiveconf "cyclehire.table.modifier=cleansed_rewrite" \
 	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/canonical/avro/snappy" \
 	$CMD_LINE_ARGUMENTS \
-	-f "$ROOT_DIR/lib/ddl/com/cloudera/cyclehire/main/process/table/processed_rewrite_avro.ddl"
+	-f "$ROOT_DIR/lib/ddl/processed_rewrite_avro.ddl"
