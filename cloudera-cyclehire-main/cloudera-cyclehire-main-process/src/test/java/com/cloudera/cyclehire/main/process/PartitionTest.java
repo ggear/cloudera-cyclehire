@@ -223,7 +223,7 @@ public class PartitionTest extends BaseTest {
         new Path(BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
             Counter.BATCHES_SUCCESSFUL.getPath()), true);
     Collections.sort(stagedPaths);
-    Path stagedPathToDelete = stagedPaths.get(3).getParent();
+    Path stagedPathToDelete = stagedPaths.get(1).getParent();
     getFileSystem().delete(stagedPathToDelete, true);
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,

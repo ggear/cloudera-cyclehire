@@ -9,6 +9,7 @@ set -x
 CMD_LINE_ARGUMENTS="$1"
 ROOT_DIR_HDFS_RAW_PARTITIONED=${2:-"$ROOT_DIR_HDFS_RAW_PARTITIONED"}
 ROOT_DIR_HDFS_PROCESSED=${3:-"$ROOT_DIR_HDFS_PROCESSED"}
+export HIVE_AUX_JARS_PATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
 
 hive \
 	--hiveconf "cyclehire.table.modifier=valid" \
