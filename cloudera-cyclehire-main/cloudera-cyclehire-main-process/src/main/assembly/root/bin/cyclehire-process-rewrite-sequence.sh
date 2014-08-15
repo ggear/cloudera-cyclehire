@@ -11,6 +11,7 @@ ROOT_DIR_HDFS_PROCESSED=${2:-"$ROOT_DIR_HDFS_PROCESSED"}
 export HIVE_AUX_JARS_PATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
 
 hive \
+	--hiveconf "hive.stats.autogather=false" \
 	--hiveconf "hive.exec.dynamic.partition.mode=nonstrict" \
 	--hiveconf "hive.exec.compress.output=true" \
 	--hiveconf "mapreduce.map.output.compress.codec=org.apache.hadoop.io.compress.SnappyCodec" \
