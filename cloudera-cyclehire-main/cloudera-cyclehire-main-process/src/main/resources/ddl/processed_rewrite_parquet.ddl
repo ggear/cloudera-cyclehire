@@ -32,4 +32,3 @@ INSERT OVERWRITE TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier}_
 SELECT * FROM cyclehire_processed_cleansed_canonical;
 
 MSCK REPAIR TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier}_parquet_${hiveconf:cyclehire.table.codec};
-
