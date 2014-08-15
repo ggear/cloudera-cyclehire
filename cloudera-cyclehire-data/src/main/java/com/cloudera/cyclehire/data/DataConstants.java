@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class DataConstants {
 
-  public static final String PATH_LOCAL_TAR = "target/test-data/cyclehire/tar";
+  public static final String PATH_LOCAL_TAR = "target/test-data/cyclehire/test/tar";
   public static final String[] PATH_LOCAL_TARS = new File(PATH_LOCAL_TAR)
       .list(new FilenameFilter() {
         @Override
@@ -18,7 +18,7 @@ public class DataConstants {
     Arrays.sort(PATH_LOCAL_TARS);
   }
 
-  public static final String PATH_LOCAL_XML = "target/test-data/cyclehire/xml";
+  public static final String PATH_LOCAL_XML = "target/test-data/cyclehire/test/xml";
   public static final String[] PATH_LOCAL_XMLS = new File(PATH_LOCAL_XML)
       .list(new FilenameFilter() {
         @Override

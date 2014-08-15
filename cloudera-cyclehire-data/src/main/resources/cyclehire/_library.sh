@@ -1,12 +1,12 @@
 #!/bin/bash
 
-DATA_SET=cyclehire
+DATA_SET=cyclehire/warehouse
 DATA_SET_FORMAT=xml
 DATA_SET_TAR_NUM=4000
 DATA_SET_TAR_PART=_PART
 DATA_SET_NAME=livecyclehireupdates
 DATA_SET_URL=http://www.tfl.gov.uk/tfl/syndication/feeds/cycle-hire/livecyclehireupdates.xml
-DATA_SET_ARCHIVE_URL=http://ec2-54-217-246-98.eu-west-1.compute.amazonaws.com/tmph3l7m2vv103/data-repos
+DATA_SET_ARCHIVE_URL=http://54.77.57.3/tmph3l7m2vv103/data-repos
 
 DIR_BASE=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../../../../data/$DATA_SET
 if [ $# -gt 0 ]; then
