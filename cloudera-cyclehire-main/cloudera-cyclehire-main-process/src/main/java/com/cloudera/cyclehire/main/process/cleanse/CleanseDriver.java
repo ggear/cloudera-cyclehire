@@ -36,6 +36,7 @@ import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
 import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
 import com.cloudera.cyclehire.main.common.model.PartitionFlag;
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
+import com.cloudera.cyclehire.main.process.table.Table;
 
 public class CleanseDriver extends Driver {
 
@@ -253,6 +254,20 @@ public class CleanseDriver extends Driver {
         if (HDFSClientUtil.listFiles(hdfs, cleansedPath, false).size() > 0) {
           cleansed = true;
           PartitionFlag.update(hdfs, cleansedPath, PartitionFlag._SUCCESS);
+          if (counter.equals(Counter.RECORDS_CLEANSED)) {
+            for (String rewriteFormat : Table.DDL_LOCATION_PROCESSED_REWRITE_FORMATS) {
+              PartitionFlag.update(
+                  hdfs,
+                  new Path(cleansedPath
+                      .toString()
+                      .replace(Counter.RECORDS_CLEANSED.getPath(),
+                          Counter.RECORDS_REWRITE.getPath())
+                      .replace(
+                          partitionKey.getType() + '/'
+                              + partitionKey.getCodec(), rewriteFormat)),
+                  PartitionFlag._REWRITE);
+            }
+          }
         }
       }
       PartitionFlag.update(hdfs, stagedPath, cleansed ? PartitionFlag._SUCCESS

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.mapreduce.MRJobConfig;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -15,7 +16,9 @@ import parquet.hadoop.ParquetOutputFormat;
 
 import com.cloudera.cyclehire.main.common.Counter;
 import com.cloudera.cyclehire.main.common.Driver;
+import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
 import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
+import com.cloudera.cyclehire.main.common.model.PartitionFlag;
 import com.cloudera.cyclehire.main.process.partition.PartitionDriver;
 import com.cloudera.cyclehire.main.process.table.Table;
 import com.cloudera.cyclehire.main.test.BaseTestCase;
@@ -29,9 +32,6 @@ public class TableTest extends EmbeddedHiveTestCase {
   private static final String PATH_HDFS_DIR_PROCESSED = "file://"
       + PATH_LOCAL_WORKING_DIR + '/' + BaseTestCase.PATH_HDFS_DIR_PROCESSED
       + '/';
-
-  private static final String TABLE_PARTITION_YEAR = "2014";
-  private static final String TABLE_PARTITION_MONTH = "01";
 
   @SuppressWarnings("serial")
   private static final List<String[]> TABLES = new ArrayList<String[]>() {
@@ -54,17 +54,8 @@ public class TableTest extends EmbeddedHiveTestCase {
     {
       add(new String[] { Counter.RECORDS_REWRITE.getPath(),
           PATH_HDFS_DIR_PROCESSED,
-          Table.DDL_LOCATION_PROCESSED_REWRITE_SEQUENCE, "sequence", "false",
-          "none", "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK",
-          "UNCOMPRESSED" });
-      add(new String[] { Counter.RECORDS_REWRITE.getPath(),
-          PATH_HDFS_DIR_PROCESSED,
           Table.DDL_LOCATION_PROCESSED_REWRITE_SEQUENCE, "sequence", "true",
           "lz4", "org.apache.hadoop.io.compress.Lz4Codec", "BLOCK", "LZ4" });
-      add(new String[] { Counter.RECORDS_REWRITE.getPath(),
-          PATH_HDFS_DIR_PROCESSED, Table.DDL_LOCATION_PROCESSED_REWRITE_AVRO,
-          "avro", "false", "none", "org.apache.hadoop.io.compress.SnappyCodec",
-          "BLOCK", "UNCOMPRESSED" });
       add(new String[] { Counter.RECORDS_REWRITE.getPath(),
           PATH_HDFS_DIR_PROCESSED, Table.DDL_LOCATION_PROCESSED_REWRITE_AVRO,
           "avro", "true", "snappy",
@@ -72,12 +63,7 @@ public class TableTest extends EmbeddedHiveTestCase {
       add(new String[] { Counter.RECORDS_REWRITE.getPath(),
           PATH_HDFS_DIR_PROCESSED,
           Table.DDL_LOCATION_PROCESSED_REWRITE_PARQUET, "parquet", "false",
-          "none", "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK",
-          "UNCOMPRESSED" });
-      add(new String[] { Counter.RECORDS_REWRITE.getPath(),
-          PATH_HDFS_DIR_PROCESSED,
-          Table.DDL_LOCATION_PROCESSED_REWRITE_PARQUET, "parquet", "true",
-          "gzip", "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK", "GZIP" });
+          "none", "", "BLOCK", "UNCOMPRESSED" });
     }
   };
 
@@ -118,24 +104,29 @@ public class TableTest extends EmbeddedHiveTestCase {
     Assert
         .assertEquals(TABLES.size(), executeAndFetchAll("SHOW TABLES").size());
 
-    for (String[] attribute : TABLES_REWRITE) {
-      getConf()
-          .set(Table.DDL_CONFIG_TABLE_PARTITION_YEAR, TABLE_PARTITION_YEAR);
-      getConf().set(Table.DDL_CONFIG_TABLE_PARTITION_MONTH,
-          TABLE_PARTITION_MONTH);
-      getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
-          attribute[0].replace('/', '_'));
-      getConf()
-          .set(
+    for (Path path : HDFSClientUtil.listFiles(getFileSystem(), new Path(
+        BaseTestCase.PATH_HDFS_DIR_PROCESSED, Counter.RECORDS_REWRITE.getPath()
+            + '/' + Table.DDL_LOCATION_PROCESSED_REWRITE_FORMATS[0]), true)) {
+      if (path.getName().equals(PartitionFlag._REWRITE.toString())) {
+        getConf().set(Table.DDL_CONFIG_TABLE_PARTITION_YEAR,
+            path.getParent().getParent().getName().replace("year=", ""));
+        getConf().set(Table.DDL_CONFIG_TABLE_PARTITION_MONTH,
+            path.getParent().getName().replace("month=", ""));
+        for (String[] attribute : TABLES_REWRITE) {
+          getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
+              attribute[0].replace('/', '_'));
+          getConf().set(
               Table.DDL_CONFIG_TABLE_LOCATION,
               attribute[1] + attribute[0] + '/' + attribute[3] + '/'
                   + attribute[5]);
-      getConf().set(Table.DDL_CONFIG_TABLE_CODEC, attribute[5]);
-      getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, attribute[4]);
-      getConf().set(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, attribute[6]);
-      getConf().set(ParquetOutputFormat.COMPRESSION, attribute[8]);
-      getConf().set(FileOutputFormat.COMPRESS_TYPE, attribute[7]);
-      execute(Table.DDL_LOCATION, attribute[2]);
+          getConf().set(Table.DDL_CONFIG_TABLE_CODEC, attribute[5]);
+          getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, attribute[4]);
+          getConf().set(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, attribute[6]);
+          getConf().set(ParquetOutputFormat.COMPRESSION, attribute[8]);
+          getConf().set(FileOutputFormat.COMPRESS_TYPE, attribute[7]);
+          execute(Table.DDL_LOCATION, attribute[2]);
+        }
+      }
     }
     Assert.assertEquals(TABLES.size() + TABLES_REWRITE.size(),
         executeAndFetchAll("SHOW TABLES").size());
@@ -157,24 +148,29 @@ public class TableTest extends EmbeddedHiveTestCase {
       execute(Table.DDL_LOCATION, attribute[2]);
     }
 
-    for (String[] attribute : TABLES_REWRITE) {
-      getConf()
-          .set(Table.DDL_CONFIG_TABLE_PARTITION_YEAR, TABLE_PARTITION_YEAR);
-      getConf().set(Table.DDL_CONFIG_TABLE_PARTITION_MONTH,
-          TABLE_PARTITION_MONTH);
-      getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
-          attribute[0].replace('/', '_'));
-      getConf()
-          .set(
+    for (Path path : HDFSClientUtil.listFiles(getFileSystem(), new Path(
+        BaseTestCase.PATH_HDFS_DIR_PROCESSED, Counter.RECORDS_REWRITE.getPath()
+            + '/' + Table.DDL_LOCATION_PROCESSED_REWRITE_FORMATS[0]), true)) {
+      if (path.getName().equals(PartitionFlag._REWRITE.toString())) {
+        getConf().set(Table.DDL_CONFIG_TABLE_PARTITION_YEAR,
+            path.getParent().getParent().getName().replace("year=", ""));
+        getConf().set(Table.DDL_CONFIG_TABLE_PARTITION_MONTH,
+            path.getParent().getName().replace("month=", ""));
+        for (String[] attribute : TABLES_REWRITE) {
+          getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
+              attribute[0].replace('/', '_'));
+          getConf().set(
               Table.DDL_CONFIG_TABLE_LOCATION,
               attribute[1] + attribute[0] + '/' + attribute[3] + '/'
                   + attribute[5]);
-      getConf().set(Table.DDL_CONFIG_TABLE_CODEC, attribute[5]);
-      getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, attribute[4]);
-      getConf().set(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, attribute[6]);
-      getConf().set(ParquetOutputFormat.COMPRESSION, attribute[8]);
-      getConf().set(FileOutputFormat.COMPRESS_TYPE, attribute[7]);
-      execute(Table.DDL_LOCATION, attribute[2]);
+          getConf().set(Table.DDL_CONFIG_TABLE_CODEC, attribute[5]);
+          getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, attribute[4]);
+          getConf().set(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, attribute[6]);
+          getConf().set(ParquetOutputFormat.COMPRESSION, attribute[8]);
+          getConf().set(FileOutputFormat.COMPRESS_TYPE, attribute[7]);
+          execute(Table.DDL_LOCATION, attribute[2]);
+        }
+      }
     }
 
     Assert.assertEquals(TABLES.size() + TABLES_REWRITE.size(),
