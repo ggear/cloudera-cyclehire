@@ -14,6 +14,10 @@ TABLE_CODEC=${5:-"snappy"}
 TABLE_CODEC_CLASS=${6:-"org.apache.hadoop.io.compress.SnappyCodec"}
 export HIVE_AUX_JARS_PATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
 
+if [ "$TABLE_COMPRESS" = "false" ]; then
+	TABLE_CODEC="none"
+fi
+
 TABLE_PARTITION_YEAR="2014"
 TABLE_PARTITION_MONTH="01"
 
@@ -29,6 +33,6 @@ hive \
 	--hiveconf "cyclehire.table.partition.year=$TABLE_PARTITION_YEAR" \
 	--hiveconf "cyclehire.table.partition.month=$TABLE_PARTITION_MONTH" \
 	--hiveconf "cyclehire.table.modifier=cleansed_rewrite" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/avro/snappy" \
+	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/avro/$TABLE_CODEC" \
 	$CMD_LINE_ARGUMENTS \
 	-f "$ROOT_DIR/lib/ddl/processed_rewrite_avro.ddl"

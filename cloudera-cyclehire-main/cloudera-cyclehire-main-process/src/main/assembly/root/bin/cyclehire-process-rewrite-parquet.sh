@@ -16,6 +16,7 @@ export HIVE_AUX_JARS_PATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's
 
 if [ "$TABLE_COMPRESS" = "false" ]; then
 	TABLE_CODEC="UNCROMPRESSED"
+	TABLE_CODEC="none"
 fi
 
 TABLE_PARTITION_YEAR="2014"
@@ -31,6 +32,6 @@ hive \
 	--hiveconf "cyclehire.table.partition.year=$TABLE_PARTITION_YEAR" \
 	--hiveconf "cyclehire.table.partition.month=$TABLE_PARTITION_MONTH" \
 	--hiveconf "cyclehire.table.modifier=cleansed_rewrite" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/parquet/snappy" \
+	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/parquet/$TABLE_CODEC" \
 	$CMD_LINE_ARGUMENTS \
 	-f "$ROOT_DIR/lib/ddl/processed_rewrite_parquet.ddl"

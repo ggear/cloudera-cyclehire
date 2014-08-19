@@ -14,6 +14,10 @@ TABLE_CODEC=${5:-"snappy"}
 TABLE_CODEC_CLASS=${6:-"org.apache.hadoop.io.compress.SnappyCodec"}
 export HIVE_AUX_JARS_PATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
 
+if [ "$TABLE_COMPRESS" = "false" ]; then
+	TABLE_CODEC="none"
+fi
+
 TABLE_PARTITION_YEAR="2014"
 TABLE_PARTITION_MONTH="01"
 
