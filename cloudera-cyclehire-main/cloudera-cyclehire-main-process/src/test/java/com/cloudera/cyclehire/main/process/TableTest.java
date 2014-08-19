@@ -30,6 +30,9 @@ public class TableTest extends EmbeddedHiveTestCase {
       + PATH_LOCAL_WORKING_DIR + '/' + BaseTestCase.PATH_HDFS_DIR_PROCESSED
       + '/';
 
+  private static final String TABLE_PARTITION_YEAR = "2014";
+  private static final String TABLE_PARTITION_MONTH = "01";
+
   @SuppressWarnings("serial")
   private static final List<String[]> TABLES = new ArrayList<String[]>() {
     {
@@ -116,6 +119,10 @@ public class TableTest extends EmbeddedHiveTestCase {
         .assertEquals(TABLES.size(), executeAndFetchAll("SHOW TABLES").size());
 
     for (String[] attribute : TABLES_REWRITE) {
+      getConf()
+          .set(Table.DDL_CONFIG_TABLE_PARTITION_YEAR, TABLE_PARTITION_YEAR);
+      getConf().set(Table.DDL_CONFIG_TABLE_PARTITION_MONTH,
+          TABLE_PARTITION_MONTH);
       getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
           attribute[0].replace('/', '_'));
       getConf()
@@ -151,6 +158,10 @@ public class TableTest extends EmbeddedHiveTestCase {
     }
 
     for (String[] attribute : TABLES_REWRITE) {
+      getConf()
+          .set(Table.DDL_CONFIG_TABLE_PARTITION_YEAR, TABLE_PARTITION_YEAR);
+      getConf().set(Table.DDL_CONFIG_TABLE_PARTITION_MONTH,
+          TABLE_PARTITION_MONTH);
       getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
           attribute[0].replace('/', '_'));
       getConf()

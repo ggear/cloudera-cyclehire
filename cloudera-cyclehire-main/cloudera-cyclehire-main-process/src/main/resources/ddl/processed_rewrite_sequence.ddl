@@ -25,10 +25,12 @@ PARTITIONED BY (
   year STRING,
   month STRING
 )
-ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazybinary.LazyBinarySerDe'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001'
+STORED AS SEQUENCEFILE
 LOCATION '${hiveconf:cyclehire.table.location}';
 
-INSERT OVERWRITE TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier}_sequence_${hiveconf:cyclehire.table.codec} PARTITION (year, month)
-SELECT * FROM cyclehire_processed_cleansed_canonical;
-
-MSCK REPAIR TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier}_sequence_${hiveconf:cyclehire.table.codec};
+INSERT OVERWRITE TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier}_sequence_${hiveconf:cyclehire.table.codec}
+PARTITION (year, month)
+SELECT *
+FROM cyclehire_processed_cleansed_canonical
+WHERE year='${hiveconf:cyclehire.table.partition.year}' AND month='${hiveconf:cyclehire.table.partition.month}';

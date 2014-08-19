@@ -11,7 +11,7 @@ import org.apache.hadoop.fs.Path;
 
 public enum PartitionFlag {
 
-  _UNKNOWN, _FAILED, _LOCKED, _SUCCESS, _PARTITION, _CLEANSE;
+  _UNKNOWN, _FAILED, _LOCKED, _SUCCESS, _PARTITION, _REWRITE, _CLEANSE;
 
   public static boolean isValue(String value) {
     if (value != null) {

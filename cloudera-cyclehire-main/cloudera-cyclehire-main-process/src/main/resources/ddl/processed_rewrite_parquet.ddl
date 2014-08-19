@@ -28,7 +28,8 @@ PARTITIONED BY (
 STORED AS PARQUET
 LOCATION '${hiveconf:cyclehire.table.location}';
 
-INSERT OVERWRITE TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier}_parquet_${hiveconf:cyclehire.table.codec} PARTITION (year, month)
-SELECT * FROM cyclehire_processed_cleansed_canonical;
-
-MSCK REPAIR TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier}_parquet_${hiveconf:cyclehire.table.codec};
+INSERT OVERWRITE TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier}_parquet_${hiveconf:cyclehire.table.codec}
+PARTITION (year, month)
+SELECT *
+FROM cyclehire_processed_cleansed_canonical
+WHERE year='${hiveconf:cyclehire.table.partition.year}' AND month='${hiveconf:cyclehire.table.partition.month}';
