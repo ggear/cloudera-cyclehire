@@ -133,7 +133,8 @@ public class CopyDriver extends Driver {
               + (isDirIncluded ? "/" + localLandedDir.getName() : ""));
       localLandedFileSets.add(localLandedFileSet);
       for (File localLandedFile : localLandedDir.listFiles()) {
-        if (localLandedFile.isFile() && localLandedFile.canRead()) {
+        if (localLandedFile.isFile() && localLandedFile.canRead()
+            && !localLandedFile.getName().startsWith(".")) {
           localLandedFileSet.addFile(localLandedFile);
           if (isFileQueue) {
             localLandedFileSets.add(localLandedFileSet = new FileSetCopy(
