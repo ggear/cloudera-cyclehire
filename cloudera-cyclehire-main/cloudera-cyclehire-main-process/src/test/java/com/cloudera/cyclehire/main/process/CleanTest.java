@@ -72,7 +72,7 @@ public class CleanTest extends BaseTest {
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.FILES_TODO)
+            Counter.FILES_SKIPPED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
@@ -81,7 +81,7 @@ public class CleanTest extends BaseTest {
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
@@ -90,7 +90,7 @@ public class CleanTest extends BaseTest {
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
@@ -108,20 +108,20 @@ public class CleanTest extends BaseTest {
             BaseTestCase.PATH_HDFS_DIR_RAW_LANDED,
             BaseTestCase.PATH_HDFS_DIR_RAW_STAGED }));
     long filesCount = cleanDriver.getCounter(
-        CleanDriver.class.getCanonicalName(), Counter.FILES_TODO).longValue();
+        CleanDriver.class.getCanonicalName(), Counter.FILES_SKIPPED).longValue();
     long batchesCount = cleanDriver.getCounter(
-        CleanDriver.class.getCanonicalName(), Counter.BATCHES_TODO).longValue();
+        CleanDriver.class.getCanonicalName(), Counter.BATCHES_SKIPPED).longValue();
     Assert.assertEquals(
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.FILES_TODO)
+            Counter.FILES_SKIPPED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.FILES_SUCCESSFUL));
     Assert.assertTrue(cleanDriver.getCounter(
-        CleanDriver.class.getCanonicalName(), Counter.FILES_TODO) > 0);
+        CleanDriver.class.getCanonicalName(), Counter.FILES_SKIPPED) > 0);
     Assert.assertEquals(new Long(0L), cleanDriver.getCounter(
         CleanDriver.class.getCanonicalName(), Counter.FILES_FAILED));
     Assert.assertTrue(cleanDriver.getCounter(
@@ -132,13 +132,13 @@ public class CleanTest extends BaseTest {
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.BATCHES_SUCCESSFUL));
     Assert.assertTrue(cleanDriver.getCounter(
-        CleanDriver.class.getCanonicalName(), Counter.BATCHES_TODO) > 0);
+        CleanDriver.class.getCanonicalName(), Counter.BATCHES_SKIPPED) > 0);
     Assert.assertEquals(new Long(0L), cleanDriver.getCounter(
         CleanDriver.class.getCanonicalName(), Counter.BATCHES_FAILED));
     Assert.assertTrue(cleanDriver.getCounter(
@@ -149,13 +149,13 @@ public class CleanTest extends BaseTest {
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_SUCCESSFUL));
     Assert.assertTrue(cleanDriver.getCounter(
-        CleanDriver.class.getCanonicalName(), Counter.PARTITIONS_TODO) > 0);
+        CleanDriver.class.getCanonicalName(), Counter.PARTITIONS_SKIPPED) > 0);
     Assert.assertEquals(new Long(0L), cleanDriver.getCounter(
         CleanDriver.class.getCanonicalName(), Counter.PARTITIONS_FAILED));
     Assert
@@ -175,7 +175,7 @@ public class CleanTest extends BaseTest {
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.FILES_TODO)
+            Counter.FILES_SKIPPED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
@@ -183,7 +183,7 @@ public class CleanTest extends BaseTest {
     Assert.assertEquals(
         filesCount,
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.FILES_TODO).longValue());
+            Counter.FILES_SKIPPED).longValue());
     Assert.assertEquals(
         0L,
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
@@ -200,7 +200,7 @@ public class CleanTest extends BaseTest {
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
@@ -208,7 +208,7 @@ public class CleanTest extends BaseTest {
     Assert.assertEquals(
         batchesCount,
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO).longValue());
+            Counter.BATCHES_SKIPPED).longValue());
     Assert.assertEquals(
         0L,
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
@@ -225,13 +225,13 @@ public class CleanTest extends BaseTest {
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_SUCCESSFUL));
     Assert.assertTrue(cleanDriver.getCounter(
-        CleanDriver.class.getCanonicalName(), Counter.PARTITIONS_TODO) > 0);
+        CleanDriver.class.getCanonicalName(), Counter.PARTITIONS_SKIPPED) > 0);
     Assert.assertEquals(
         0L,
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
@@ -259,7 +259,7 @@ public class CleanTest extends BaseTest {
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.FILES_TODO)
+            Counter.FILES_SKIPPED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
@@ -267,7 +267,7 @@ public class CleanTest extends BaseTest {
     Assert.assertEquals(
         filesCount,
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.FILES_TODO).longValue());
+            Counter.FILES_SKIPPED).longValue());
     Assert.assertEquals(
         0L,
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
@@ -280,7 +280,7 @@ public class CleanTest extends BaseTest {
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
@@ -288,7 +288,7 @@ public class CleanTest extends BaseTest {
     Assert.assertEquals(
         batchesCount,
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO).longValue());
+            Counter.BATCHES_SKIPPED).longValue());
     Assert.assertEquals(
         0L,
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
@@ -301,13 +301,13 @@ public class CleanTest extends BaseTest {
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_SUCCESSFUL));
     Assert.assertTrue(cleanDriver.getCounter(
-        CleanDriver.class.getCanonicalName(), Counter.PARTITIONS_TODO) > 0);
+        CleanDriver.class.getCanonicalName(), Counter.PARTITIONS_SKIPPED) > 0);
     Assert.assertEquals(
         0L,
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),

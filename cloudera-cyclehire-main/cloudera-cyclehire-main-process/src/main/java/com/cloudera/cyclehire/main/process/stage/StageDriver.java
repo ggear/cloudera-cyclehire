@@ -24,10 +24,10 @@ import com.cloudera.cyclehire.main.common.model.PartitionKey;
 
 public class StageDriver extends Driver {
 
-  public static final Counter[] COUNTERS = new Counter[] { Counter.FILES_TODO,
+  public static final Counter[] COUNTERS = new Counter[] { Counter.FILES_SKIPPED,
       Counter.FILES_FAILED, Counter.FILES_SUCCESSFUL, Counter.FILES,
-      Counter.BATCHES_TODO, Counter.BATCHES_FAILED, Counter.BATCHES_SUCCESSFUL,
-      Counter.BATCHES, Counter.PARTITIONS_TODO, Counter.PARTITIONS_FAILED,
+      Counter.BATCHES_SKIPPED, Counter.BATCHES_FAILED, Counter.BATCHES_SUCCESSFUL,
+      Counter.BATCHES, Counter.PARTITIONS_SKIPPED, Counter.PARTITIONS_FAILED,
       Counter.PARTITIONS_SUCCESSFUL, Counter.PARTITIONS };
 
   private static final Logger log = LoggerFactory.getLogger(StageDriver.class);
@@ -163,7 +163,7 @@ public class StageDriver extends Driver {
           } else {
             stagedTodo.put(stagedPath, partitionKey);
             if (landedPathExists) {
-              incrementCounter(Counter.FILES_TODO, 1, partitionKey.getBatch()
+              incrementCounter(Counter.FILES_SKIPPED, 1, partitionKey.getBatch()
                   + '/' + partitionKey.getRecord(), counterFiles);
             }
           }
@@ -181,9 +181,9 @@ public class StageDriver extends Driver {
     }
     for (Path stagedPath : stagedTodo.keySet()) {
       PartitionKey partitionKey = stagedTodo.get(stagedPath);
-      incrementCounter(Counter.BATCHES_TODO, 1, partitionKey.getPartition()
+      incrementCounter(Counter.BATCHES_SKIPPED, 1, partitionKey.getPartition()
           + '/' + partitionKey.getBatch(), counterBatches);
-      incrementCounter(Counter.PARTITIONS_TODO, 1, partitionKey.getPartition(),
+      incrementCounter(Counter.PARTITIONS_SKIPPED, 1, partitionKey.getPartition(),
           counterPartitions);
     }
     incrementCounter(Counter.FILES, counterFiles.size());

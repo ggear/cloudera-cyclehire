@@ -72,7 +72,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.FILES_TODO)
+            Counter.FILES_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -81,7 +81,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -90,7 +90,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -99,7 +99,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
@@ -110,7 +110,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
@@ -121,7 +121,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -130,7 +130,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -163,7 +163,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.FILES_TODO)
+            Counter.FILES_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -172,7 +172,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -181,7 +181,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -190,7 +190,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
@@ -201,7 +201,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
@@ -212,7 +212,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -221,7 +221,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -249,7 +249,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.FILES_TODO)
+            Counter.FILES_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -258,7 +258,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -267,7 +267,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -276,7 +276,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
@@ -287,7 +287,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
@@ -298,7 +298,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -307,7 +307,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -341,7 +341,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.FILES_TODO)
+            Counter.FILES_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -350,7 +350,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -359,7 +359,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -368,7 +368,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
@@ -379,7 +379,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
@@ -390,7 +390,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -399,7 +399,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -432,7 +432,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.FILES_TODO)
+            Counter.FILES_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.FILES_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -441,7 +441,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -450,7 +450,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(StageDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + processDriver.getCounter(StageDriver.class.getCanonicalName(),
@@ -459,7 +459,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
@@ -470,7 +470,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(PartitionDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(
                 PartitionDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
@@ -481,7 +481,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES).longValue(),
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.BATCHES_TODO)
+            Counter.BATCHES_SKIPPED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.BATCHES_FAILED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
@@ -490,7 +490,7 @@ public class ProcessTest extends BaseTest {
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.PARTITIONS).longValue(),
         processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
-            Counter.PARTITIONS_TODO)
+            Counter.PARTITIONS_SKIPPED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_FAILED)
             + processDriver.getCounter(CleanseDriver.class.getCanonicalName(),

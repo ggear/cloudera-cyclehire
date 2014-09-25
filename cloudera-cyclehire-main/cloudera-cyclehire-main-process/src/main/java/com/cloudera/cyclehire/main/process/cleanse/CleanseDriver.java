@@ -41,8 +41,8 @@ import com.cloudera.cyclehire.main.process.table.Table;
 public class CleanseDriver extends Driver {
 
   public static final Counter[] COUNTERS = new Counter[] {
-      Counter.BATCHES_TODO, Counter.BATCHES_FAILED, Counter.BATCHES_SUCCESSFUL,
-      Counter.BATCHES, Counter.PARTITIONS_TODO, Counter.PARTITIONS_FAILED,
+      Counter.BATCHES_SKIPPED, Counter.BATCHES_FAILED, Counter.BATCHES_SUCCESSFUL,
+      Counter.BATCHES, Counter.PARTITIONS_SKIPPED, Counter.PARTITIONS_FAILED,
       Counter.PARTITIONS_SUCCESSFUL, Counter.PARTITIONS,
       Counter.RECORDS_MALFORMED, Counter.RECORDS_DUPLICATE,
       Counter.RECORDS_CLEANSED, Counter.RECORDS };
@@ -185,9 +185,9 @@ public class CleanseDriver extends Driver {
             }
           }
         } else {
-          incrementCounter(Counter.BATCHES_TODO, 1, partitionKey.getPartition()
+          incrementCounter(Counter.BATCHES_SKIPPED, 1, partitionKey.getPartition()
               + '/' + partitionKey.getBatch(), counterBatches);
-          incrementCounter(Counter.PARTITIONS_TODO, 1,
+          incrementCounter(Counter.PARTITIONS_SKIPPED, 1,
               partitionKey.getPartition(), counterPartitions);
         }
       }

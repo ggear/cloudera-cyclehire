@@ -78,7 +78,7 @@ public class CopyDriver extends Driver {
   @Override
   public void reset() {
     super.reset();
-    for (Counter counter : new Counter[] { Counter.FILES_TODO,
+    for (Counter counter : new Counter[] { Counter.FILES_SKIPPED,
         Counter.FILES_FAILED, Counter.FILES_SUCCESSFUL, Counter.FILES }) {
       incrementCounter(counter, 0);
     }
@@ -249,7 +249,7 @@ public class CopyDriver extends Driver {
     }
 
     public void addFile(File file) {
-      files.put(file, Counter.FILES_TODO);
+      files.put(file, Counter.FILES_SKIPPED);
     }
 
     @Override
@@ -276,7 +276,7 @@ public class CopyDriver extends Driver {
                   * bytesPerBlock : bytesPerBlock)) {
             files.put(file, Counter.FILES_SUCCESSFUL);
           } else {
-            files.put(file, Counter.FILES_TODO);
+            files.put(file, Counter.FILES_SKIPPED);
           }
         } catch (Exception exception) {
           files.put(file, Counter.FILES_FAILED);

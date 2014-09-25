@@ -126,7 +126,7 @@ public class CopyTest extends EmbeddedCoreTestCase {
     Assert.assertEquals(
         0L,
         copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-            Counter.FILES_TODO).longValue());
+            Counter.FILES_SKIPPED).longValue());
     Assert.assertEquals(
         0L,
         copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
@@ -152,7 +152,7 @@ public class CopyTest extends EmbeddedCoreTestCase {
     Assert.assertEquals(
         fileCountInput,
         copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-            Counter.FILES_TODO).longValue());
+            Counter.FILES_SKIPPED).longValue());
     Assert.assertEquals(
         0L,
         copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
@@ -188,7 +188,7 @@ public class CopyTest extends EmbeddedCoreTestCase {
     Assert.assertEquals(
         fileCountTodo,
         copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-            Counter.FILES_TODO).longValue());
+            Counter.FILES_SKIPPED).longValue());
     Assert.assertEquals(
         fileCountFailed,
         copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
@@ -226,7 +226,7 @@ public class CopyTest extends EmbeddedCoreTestCase {
       Assert.assertEquals(
           0L,
           copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-              Counter.FILES_TODO).longValue());
+              Counter.FILES_SKIPPED).longValue());
       Assert.assertEquals(
           0L,
           copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
@@ -256,7 +256,7 @@ public class CopyTest extends EmbeddedCoreTestCase {
       Assert.assertEquals(
           fileCountInput,
           copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-              Counter.FILES_TODO).longValue());
+              Counter.FILES_SKIPPED).longValue());
       Assert.assertEquals(
           0L,
           copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
@@ -299,7 +299,7 @@ public class CopyTest extends EmbeddedCoreTestCase {
       Assert.assertEquals(
           fileCountTodo,
           copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
-              Counter.FILES_TODO).longValue());
+              Counter.FILES_SKIPPED).longValue());
       Assert.assertEquals(
           fileCountFailed,
           copyDriver.getCounter(CopyDriver.class.getCanonicalName(),
