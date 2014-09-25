@@ -39,9 +39,10 @@ import com.cloudera.cyclehire.main.common.model.PartitionKey;
 public class PartitionDriver extends Driver {
 
   public static final Counter[] COUNTERS = new Counter[] {
-      Counter.BATCHES_SKIPPED, Counter.BATCHES_FAILED, Counter.BATCHES_SUCCESSFUL,
-      Counter.BATCHES, Counter.PARTITIONS_SKIPPED, Counter.PARTITIONS_FAILED,
-      Counter.PARTITIONS_SUCCESSFUL, Counter.PARTITIONS, Counter.RECORDS };
+      Counter.BATCHES_SKIPPED, Counter.BATCHES_FAILED,
+      Counter.BATCHES_SUCCESSFUL, Counter.BATCHES, Counter.PARTITIONS_SKIPPED,
+      Counter.PARTITIONS_FAILED, Counter.PARTITIONS_SUCCESSFUL,
+      Counter.PARTITIONS, Counter.RECORDS };
 
   public static final String OUTPUT_FORMAT = "sequence";
 
@@ -152,8 +153,9 @@ public class PartitionDriver extends Driver {
             partitionKeys.put(partitionKey.getBatch(), partitionKey);
           }
         } else {
-          incrementCounter(Counter.BATCHES_SKIPPED, 1, partitionKey.getPartition()
-              + '/' + partitionKey.getBatch(), counterBatches);
+          incrementCounter(Counter.BATCHES_SKIPPED, 1,
+              partitionKey.getPartition() + '/' + partitionKey.getBatch(),
+              counterBatches);
           incrementCounter(Counter.PARTITIONS_SKIPPED, 1,
               partitionKey.getPartition(), counterPartitions);
         }

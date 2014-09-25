@@ -15,7 +15,6 @@ import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.ParentNotDirectoryException;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RemoteIterator;
-import org.apache.hadoop.fs.UnsupportedFileSystemException;
 import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.IOUtils;
@@ -76,15 +75,19 @@ public class HDFSClientUtil {
 
   public static boolean createSymlinkOrCopy(FileSystem hdfs, Path target,
       Path link) throws AccessControlException, FileAlreadyExistsException,
-      FileNotFoundException, ParentNotDirectoryException,
-      UnsupportedFileSystemException, IOException {
-    try {
-      hdfs.createSymlink(target, link, true);
-      return true;
-    } catch (UnsupportedOperationException exception) {
-      FileUtil.copy(hdfs, target, hdfs, link, false, hdfs.getConf());
-      return false;
+      FileNotFoundException, ParentNotDirectoryException, IOException {
+    boolean isSymlinked = FileSystem.areSymlinksEnabled();
+    if (isSymlinked) {
+      try {
+        hdfs.createSymlink(target, link, true);
+      } catch (UnsupportedOperationException exception) {
+        isSymlinked = false;
+      }
     }
+    if (!isSymlinked) {
+      FileUtil.copy(hdfs, target, hdfs, link, false, hdfs.getConf());
+    }
+    return isSymlinked;
   }
 
   public static List<Path> listFiles(FileSystem hdfs, Path path, boolean recurse)

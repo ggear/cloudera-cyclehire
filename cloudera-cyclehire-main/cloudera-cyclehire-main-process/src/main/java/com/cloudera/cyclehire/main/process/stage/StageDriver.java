@@ -24,11 +24,12 @@ import com.cloudera.cyclehire.main.common.model.PartitionKey;
 
 public class StageDriver extends Driver {
 
-  public static final Counter[] COUNTERS = new Counter[] { Counter.FILES_SKIPPED,
-      Counter.FILES_FAILED, Counter.FILES_SUCCESSFUL, Counter.FILES,
-      Counter.BATCHES_SKIPPED, Counter.BATCHES_FAILED, Counter.BATCHES_SUCCESSFUL,
-      Counter.BATCHES, Counter.PARTITIONS_SKIPPED, Counter.PARTITIONS_FAILED,
-      Counter.PARTITIONS_SUCCESSFUL, Counter.PARTITIONS };
+  public static final Counter[] COUNTERS = new Counter[] {
+      Counter.FILES_SKIPPED, Counter.FILES_FAILED, Counter.FILES_SUCCESSFUL,
+      Counter.FILES, Counter.BATCHES_SKIPPED, Counter.BATCHES_FAILED,
+      Counter.BATCHES_SUCCESSFUL, Counter.BATCHES, Counter.PARTITIONS_SKIPPED,
+      Counter.PARTITIONS_FAILED, Counter.PARTITIONS_SUCCESSFUL,
+      Counter.PARTITIONS };
 
   private static final Logger log = LoggerFactory.getLogger(StageDriver.class);
 
@@ -163,8 +164,9 @@ public class StageDriver extends Driver {
           } else {
             stagedTodo.put(stagedPath, partitionKey);
             if (landedPathExists) {
-              incrementCounter(Counter.FILES_SKIPPED, 1, partitionKey.getBatch()
-                  + '/' + partitionKey.getRecord(), counterFiles);
+              incrementCounter(Counter.FILES_SKIPPED, 1,
+                  partitionKey.getBatch() + '/' + partitionKey.getRecord(),
+                  counterFiles);
             }
           }
         }
@@ -183,8 +185,8 @@ public class StageDriver extends Driver {
       PartitionKey partitionKey = stagedTodo.get(stagedPath);
       incrementCounter(Counter.BATCHES_SKIPPED, 1, partitionKey.getPartition()
           + '/' + partitionKey.getBatch(), counterBatches);
-      incrementCounter(Counter.PARTITIONS_SKIPPED, 1, partitionKey.getPartition(),
-          counterPartitions);
+      incrementCounter(Counter.PARTITIONS_SKIPPED, 1,
+          partitionKey.getPartition(), counterPartitions);
     }
     incrementCounter(Counter.FILES, counterFiles.size());
     incrementCounter(Counter.BATCHES, counterBatches.size());

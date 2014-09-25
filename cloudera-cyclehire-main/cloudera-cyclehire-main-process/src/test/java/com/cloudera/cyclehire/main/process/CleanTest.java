@@ -108,9 +108,11 @@ public class CleanTest extends BaseTest {
             BaseTestCase.PATH_HDFS_DIR_RAW_LANDED,
             BaseTestCase.PATH_HDFS_DIR_RAW_STAGED }));
     long filesCount = cleanDriver.getCounter(
-        CleanDriver.class.getCanonicalName(), Counter.FILES_SKIPPED).longValue();
+        CleanDriver.class.getCanonicalName(), Counter.FILES_SKIPPED)
+        .longValue();
     long batchesCount = cleanDriver.getCounter(
-        CleanDriver.class.getCanonicalName(), Counter.BATCHES_SKIPPED).longValue();
+        CleanDriver.class.getCanonicalName(), Counter.BATCHES_SKIPPED)
+        .longValue();
     Assert.assertEquals(
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
