@@ -17,12 +17,12 @@ TABLE_PARTITION_YEAR="$8"
 TABLE_PARTITION_MONTH="$9"
 export HIVE_AUX_JARS_PATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
 
-TABLE_LOCATION=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/parquet/$TABLE_CODEC
-
 if [ "$TABLE_COMPRESS" = "false" ]; then
 	TABLE_CODEC_CLASS="UNCOMPRESSED"
 	TABLE_CODEC="none"
 fi
+
+TABLE_LOCATION=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/parquet/$TABLE_CODEC
 
 PARTITION_YEARS=()
 PARTITION_MONTHS=()
