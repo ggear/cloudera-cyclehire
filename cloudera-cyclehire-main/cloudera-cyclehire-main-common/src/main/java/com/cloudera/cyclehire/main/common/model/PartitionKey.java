@@ -46,7 +46,7 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
 
   private String batch = "";
   private String record = "";
-  private long epochGet = 0L;
+  private long epochPoll = 0L;
   private long epochUpdate = 0L;
 
   private String type = null;
@@ -100,8 +100,8 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
         && REGEX_BATCH.matcher(this.record).matches()) {
       this.record = "";
     }
-    if (this.epochGet == 0L && getMatcherRecord() != null) {
-      epochGet(1000 * Long.parseLong(getMatcherRecord().group(1)));
+    if (this.epochPoll == 0L && getMatcherRecord() != null) {
+      epochPoll(1000 * Long.parseLong(getMatcherRecord().group(1)));
     }
     return this;
   }
@@ -135,8 +135,8 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
     return this;
   }
 
-  public PartitionKey epochGet(long epochGet) {
-    this.epochGet = epochGet;
+  public PartitionKey epochPoll(long epochPoll) {
+    this.epochPoll = epochPoll;
     return this;
   }
 
@@ -169,9 +169,9 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
         && (epochRecord > EPOCH_MAX || epochRecord < EPOCH_MIN)) {
       return false;
     }
-    if (epochGet != 0L
-        && (epochGet > EPOCH_MAX || epochGet < EPOCH_MIN
-            || epochGet > epochBatchMax || epochGet < epochBatchMin)) {
+    if (epochPoll != 0L
+        && (epochPoll > EPOCH_MAX || epochPoll < EPOCH_MIN
+            || epochPoll > epochBatchMax || epochPoll < epochBatchMin)) {
       return false;
     }
     if (epochUpdate != 0L
@@ -322,7 +322,7 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   }
 
   public Long getEpochGet() {
-    return epochGet;
+    return epochPoll;
   }
 
   public Long getEpochUpdate() {
@@ -337,7 +337,7 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
     string.append(", record=");
     string.append(record);
     string.append(", get=");
-    string.append(epochGet);
+    string.append(epochPoll);
     string.append(", update=");
     string.append(epochUpdate);
     string.append("]");
@@ -365,7 +365,7 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
     version = in.readByte();
     batch(WritableUtils.readString(in));
     record(WritableUtils.readString(in));
-    epochGet(WritableUtils.readVLong(in));
+    epochPoll(WritableUtils.readVLong(in));
     epochUpdate(WritableUtils.readVLong(in));
   }
 
@@ -374,7 +374,7 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
     out.writeByte(version);
     WritableUtils.writeString(out, batch);
     WritableUtils.writeString(out, record);
-    WritableUtils.writeVLong(out, epochGet);
+    WritableUtils.writeVLong(out, epochPoll);
     WritableUtils.writeVLong(out, epochUpdate);
   }
 
@@ -382,8 +382,8 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   public int compareTo(PartitionKey that) {
     int compare = epochUpdate > that.epochUpdate ? +1
         : epochUpdate < that.epochUpdate ? -1 : 0;
-    return compare == 0 ? epochGet > that.epochGet ? +1
-        : epochGet < that.epochGet ? -1 : 0 : compare;
+    return compare == 0 ? epochPoll > that.epochPoll ? +1
+        : epochPoll < that.epochPoll ? -1 : 0 : compare;
   }
 
 }

@@ -26,7 +26,7 @@ public class PartitionKeyTest {
   private static String XML_EXTENSION = "xml";
   private static String XML_REPO = DataConstants.PATH_LOCAL_XMLS[0];
 
-  private static Long EPOCH_GET;
+  private static Long EPOCH_POLL;
   private static Long EPOCH_UPDATE;
   private static long PARTITION_EPOCH_MIN;
   private static long PARTITION_EPOCH_MAX;
@@ -45,9 +45,9 @@ public class PartitionKeyTest {
   static {
     Matcher matcherFile = PartitionKey.REGEX_RECORD.matcher(FILE);
     matcherFile.matches();
-    EPOCH_GET = 1000 * Long.parseLong(matcherFile.group(1));
-    EPOCH_UPDATE = EPOCH_GET - 50000;
-    Calendar calendar = PartitionKey.getCalendarMonth(EPOCH_GET);
+    EPOCH_POLL = 1000 * Long.parseLong(matcherFile.group(1));
+    EPOCH_UPDATE = EPOCH_POLL - 50000;
+    Calendar calendar = PartitionKey.getCalendarMonth(EPOCH_POLL);
     PARTITION.add("year=" + calendar.get(Calendar.YEAR) + "/month="
         + String.format("%02d", calendar.get(Calendar.MONTH) + 1));
     Matcher matcherBatch = PartitionKey.REGEX_BATCH.matcher(XML_REPO);
@@ -68,7 +68,7 @@ public class PartitionKeyTest {
     Assert.assertEquals(false, new PartitionKey().isValid());
     Assert.assertEquals(false, new PartitionKey().record(FILE).isValid());
     Assert
-        .assertEquals(false, new PartitionKey().epochGet(EPOCH_GET).isValid());
+        .assertEquals(false, new PartitionKey().epochPoll(EPOCH_POLL).isValid());
     Assert.assertEquals(false, new PartitionKey().epochUpdate(EPOCH_UPDATE)
         .isValid());
     Assert.assertEquals(false, new PartitionKey().batch(null).isValid());
@@ -99,18 +99,18 @@ public class PartitionKeyTest {
         false,
         new PartitionKey().batch(TAR_REPO)
             .record("9" + FILE.substring(1, FILE.length())).isValid());
-    Assert.assertEquals(false, new PartitionKey().batch(TAR_REPO).epochGet(1L)
+    Assert.assertEquals(false, new PartitionKey().batch(TAR_REPO).epochPoll(1L)
         .isValid());
     Assert.assertEquals(false,
-        new PartitionKey().batch(TAR_REPO).epochGet(PARTITION_EPOCH_MIN - 1)
+        new PartitionKey().batch(TAR_REPO).epochPoll(PARTITION_EPOCH_MIN - 1)
             .isValid());
     Assert.assertEquals(false,
-        new PartitionKey().batch(TAR_REPO).epochGet(PARTITION_EPOCH_MAX + 1)
+        new PartitionKey().batch(TAR_REPO).epochPoll(PARTITION_EPOCH_MAX + 1)
             .isValid());
     Assert.assertEquals(false, new PartitionKey().batch(TAR_REPO).record(FILE)
-        .epochGet(EPOCH_GET * 2).isValid());
+        .epochPoll(EPOCH_POLL * 2).isValid());
     Assert.assertEquals(false, new PartitionKey().batch(TAR_REPO).record(FILE)
-        .epochGet(EPOCH_GET * -1L).isValid());
+        .epochPoll(EPOCH_POLL * -1L).isValid());
     Assert.assertEquals(false,
         new PartitionKey().batch(TAR_REPO).partition("some-rubbish").isValid());
     Assert.assertEquals(
@@ -127,7 +127,7 @@ public class PartitionKeyTest {
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
         .record(FILE).getType());
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
-        .epochGet(EPOCH_GET).getType());
+        .epochPoll(EPOCH_POLL).getType());
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
         .epochUpdate(EPOCH_UPDATE).getType());
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
@@ -156,15 +156,15 @@ public class PartitionKeyTest {
     Assert.assertEquals(TAR_EXTENSION, new PartitionKey().batch(TAR_REPO)
         .record("9" + FILE.substring(1, FILE.length())).getType());
     Assert.assertEquals(TAR_EXTENSION, new PartitionKey().batch(TAR_REPO)
-        .epochGet(1L).getType());
+        .epochPoll(1L).getType());
     Assert.assertEquals(TAR_EXTENSION, new PartitionKey().batch(TAR_REPO)
-        .epochGet(PARTITION_EPOCH_MIN - 1).getType());
+        .epochPoll(PARTITION_EPOCH_MIN - 1).getType());
     Assert.assertEquals(TAR_EXTENSION, new PartitionKey().batch(TAR_REPO)
-        .epochGet(PARTITION_EPOCH_MAX + 1).getType());
+        .epochPoll(PARTITION_EPOCH_MAX + 1).getType());
     Assert.assertEquals(TAR_EXTENSION, new PartitionKey().batch(TAR_REPO)
-        .record(FILE).epochGet(EPOCH_GET + 1).getType());
+        .record(FILE).epochPoll(EPOCH_POLL + 1).getType());
     Assert.assertEquals(TAR_EXTENSION, new PartitionKey().batch(TAR_REPO)
-        .record(FILE).epochGet(EPOCH_GET - 1).getType());
+        .record(FILE).epochPoll(EPOCH_POLL - 1).getType());
   }
 
   @Test
@@ -174,7 +174,7 @@ public class PartitionKeyTest {
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
         .record(FILE).getCodec());
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
-        .epochGet(EPOCH_GET).getCodec());
+        .epochPoll(EPOCH_POLL).getCodec());
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
         .epochUpdate(EPOCH_UPDATE).getCodec());
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
@@ -208,18 +208,18 @@ public class PartitionKeyTest {
         new PartitionKey().batch(TAR_REPO)
             .record("9" + FILE.substring(1, FILE.length())).getCodec());
     Assert.assertEquals(TAR_CODEC,
-        new PartitionKey().batch(TAR_REPO).epochGet(1L).getCodec());
+        new PartitionKey().batch(TAR_REPO).epochPoll(1L).getCodec());
     Assert.assertEquals(TAR_CODEC,
-        new PartitionKey().batch(TAR_REPO).epochGet(PARTITION_EPOCH_MIN - 1)
+        new PartitionKey().batch(TAR_REPO).epochPoll(PARTITION_EPOCH_MIN - 1)
             .getCodec());
     Assert.assertEquals(TAR_CODEC,
-        new PartitionKey().batch(TAR_REPO).epochGet(PARTITION_EPOCH_MAX + 1)
+        new PartitionKey().batch(TAR_REPO).epochPoll(PARTITION_EPOCH_MAX + 1)
             .getCodec());
     Assert.assertEquals(TAR_CODEC,
-        new PartitionKey().batch(TAR_REPO).record(FILE).epochGet(EPOCH_GET + 1)
+        new PartitionKey().batch(TAR_REPO).record(FILE).epochPoll(EPOCH_POLL + 1)
             .getCodec());
     Assert.assertEquals(TAR_CODEC,
-        new PartitionKey().batch(TAR_REPO).record(FILE).epochGet(EPOCH_GET - 1)
+        new PartitionKey().batch(TAR_REPO).record(FILE).epochPoll(EPOCH_POLL - 1)
             .getCodec());
   }
 
@@ -230,7 +230,7 @@ public class PartitionKeyTest {
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
         .record(FILE).getPartition());
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
-        .epochGet(EPOCH_GET).getPartition());
+        .epochPoll(EPOCH_POLL).getPartition());
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
         .epochUpdate(EPOCH_UPDATE).getPartition());
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
@@ -261,16 +261,16 @@ public class PartitionKeyTest {
         .batch(TAR_REPO).record("9" + FILE.substring(1, FILE.length()))
         .getPartition());
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
-        .batch(TAR_REPO).epochGet(1L).getPartition());
+        .batch(TAR_REPO).epochPoll(1L).getPartition());
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
-        .batch(TAR_REPO).epochGet(PARTITION_EPOCH_MIN - 1).getPartition());
+        .batch(TAR_REPO).epochPoll(PARTITION_EPOCH_MIN - 1).getPartition());
     Assert.assertEquals(PartitionFlag._UNKNOWN.toString(), new PartitionKey()
-        .batch(TAR_REPO).epochGet(PARTITION_EPOCH_MAX + 1).getPartition());
+        .batch(TAR_REPO).epochPoll(PARTITION_EPOCH_MAX + 1).getPartition());
     Assert.assertEquals(PARTITION.iterator().next(),
-        new PartitionKey().batch(TAR_REPO).record(FILE).epochGet(EPOCH_GET + 1)
+        new PartitionKey().batch(TAR_REPO).record(FILE).epochPoll(EPOCH_POLL + 1)
             .getPartition());
     Assert.assertEquals(PARTITION.iterator().next(),
-        new PartitionKey().batch(TAR_REPO).record(FILE).epochGet(EPOCH_GET - 1)
+        new PartitionKey().batch(TAR_REPO).record(FILE).epochPoll(EPOCH_POLL - 1)
             .getPartition());
   }
 
@@ -280,7 +280,7 @@ public class PartitionKeyTest {
     Assert.assertEquals(PARTITIONS_UNKNOWN, new PartitionKey().record(FILE)
         .getPartitions());
     Assert.assertEquals(PARTITIONS_UNKNOWN,
-        new PartitionKey().epochGet(EPOCH_GET).getPartitions());
+        new PartitionKey().epochPoll(EPOCH_POLL).getPartitions());
     Assert.assertEquals(PARTITIONS_UNKNOWN,
         new PartitionKey().epochUpdate(EPOCH_UPDATE).getPartitions());
     Assert.assertEquals(PARTITIONS_UNKNOWN, new PartitionKey().batch(null)
@@ -312,16 +312,16 @@ public class PartitionKeyTest {
     Assert.assertEquals(PARTITIONS_UNKNOWN, new PartitionKey().batch(TAR_REPO)
         .record("9" + FILE.substring(1, FILE.length())).getPartitions());
     Assert.assertEquals(PARTITIONS, new PartitionKey().batch(TAR_REPO)
-        .epochGet(1L).getPartitions());
+        .epochPoll(1L).getPartitions());
     Assert.assertEquals(PARTITIONS, new PartitionKey().batch(TAR_REPO)
-        .epochGet(PARTITION_EPOCH_MIN - 1).getPartitions());
+        .epochPoll(PARTITION_EPOCH_MIN - 1).getPartitions());
     Assert.assertEquals(PARTITIONS, new PartitionKey().batch(TAR_REPO)
-        .epochGet(PARTITION_EPOCH_MAX + 1).getPartitions());
+        .epochPoll(PARTITION_EPOCH_MAX + 1).getPartitions());
     Assert.assertEquals(PARTITION,
-        new PartitionKey().batch(TAR_REPO).record(FILE).epochGet(EPOCH_GET + 1)
+        new PartitionKey().batch(TAR_REPO).record(FILE).epochPoll(EPOCH_POLL + 1)
             .getPartitions());
     Assert.assertEquals(PARTITION,
-        new PartitionKey().batch(TAR_REPO).record(FILE).epochGet(EPOCH_GET - 1)
+        new PartitionKey().batch(TAR_REPO).record(FILE).epochPoll(EPOCH_POLL - 1)
             .getPartitions());
   }
 
@@ -448,7 +448,7 @@ public class PartitionKeyTest {
       if (FILE.equals(partitionKey.getRecord())) {
         Assert.assertEquals(FILE, partitionKey.getRecord());
         Assert.assertEquals(XML_REPO, partitionKey.getBatch());
-        Assert.assertEquals(EPOCH_GET, partitionKey.getEpochGet());
+        Assert.assertEquals(EPOCH_POLL, partitionKey.getEpochGet());
         Assert.assertEquals(new Long(0L), partitionKey.getEpochUpdate());
         Assert.assertEquals(XML_EXTENSION, partitionKey.getType());
         Assert.assertEquals(XML_CODEC, partitionKey.getCodec());
@@ -544,7 +544,7 @@ public class PartitionKeyTest {
     Assert.assertTrue(partitionKey.isValid());
     Assert.assertEquals(FILE, partitionKey.getRecord());
     Assert.assertEquals(TAR_REPO, partitionKey.getBatch());
-    Assert.assertEquals(EPOCH_GET, partitionKey.getEpochGet());
+    Assert.assertEquals(EPOCH_POLL, partitionKey.getEpochGet());
     Assert.assertEquals(new Long(0L), partitionKey.getEpochUpdate());
     Assert.assertEquals(TAR_EXTENSION, partitionKey.getType());
     Assert.assertEquals(TAR_CODEC, partitionKey.getCodec());
@@ -564,7 +564,7 @@ public class PartitionKeyTest {
     Assert.assertTrue(partitionKey.isValid());
     Assert.assertEquals(FILE, partitionKey.getRecord());
     Assert.assertEquals(XML_REPO, partitionKey.getBatch());
-    Assert.assertEquals(EPOCH_GET, partitionKey.getEpochGet());
+    Assert.assertEquals(EPOCH_POLL, partitionKey.getEpochGet());
     Assert.assertEquals(new Long(0L), partitionKey.getEpochUpdate());
     Assert.assertEquals(XML_EXTENSION, partitionKey.getType());
     Assert.assertEquals(XML_CODEC, partitionKey.getCodec());
@@ -585,7 +585,7 @@ public class PartitionKeyTest {
     Assert.assertTrue(partitionKey.isValid());
     Assert.assertEquals(FILE, partitionKey.getRecord());
     Assert.assertEquals(TAR_REPO, partitionKey.getBatch());
-    Assert.assertEquals(EPOCH_GET, partitionKey.getEpochGet());
+    Assert.assertEquals(EPOCH_POLL, partitionKey.getEpochGet());
     Assert.assertEquals(EPOCH_UPDATE, partitionKey.getEpochUpdate());
     Assert.assertEquals(TAR_EXTENSION, partitionKey.getType());
     Assert.assertEquals(TAR_CODEC, partitionKey.getCodec());
@@ -606,7 +606,7 @@ public class PartitionKeyTest {
     Assert.assertTrue(partitionKey.isValid());
     Assert.assertEquals(FILE, partitionKey.getRecord());
     Assert.assertEquals(XML_REPO, partitionKey.getBatch());
-    Assert.assertEquals(EPOCH_GET, partitionKey.getEpochGet());
+    Assert.assertEquals(EPOCH_POLL, partitionKey.getEpochGet());
     Assert.assertEquals(EPOCH_UPDATE, partitionKey.getEpochUpdate());
     Assert.assertEquals(XML_EXTENSION, partitionKey.getType());
     Assert.assertEquals(XML_CODEC, partitionKey.getCodec());
@@ -650,7 +650,7 @@ public class PartitionKeyTest {
     Assert.assertTrue(partitionKey.isValid());
     Assert.assertEquals(FILE, partitionKey.getRecord());
     Assert.assertEquals(XML_REPO, partitionKey.getBatch());
-    Assert.assertEquals(EPOCH_GET, partitionKey.getEpochGet());
+    Assert.assertEquals(EPOCH_POLL, partitionKey.getEpochGet());
     Assert.assertEquals(new Long(0L), partitionKey.getEpochUpdate());
     Assert.assertEquals(XML_EXTENSION, partitionKey.getType());
     Assert.assertEquals(XML_CODEC, partitionKey.getCodec());

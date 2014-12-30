@@ -3,36 +3,30 @@
 --
 
 SELECT 
-  COUNT(1) AS total_station_readings
+  COUNT(1) AS readings
 FROM cyclehire_processed_cleansed_canonical;
 
-SELECT
-  FROM_UTC_TIMESTAMP(updateDate, "GMT") AS station_reading_timestamp,
-  COUNT(1) AS station_readings
-FROM cyclehire_processed_cleansed_canonical
-GROUP BY updateDate;
+SELECT 
+  COUNT(1) AS readings
+FROM cyclehire_processed_cleansed_rewrite_parquet_none;
 
 SELECT 
-  FROM_UTC_TIMESTAMP(getDate, "GMT"),
-  FROM_UTC_TIMESTAMP(updateDate, "GMT"),
+  FROM_UNIXTIME(CAST(polled/1000 AS BIGINT)) AS polled,
+  FROM_UNIXTIME(CAST(updated/1000 AS BIGINT)) AS updated,
   id,
-  RPAD(name, 45, ' '),
+  RPAD(name, 45, ' ') AS name,
   bikes,
   empty,
   docks
-FROM cyclehire_processed_cleansed_canonical
-LIMIT 5;
+FROM cyclehire_processed_cleansed_rewrite_parquet_none
+LIMIT 10;
 
-SELECT 
-  FROM_UTC_TIMESTAMP(getDate, "GMT"),
-  FROM_UTC_TIMESTAMP(updateDate, "GMT"),
-  id,
-  RPAD(name, 45, ' '),
-  bikes,
-  empty,
-  docks
-FROM cyclehire_processed_cleansed_canonical
-WHERE
-  id == 1
-LIMIT 50;
-
+SELECT readings_per_update, count(1) AS updates
+FROM (
+  SELECT
+    COUNT(1) AS readings_per_update
+  FROM cyclehire_processed_cleansed_rewrite_parquet_none
+  GROUP BY updated
+) AS T
+GROUP BY readings_per_update
+ORDER BY readings_per_update ASC;

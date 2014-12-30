@@ -3,17 +3,17 @@
 --
 
 CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.table.modifier}_sequence_${hiveconf:cyclehire.table.codec} (
-  getDate BIGINT,
-  updateDate BIGINT,
+  polled BIGINT,
+  updated BIGINT,
   id SMALLINT,
   name STRING,
   terminal STRING,
   lattitude FLOAT,
   longitude FLOAT,
-  installed BOOLEAN,
-  locked BOOLEAN,
-  installDate BIGINT,
-  removalDate BIGINT,
+  is_installed BOOLEAN,
+  is_locked BOOLEAN,
+  installed BIGINT,
+  removed BIGINT,
   temporary BOOLEAN,
   bikes SMALLINT,
   empty SMALLINT,
