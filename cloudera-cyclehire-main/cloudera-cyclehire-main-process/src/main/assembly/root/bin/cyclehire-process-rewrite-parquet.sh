@@ -9,7 +9,7 @@ set -x
 CMD_LINE_ARGUMENTS="$1"
 ROOT_DIR_HDFS_PROCESSED=${2:-"$ROOT_DIR_HDFS_PROCESSED"}
 TABLE_BLOCKSIZE=${3:-"256000000"}
-TABLE_PARTITION_SPLIT=${4:-"4750000000"}
+TABLE_PARTITION_SPLIT=${4:-"250000000"}
 TABLE_COMPRESS=${5:-"false"}
 TABLE_CODEC=${6:-"none"}
 TABLE_CODEC_CLASS=${7:-"SNAPPY"}
@@ -27,7 +27,6 @@ elif [ "$TABLE_CODEC_CLASS" = "DICT" ]; then
 	TABLE_CODEC="dict"
 	TABLE_CODEC_DICT="true"
 fi
-
 
 TABLE_LOCATION=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/parquet/$TABLE_CODEC
 
@@ -48,7 +47,7 @@ for((i=0;i<${#PARTITION_YEARS[@]};i++)); do
 		--hiveconf "hive.stats.autogather=false" \
 		--hiveconf "hive.exec.dynamic.partition.mode=nonstrict" \
 		--hiveconf "dfs.blocksize=$TABLE_BLOCKSIZE" \
-		--hiveconf "parquet.block.size=134217728" \
+		--hiveconf "parquet.block.size=$TABLE_PARTITION_SPLIT" \
 		--hiveconf "parquet.page.size=1048576" \
 		--hiveconf "parquet.dictionary.page.size=1048576" \
 		--hiveconf "parquet.compression=$TABLE_CODEC_CLASS" \
