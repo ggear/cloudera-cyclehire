@@ -61,5 +61,5 @@ for((i=0;i<${#PARTITION_YEARS[@]};i++)); do
 		--hiveconf "cyclehire.table.location=$TABLE_LOCATION" \
 		$CMD_LINE_ARGUMENTS \
 		-f "$ROOT_DIR/lib/ddl/processed_rewrite_parquet.ddl"
-	hadoop fs -rm -f $TABLE_LOCATION/${PARTITION_YEARS[$i]}/${PARTITION_MONTHS[$i]}/_REWRITE
+	hadoop fs -rm -f $TABLE_LOCATION/year=${PARTITION_YEARS[$i]}/month=${PARTITION_MONTHS[$i]}/_REWRITE
 done
