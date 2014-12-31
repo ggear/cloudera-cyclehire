@@ -17,10 +17,17 @@ TABLE_PARTITION_YEAR="$8"
 TABLE_PARTITION_MONTH="$9"
 export HIVE_AUX_JARS_PATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
 
+TABLE_CODEC_DICT="false"
 if [ "$TABLE_COMPRESS" = "false" ]; then
 	TABLE_CODEC_CLASS="UNCOMPRESSED"
 	TABLE_CODEC="none"
+elif [ "$TABLE_CODEC_CLASS" = "DICT" ]; then
+	TABLE_COMPRESS="false"
+	TABLE_CODEC_CLASS="UNCOMPRESSED"
+	TABLE_CODEC="dict"
+	TABLE_CODEC_DICT="true"
 fi
+
 
 TABLE_LOCATION=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/parquet/$TABLE_CODEC
 
@@ -46,7 +53,7 @@ for((i=0;i<${#PARTITION_YEARS[@]};i++)); do
 		--hiveconf "parquet.dictionary.page.size=1048576" \
 		--hiveconf "parquet.compression=$TABLE_CODEC_CLASS" \
 		--hiveconf "cyclehire.table.codec=$TABLE_CODEC" \
-		--hiveconf "parquet.enable.dictionary=true" \
+		--hiveconf "parquet.enable.dictionary=$TABLE_CODEC_DICT" \
 		--hiveconf "mapreduce.input.fileinputformat.split.minsize=$TABLE_PARTITION_SPLIT" \
 		--hiveconf "cyclehire.table.partition.year=${PARTITION_YEARS[$i]}" \
 		--hiveconf "cyclehire.table.partition.month=${PARTITION_MONTHS[$i]}" \
