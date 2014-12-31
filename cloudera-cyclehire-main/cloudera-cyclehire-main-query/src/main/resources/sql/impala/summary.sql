@@ -3,8 +3,8 @@
 --
 
 SELECT 
-  MILLISECONDS_ADD(FROM_UNIXTIME(CAST(polled/1000 AS BIGINT)),PMOD(updateDate,1000)) AS polled,
-  MILLISECONDS_ADD(FROM_UNIXTIME(CAST(updated/1000 AS BIGINT)),PMOD(updateDate,1000)) AS updated,
+  MILLISECONDS_ADD(FROM_UNIXTIME(CAST(polled/1000 AS BIGINT)),PMOD(polled,1000)) AS polled,
+  MILLISECONDS_ADD(FROM_UNIXTIME(CAST(updated/1000 AS BIGINT)),PMOD(updated,1000)) AS updated,
   id,
   RPAD(name, 45, ' ') AS name,
   bikes,

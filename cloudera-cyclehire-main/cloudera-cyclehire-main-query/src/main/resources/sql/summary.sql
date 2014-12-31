@@ -3,11 +3,11 @@
 --
 
 SELECT 
-  COUNT(1) AS readings
+  COUNT(1) AS updates
 FROM cyclehire_processed_cleansed_canonical;
 
 SELECT 
-  COUNT(1) AS readings
+  COUNT(1) AS updates
 FROM cyclehire_processed_cleansed_rewrite_parquet_none;
 
 SELECT 
@@ -21,12 +21,35 @@ SELECT
 FROM cyclehire_processed_cleansed_rewrite_parquet_none
 LIMIT 10;
 
-SELECT readings_per_update, count(1) AS updates
+SELECT
+  stations,
+  count(1) AS updates
 FROM (
   SELECT
-    COUNT(1) AS readings_per_update
+    COUNT(1) AS stations
   FROM cyclehire_processed_cleansed_rewrite_parquet_none
   GROUP BY updated
-) AS T
-GROUP BY readings_per_update
-ORDER BY readings_per_update ASC;
+) AS stations_per_update
+GROUP BY stations
+ORDER BY stations ASC;
+
+SELECT
+  year,
+  month,
+  AVG(bikes/docks*100) AS bikes_avg,
+  STDDEV_POP(bikes/docks*100) AS bikes_stddev,
+  AVG(empty/docks*100) AS empty_avg,
+  STDDEV_POP(empty/docks*100) AS empty_stddev,
+  AVG((docks-bikes-empty)/docks*100) AS locked_avg,
+  STDDEV_POP((docks-bikes-empty)/docks*100) AS locked_stddev
+FROM cyclehire_processed_cleansed_rewrite_parquet_none
+WHERE docks != 0
+GROUP BY year,month;
+
+SELECT
+  COUNT(DISTINCT(id)) AS disabled_stations
+FROM cyclehire_processed_cleansed_rewrite_parquet_none
+WHERE
+  is_locked = true OR
+  is_installed = false OR
+  docks = 0;
