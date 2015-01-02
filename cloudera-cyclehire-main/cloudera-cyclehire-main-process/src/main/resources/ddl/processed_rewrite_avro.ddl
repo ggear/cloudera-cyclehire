@@ -5,8 +5,8 @@
 CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.table.modifier}_avro_${hiveconf:cyclehire.table.codec}
 COMMENT 'TFL Cyclehire processed data (${hiveconf:cyclehire.table.modifier})'
 PARTITIONED BY (
-  year INT,
-  month INT
+  year SMALLINT,
+  month TINYINT
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
 STORED AS INPUTFORMAT 'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'

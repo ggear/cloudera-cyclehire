@@ -25,8 +25,7 @@ PARTITIONED BY (
   year INT,
   month INT
 )
-ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001'
-STORED AS SEQUENCEFILE
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazybinary.LazyBinarySerDe'
 LOCATION '${hiveconf:cyclehire.table.location}';
 
 INSERT OVERWRITE TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier}_sequence_${hiveconf:cyclehire.table.codec}
