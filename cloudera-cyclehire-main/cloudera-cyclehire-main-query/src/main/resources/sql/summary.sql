@@ -8,7 +8,7 @@ FROM cyclehire_processed_cleansed_canonical;
 
 SELECT 
   COUNT(1) AS updates
-FROM cyclehire_processed_cleansed_rewrite_parquet_none;
+FROM cyclehire_processed_cleansed_rewrite_parquet_dict;
 
 SELECT 
   FROM_UNIXTIME(CAST(polled/1000 AS BIGINT)) AS polled,
@@ -18,7 +18,7 @@ SELECT
   bikes,
   empty,
   docks
-FROM cyclehire_processed_cleansed_rewrite_parquet_none
+FROM cyclehire_processed_cleansed_rewrite_parquet_dict
 LIMIT 10;
 
 SELECT
@@ -27,7 +27,7 @@ SELECT
 FROM (
   SELECT
     COUNT(1) AS stations
-  FROM cyclehire_processed_cleansed_rewrite_parquet_none
+  FROM cyclehire_processed_cleansed_rewrite_parquet_dict
   GROUP BY updated
 ) AS stations_per_update
 GROUP BY stations
@@ -42,13 +42,13 @@ SELECT
   ROUND(STDDEV_POP(empty/docks*100), 2) AS empty_stddev,
   ROUND(AVG((docks-bikes-empty)/docks*100), 2) AS locked_avg,
   ROUND(STDDEV_POP((docks-bikes-empty)/docks*100), 2) AS locked_stddev
-FROM cyclehire_processed_cleansed_rewrite_parquet_none
+FROM cyclehire_processed_cleansed_rewrite_parquet_dict
 WHERE docks != 0
 GROUP BY year,month;
 
 SELECT
   COUNT(DISTINCT(id)) AS disabled_stations
-FROM cyclehire_processed_cleansed_rewrite_parquet_none
+FROM cyclehire_processed_cleansed_rewrite_parquet_dict
 WHERE
   is_locked = true OR
   is_installed = false OR

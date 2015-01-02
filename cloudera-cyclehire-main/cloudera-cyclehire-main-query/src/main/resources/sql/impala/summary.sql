@@ -10,5 +10,5 @@ SELECT
   bikes,
   empty,
   docks
-FROM cyclehire_processed_cleansed_rewrite_parquet_none
+FROM cyclehire_processed_cleansed_rewrite_parquet_dict
 LIMIT 10;
