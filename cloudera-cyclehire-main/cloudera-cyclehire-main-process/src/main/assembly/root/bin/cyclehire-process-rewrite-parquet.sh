@@ -10,9 +10,9 @@ CMD_LINE_ARGUMENTS="$1"
 ROOT_DIR_HDFS_PROCESSED=${2:-"$ROOT_DIR_HDFS_PROCESSED"}
 TABLE_BLOCKSIZE=${3:-"256000000"}
 TABLE_PARTITION_SPLIT=${4:-"250000000"}
-TABLE_COMPRESS=${5:-"false"}
+TABLE_COMPRESS=${5:-"true"}
 TABLE_CODEC=${6:-"none"}
-TABLE_CODEC_CLASS=${7:-"SNAPPY"}
+TABLE_CODEC_CLASS=${7:-"DICT"}
 TABLE_PARTITION_YEAR="$8"
 TABLE_PARTITION_MONTH="$9"
 export HIVE_AUX_JARS_PATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
@@ -33,7 +33,7 @@ TABLE_LOCATION=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/parquet/$TABLE_CODEC
 PARTITION_YEARS=()
 PARTITION_MONTHS=()
 if [ -z "$TABLE_PARTITION_YEAR" ] || [ -z "$TABLE_PARTITION_MONTH" ]; then
-	for PATH_REWRITE in $(hadoop jar $HADOOP_LIB_SEARCH org.apache.solr.hadoop.HdfsFindTool -find $TABLE_LOCATION -name _REWRITE); do
+	for PATH_REWRITE in $(hadoop jar $HADOOP_LIB_SEARCH org.apache.solr.hadoop.HdfsFindTool -find $TABLE_LOCATION -name _REWRITE 2> /dev/null); do
    		PARTITION_YEARS+=("$(basename $(dirname $(dirname $PATH_REWRITE))|cut -c 6-|tr -d '\n')")
    		PARTITION_MONTHS+=("$(basename $(dirname $PATH_REWRITE)|cut -c 7-|tr -d '\n')")
 	done
