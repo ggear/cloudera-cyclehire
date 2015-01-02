@@ -125,8 +125,8 @@ public class QueryTest extends EmbeddedHiveTestCase {
   @Test
   public void testQueryValid() throws TException, IOException {
 
-    Assert.assertNotNull(executeAndFetchAll(Query.SQL_LOCATION,
-        Query.SQL_LOCATION_SUMMARY));
+    Assert.assertTrue(executeAndFetchAll(Query.SQL_LOCATION,
+        Query.SQL_LOCATION_SUMMARY).size() > 0);
 
   }
 

@@ -36,12 +36,12 @@ ORDER BY stations ASC;
 SELECT
   year,
   month,
-  AVG(bikes/docks*100) AS bikes_avg,
-  STDDEV_POP(bikes/docks*100) AS bikes_stddev,
-  AVG(empty/docks*100) AS empty_avg,
-  STDDEV_POP(empty/docks*100) AS empty_stddev,
-  AVG((docks-bikes-empty)/docks*100) AS locked_avg,
-  STDDEV_POP((docks-bikes-empty)/docks*100) AS locked_stddev
+  ROUND(AVG(bikes/docks*100), 2) AS bikes_avg,
+  ROUND(STDDEV_POP(bikes/docks*100), 2) AS bikes_stddev,
+  ROUND(AVG(empty/docks*100), 2) AS empty_avg,
+  ROUND(STDDEV_POP(empty/docks*100), 2) AS empty_stddev,
+  ROUND(AVG((docks-bikes-empty)/docks*100), 2) AS locked_avg,
+  ROUND(STDDEV_POP((docks-bikes-empty)/docks*100), 2) AS locked_stddev
 FROM cyclehire_processed_cleansed_rewrite_parquet_none
 WHERE docks != 0
 GROUP BY year,month;
