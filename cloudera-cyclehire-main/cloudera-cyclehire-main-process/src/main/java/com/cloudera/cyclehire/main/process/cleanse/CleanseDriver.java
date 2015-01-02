@@ -14,6 +14,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.permission.FsPermission;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.compress.DefaultCodec;
@@ -228,7 +229,7 @@ public class CleanseDriver extends Driver {
           CompressionType.NONE);
       FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
       MultipleOutputs.addNamedOutput(job, NAMED_OUTPUT_SEQUENCE,
-          SequenceFileOutputFormat.class, PartitionKey.class, Text.class);
+          SequenceFileOutputFormat.class, NullWritable.class, Text.class);
       ClenseReducerPartitioner.setPartitions(job.getConfiguration(),
           partitionKeys.keySet());
       job.setNumReduceTasks(partitionKeys.size());

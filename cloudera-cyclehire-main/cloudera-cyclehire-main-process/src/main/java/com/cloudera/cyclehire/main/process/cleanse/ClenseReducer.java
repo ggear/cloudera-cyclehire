@@ -3,6 +3,7 @@ package com.cloudera.cyclehire.main.process.cleanse;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
@@ -14,18 +15,18 @@ import com.cloudera.cyclehire.main.common.model.PartitionRecord;
 import com.cloudera.cyclehire.main.process.partition.PartitionDriver;
 
 public class ClenseReducer extends
-    Reducer<PartitionKey, Text, PartitionKey, Text> {
+    Reducer<PartitionKey, Text, NullWritable, Text> {
 
   public static final int RECORD_BUFFER_SIZE_DATA = 1024;
   public static final int RECORD_BUFFER_SIZE_METADATA = 256;
 
   private static final String PATH_PREFIX = "./";
 
-  private MultipleOutputs<PartitionKey, Text> multipleOutputs;
+  private MultipleOutputs<NullWritable, Text> multipleOutputs;
 
   @Override
   public void setup(Context context) {
-    multipleOutputs = new MultipleOutputs<PartitionKey, Text>(context);
+    multipleOutputs = new MultipleOutputs<NullWritable, Text>(context);
   }
 
   @Override
@@ -68,7 +69,7 @@ public class ClenseReducer extends
         value = new Text(valueStringBuilder.toString());
         multipleOutputs.write(
             CleanseDriver.NAMED_OUTPUT_SEQUENCE,
-            key,
+            NullWritable.get(),
             value,
             new StringBuilder(RECORD_BUFFER_SIZE_METADATA)
                 .append(PATH_PREFIX)
