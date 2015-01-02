@@ -22,8 +22,8 @@ CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.tab
 )
 COMMENT 'TFL Cyclehire processed data (${hiveconf:cyclehire.table.modifier})'
 PARTITIONED BY (
-  year INT,
-  month INT
+  year SMALLINT,
+  month TINYINT
 )
 STORED AS PARQUET
 LOCATION '${hiveconf:cyclehire.table.location}';
