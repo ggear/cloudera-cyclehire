@@ -87,7 +87,7 @@ public class QueryTest extends EmbeddedHiveTestCase {
         "nonstrict");
     getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, "false");
     for (String[] attribute : TABLES) {
-      getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
+      getConf().set(Table.DDL_CONFIG_TABLE_NAME,
           attribute[0].replace('/', '_'));
       getConf().set(
           Table.DDL_CONFIG_TABLE_LOCATION,
@@ -104,7 +104,7 @@ public class QueryTest extends EmbeddedHiveTestCase {
         getConf().set(Table.DDL_CONFIG_TABLE_PARTITION_MONTH,
             path.getParent().getName().replace("month=", ""));
         for (String[] attribute : TABLES_REWRITE) {
-          getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
+          getConf().set(Table.DDL_CONFIG_TABLE_NAME,
               attribute[0].replace('/', '_'));
           getConf().set(
               Table.DDL_CONFIG_TABLE_LOCATION,

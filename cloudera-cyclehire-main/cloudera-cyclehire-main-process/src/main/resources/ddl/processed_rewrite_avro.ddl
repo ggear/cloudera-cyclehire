@@ -2,8 +2,8 @@
 -- Cyclehire Processed Schema Rewrite Avro
 --
 
-CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.table.modifier}_avro_${hiveconf:cyclehire.table.codec}
-COMMENT 'TFL Cyclehire processed data (${hiveconf:cyclehire.table.modifier})'
+CREATE EXTERNAL TABLE IF NOT EXISTS ${hiveconf:cyclehire.table.name}
+COMMENT 'TFL Cyclehire processed data'
 PARTITIONED BY (
   year SMALLINT,
   month TINYINT
@@ -39,7 +39,7 @@ TBLPROPERTIES (
   }'
 );
 
-INSERT OVERWRITE TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier}_avro_${hiveconf:cyclehire.table.codec}
+INSERT OVERWRITE TABLE ${hiveconf:cyclehire.table.name}
 PARTITION (year, month)
 SELECT *
 FROM cyclehire_processed_cleansed_canonical

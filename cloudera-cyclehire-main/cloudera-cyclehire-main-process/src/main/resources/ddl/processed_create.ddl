@@ -2,7 +2,7 @@
 -- Cyclehire Processed Schema Create
 --
 
-CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.table.modifier} (
+CREATE EXTERNAL TABLE IF NOT EXISTS ${hiveconf:cyclehire.table.name} (
   polled BIGINT,
   updated BIGINT,
   id SMALLINT,
@@ -20,7 +20,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.tab
   docks SMALLINT,
   source STRING
 )
-COMMENT 'TFL Cyclehire processed data (${hiveconf:cyclehire.table.modifier})'
+COMMENT 'TFL Cyclehire processed data'
 PARTITIONED BY (
   year STRING,
   month STRING
@@ -29,4 +29,4 @@ ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001'
 STORED AS SEQUENCEFILE
 LOCATION '${hiveconf:cyclehire.table.location}';
 
-MSCK REPAIR TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier};
+MSCK REPAIR TABLE ${hiveconf:cyclehire.table.name};

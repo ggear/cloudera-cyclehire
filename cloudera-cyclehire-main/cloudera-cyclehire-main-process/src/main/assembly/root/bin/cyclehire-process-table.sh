@@ -11,31 +11,20 @@ ROOT_DIR_HDFS_RAW_PARTITIONED=${2:-"$ROOT_DIR_HDFS_RAW_PARTITIONED"}
 ROOT_DIR_HDFS_PROCESSED=${3:-"$ROOT_DIR_HDFS_PROCESSED"}
 export HIVE_AUX_JARS_PATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
 
-hive \
-	--hiveconf "cyclehire.table.modifier=valid" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_RAW_PARTITIONED/valid/sequence/none" \
-	-f "$ROOT_DIR/lib/ddl/partitioned_create.ddl"
+TABLES_REAPIR=""
+TABLES_NAME=("cyclehire_raw_partitioned_valid" "cyclehire_raw_partitioned_invalid" "cyclehire_processed_cleansed_canonical" "cyclehire_processed_erroneous_duplicate" "cyclehire_processed_erroneous_malformed")
+TABLES_LOCATION=("$ROOT_DIR_HDFS_RAW_PARTITIONED/valid" "$ROOT_DIR_HDFS_RAW_PARTITIONED/invalid" "$ROOT_DIR_HDFS_PROCESSED/cleansed/canonical" "$ROOT_DIR_HDFS_PROCESSED/erroneous/duplicate" "$ROOT_DIR_HDFS_PROCESSED/erroneous/malformed")
+TABLES_DDL=("partitioned_create.ddl" "partitioned_create.ddl" "processed_create.ddl" "processed_create.ddl" "processed_create.ddl")
 
-hive \
-	--hiveconf "cyclehire.table.modifier=invalid" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_RAW_PARTITIONED/invalid/sequence/none" \
-	$CMD_LINE_ARGUMENTS \
-	-f "$ROOT_DIR/lib/ddl/partitioned_create.ddl"
+for((i=0;i<${#TABLES_NAME[@]};i++)); do
+	TABLES_REAPIR="$TABLES_REAPIR""MSCK REPAIR TABLE ${TABLES_NAME[$i]};"
+done
 
-hive \
-	--hiveconf "cyclehire.table.modifier=cleansed_canonical" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/cleansed/canonical/sequence/none" \
-	$CMD_LINE_ARGUMENTS \
-	-f "$ROOT_DIR/lib/ddl/processed_create.ddl"
-
-hive \
-	--hiveconf "cyclehire.table.modifier=erroneous_duplicate" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/erroneous/duplicate/sequence/none" \
-	$CMD_LINE_ARGUMENTS \
-	-f "$ROOT_DIR/lib/ddl/processed_create.ddl"
-
-hive \
-	--hiveconf "cyclehire.table.modifier=erroneous_malformed" \
-	--hiveconf "cyclehire.table.location=$ROOT_DIR_HDFS_PROCESSED/erroneous/malformed/sequence/none" \
-	$CMD_LINE_ARGUMENTS \
-	-f "$ROOT_DIR/lib/ddl/processed_create.ddl"
+if [ $(hive -e "$TABLES_REAPIR" | grep "Tables not in metastore" | wc -l) -gt 0 ]; then
+	for((i=0;i<${#TABLES_NAME[@]};i++)); do
+		hive \
+			--hiveconf "cyclehire.table.name=${TABLES_NAME[$i]}" \
+			--hiveconf "cyclehire.table.location=${TABLES_LOCATION[$i]}/sequence/none" \
+			-f "$ROOT_DIR/lib/ddl/${TABLES_DDL[$i]}"
+	done
+fi

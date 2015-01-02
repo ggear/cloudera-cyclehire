@@ -93,7 +93,7 @@ public class TableTest extends EmbeddedHiveTestCase {
 
     Assert.assertEquals(0, executeAndFetchAll("SHOW TABLES").size());
     for (String[] attribute : TABLES) {
-      getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
+      getConf().set(Table.DDL_CONFIG_TABLE_NAME,
           attribute[0].replace('/', '_'));
       getConf().set(
           Table.DDL_CONFIG_TABLE_LOCATION,
@@ -113,7 +113,7 @@ public class TableTest extends EmbeddedHiveTestCase {
         getConf().set(Table.DDL_CONFIG_TABLE_PARTITION_MONTH,
             path.getParent().getName().replace("month=", ""));
         for (String[] attribute : TABLES_REWRITE) {
-          getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
+          getConf().set(Table.DDL_CONFIG_TABLE_NAME,
               attribute[0].replace('/', '_'));
           getConf().set(
               Table.DDL_CONFIG_TABLE_LOCATION,
@@ -139,7 +139,7 @@ public class TableTest extends EmbeddedHiveTestCase {
     Assert.assertEquals(0, executeAndFetchAll("SHOW TABLES").size());
 
     for (String[] attribute : TABLES) {
-      getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
+      getConf().set(Table.DDL_CONFIG_TABLE_NAME,
           attribute[0].replace('/', '_'));
       getConf().set(
           Table.DDL_CONFIG_TABLE_LOCATION,
@@ -157,7 +157,7 @@ public class TableTest extends EmbeddedHiveTestCase {
         getConf().set(Table.DDL_CONFIG_TABLE_PARTITION_MONTH,
             path.getParent().getName().replace("month=", ""));
         for (String[] attribute : TABLES_REWRITE) {
-          getConf().set(Table.DDL_CONFIG_TABLE_MODIFIER,
+          getConf().set(Table.DDL_CONFIG_TABLE_NAME,
               attribute[0].replace('/', '_'));
           getConf().set(
               Table.DDL_CONFIG_TABLE_LOCATION,

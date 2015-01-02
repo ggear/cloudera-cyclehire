@@ -2,7 +2,7 @@
 -- Cyclehire Processed Schema Rewrite Parquet
 --
 
-CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.table.modifier}_parquet_${hiveconf:cyclehire.table.codec} (
+CREATE EXTERNAL TABLE IF NOT EXISTS ${hiveconf:cyclehire.table.name} (
   polled BIGINT,
   updated BIGINT,
   id SMALLINT,
@@ -20,7 +20,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS cyclehire_processed_${hiveconf:cyclehire.tab
   docks SMALLINT,
   source STRING
 )
-COMMENT 'TFL Cyclehire processed data (${hiveconf:cyclehire.table.modifier})'
+COMMENT 'TFL Cyclehire processed data'
 PARTITIONED BY (
   year SMALLINT,
   month TINYINT
@@ -28,7 +28,7 @@ PARTITIONED BY (
 STORED AS PARQUET
 LOCATION '${hiveconf:cyclehire.table.location}';
 
-INSERT OVERWRITE TABLE cyclehire_processed_${hiveconf:cyclehire.table.modifier}_parquet_${hiveconf:cyclehire.table.codec}
+INSERT OVERWRITE TABLE ${hiveconf:cyclehire.table.name}
 PARTITION (year, month)
 SELECT *
 FROM cyclehire_processed_cleansed_canonical

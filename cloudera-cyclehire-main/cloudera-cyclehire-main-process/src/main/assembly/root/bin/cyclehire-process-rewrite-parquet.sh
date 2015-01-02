@@ -28,6 +28,7 @@ elif [ "$TABLE_CODEC_CLASS" = "DICT" ]; then
 	TABLE_CODEC="dict"
 fi
 
+TABLE_NAME=cleansed_rewrite_parquet_$TABLE_CODEC
 TABLE_LOCATION=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/parquet/$TABLE_CODEC
 
 PARTITION_YEARS=()
@@ -56,7 +57,7 @@ for((i=0;i<${#PARTITION_YEARS[@]};i++)); do
 		--hiveconf "mapreduce.input.fileinputformat.split.minsize=$TABLE_PARTITION_SPLIT" \
 		--hiveconf "cyclehire.table.partition.year=${PARTITION_YEARS[$i]}" \
 		--hiveconf "cyclehire.table.partition.month=${PARTITION_MONTHS[$i]}" \
-		--hiveconf "cyclehire.table.modifier=cleansed_rewrite" \
+		--hiveconf "cyclehire.table.name=$TABLE_NAME" \
 		--hiveconf "cyclehire.table.location=$TABLE_LOCATION" \
 		$CMD_LINE_ARGUMENTS \
 		-f "$ROOT_DIR/lib/ddl/processed_rewrite_parquet.ddl"
