@@ -46,25 +46,29 @@ else
 fi
 
 for((i=0;i<${#PARTITION_YEARS[@]};i++)); do
-	hive \
-		--hiveconf "hive.stats.autogather=false" \
-		--hiveconf "hive.exec.dynamic.partition.mode=nonstrict" \
-		--hiveconf "dfs.blocksize=$TABLE_BLOCKSIZE" \
-		--hiveconf "hive.exec.compress.output=$TABLE_COMPRESS" \
-		--hiveconf "mapreduce.map.output.compress.codec=$TABLE_CODEC_CLASS" \
-		--hiveconf "mapreduce.output.fileoutputformat.compress.type=BLOCK" \
-		--hiveconf "cyclehire.table.codec=$TABLE_CODEC" \
-		--hiveconf "parquet.block.size=$TABLE_PARTITION_SPLIT" \
-		--hiveconf "parquet.page.size=1048576" \
-		--hiveconf "parquet.dictionary.page.size=1048576" \
-		--hiveconf "parquet.compression=$TABLE_CODEC_CLASS" \
-		--hiveconf "parquet.enable.dictionary=true" \
-		--hiveconf "mapreduce.input.fileinputformat.split.minsize=$TABLE_PARTITION_SPLIT" \
-		--hiveconf "cyclehire.table.partition.year=${PARTITION_YEARS[$i]}" \
-		--hiveconf "cyclehire.table.partition.month=${PARTITION_MONTHS[$i]}" \
-		--hiveconf "cyclehire.table.name=$TABLE_NAME" \
-		--hiveconf "cyclehire.table.location=$TABLE_LOCATION" \
-		$CMD_LINE_ARGUMENTS \
-		-f "$TABLE_DDL"
-	hadoop fs -rm -f $TABLE_LOCATION/year=${PARTITION_YEARS[$i]}/month=${PARTITION_MONTHS[$i]}/_REWRITE
+	CMD_LINE_ARGUMENTS_PARTITION=\
+" --hiveconf cyclehire.table.name=$TABLE_NAME"\
+" --hiveconf cyclehire.table.location=$TABLE_LOCATION"\
+" --hiveconf cyclehire.table.codec=$TABLE_CODEC"\
+" --hiveconf cyclehire.table.partition.year=${PARTITION_YEARS[$i]}"\
+" --hiveconf cyclehire.table.partition.month=${PARTITION_MONTHS[$i]}"\
+" --hiveconf hive.stats.autogather=false"\
+" --hiveconf hive.exec.dynamic.partition.mode=nonstrict"\
+" --hiveconf dfs.blocksize=$TABLE_BLOCKSIZE"\
+" --hiveconf mapreduce.input.fileinputformat.split.minsize=$TABLE_PARTITION_SPLIT"
+	if [ "$TABLE_FORMAT" = "parquet" ]; then
+		CMD_LINE_ARGUMENTS="$CMD_LINE_ARGUMENTS_PARTITION"\
+" --hiveconf parquet.block.size=$TABLE_PARTITION_SPLIT"\
+" --hiveconf parquet.page.size=1048576"\
+" --hiveconf parquet.dictionary.page.size=1048576"\
+" --hiveconf parquet.compression=$TABLE_CODEC_CLASS"\
+" --hiveconf parquet.enable.dictionary=true"
+	else
+		CMD_LINE_ARGUMENTS="$CMD_LINE_ARGUMENTS_PARTITION"\
+" --hiveconf hive.exec.compress.output=$TABLE_COMPRESS"\
+" --hiveconf mapreduce.map.output.compress.codec=$TABLE_CODEC_CLASS"\
+" --hiveconf mapreduce.output.fileoutputformat.compress.type=BLOCK"
+	fi
+	hive $CMD_LINE_ARGUMENTS_PARTITION $CMD_LINE_ARGUMENTS -f "$TABLE_DDL" && \
+		hadoop fs -rm -f $TABLE_LOCATION/year=${PARTITION_YEARS[$i]}/month=${PARTITION_MONTHS[$i]}/_REWRITE
 done
