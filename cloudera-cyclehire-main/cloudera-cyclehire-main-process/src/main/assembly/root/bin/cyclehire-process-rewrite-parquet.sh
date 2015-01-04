@@ -28,7 +28,7 @@ elif [ "$TABLE_CODEC_CLASS" = "DICT" ]; then
 	TABLE_CODEC="dict"
 fi
 
-TABLE_NAME=cleansed_rewrite_parquet_$TABLE_CODEC
+TABLE_NAME=cyclehire_processed_cleansed_rewrite_parquet_$TABLE_CODEC
 TABLE_LOCATION=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/parquet/$TABLE_CODEC
 
 PARTITION_YEARS=()

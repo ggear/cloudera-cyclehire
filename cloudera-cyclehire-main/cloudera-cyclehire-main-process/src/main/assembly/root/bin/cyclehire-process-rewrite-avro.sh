@@ -21,7 +21,7 @@ if [ "$TABLE_COMPRESS" = "false" ]; then
 	TABLE_CODEC="none"
 fi
 
-TABLE_NAME=cleansed_rewrite_avro_$TABLE_CODEC
+TABLE_NAME=cyclehire_processed_cleansed_rewrite_avro_$TABLE_CODEC
 TABLE_LOCATION=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/avro/$TABLE_CODEC
 
 PARTITION_YEARS=()

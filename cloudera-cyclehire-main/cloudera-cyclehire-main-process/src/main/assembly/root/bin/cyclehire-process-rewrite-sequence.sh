@@ -21,7 +21,7 @@ if [ "$TABLE_COMPRESS" = "false" ]; then
 	TABLE_CODEC="none"
 fi
 
-TABLE_NAME=cleansed_rewrite_sequence_$TABLE_CODEC
+TABLE_NAME=cyclehire_processed_cleansed_rewrite_sequence_$TABLE_CODEC
 TABLE_LOCATION=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/sequence/$TABLE_CODEC
 
 PARTITION_YEARS=()

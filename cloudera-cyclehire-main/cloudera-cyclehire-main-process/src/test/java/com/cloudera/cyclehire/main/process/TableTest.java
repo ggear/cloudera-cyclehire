@@ -36,34 +36,56 @@ public class TableTest extends EmbeddedHiveTestCase {
   @SuppressWarnings("serial")
   private static final List<String[]> TABLES = new ArrayList<String[]>() {
     {
-      add(new String[] { Counter.BATCHES_SUCCESSFUL.getPath(),
-          PATH_HDFS_DIR_PARTITIONED, Table.DDL_LOCATION_PARTITIONED_CREATE });
-      add(new String[] { Counter.BATCHES_FAILED.getPath(),
-          PATH_HDFS_DIR_PARTITIONED, Table.DDL_LOCATION_PARTITIONED_CREATE });
-      add(new String[] { Counter.RECORDS_CLEANSED.getPath(),
-          PATH_HDFS_DIR_PROCESSED, Table.DDL_LOCATION_PROCESSED_CREATE });
-      add(new String[] { Counter.RECORDS_DUPLICATE.getPath(),
-          PATH_HDFS_DIR_PROCESSED, Table.DDL_LOCATION_PROCESSED_CREATE });
-      add(new String[] { Counter.RECORDS_MALFORMED.getPath(),
-          PATH_HDFS_DIR_PROCESSED, Table.DDL_LOCATION_PROCESSED_CREATE });
+      add(new String[] {
+          "cyclehire_raw_partitioned_"
+              + Counter.BATCHES_SUCCESSFUL.getPath().replace('/', '_'),
+          PATH_HDFS_DIR_PARTITIONED + Counter.BATCHES_SUCCESSFUL.getPath(),
+          Table.DDL_LOCATION_PARTITIONED_CREATE });
+      add(new String[] {
+          "cyclehire_raw_partitioned_"
+              + Counter.BATCHES_FAILED.getPath().replace('/', '_'),
+          PATH_HDFS_DIR_PARTITIONED + Counter.BATCHES_FAILED.getPath(),
+          Table.DDL_LOCATION_PARTITIONED_CREATE });
+      add(new String[] {
+          "cyclehire_processed_"
+              + Counter.RECORDS_CLEANSED.getPath().replace('/', '_'),
+          PATH_HDFS_DIR_PROCESSED + Counter.RECORDS_CLEANSED.getPath(),
+          Table.DDL_LOCATION_PROCESSED_CREATE });
+      add(new String[] {
+          "cyclehire_processed_"
+              + Counter.RECORDS_DUPLICATE.getPath().replace('/', '_'),
+          PATH_HDFS_DIR_PROCESSED + Counter.RECORDS_DUPLICATE.getPath(),
+          Table.DDL_LOCATION_PROCESSED_CREATE });
+      add(new String[] {
+          "cyclehire_processed_"
+              + Counter.RECORDS_MALFORMED.getPath().replace('/', '_'),
+          PATH_HDFS_DIR_PROCESSED + Counter.RECORDS_MALFORMED.getPath(),
+          Table.DDL_LOCATION_PROCESSED_CREATE });
     }
   };
 
   @SuppressWarnings("serial")
   private static final List<String[]> TABLES_REWRITE = new ArrayList<String[]>() {
     {
-      add(new String[] { Counter.RECORDS_REWRITE.getPath(),
-          PATH_HDFS_DIR_PROCESSED,
+      add(new String[] {
+          "cyclehire_processed_"
+              + Counter.RECORDS_REWRITE.getPath().replace('/', '_'),
+          PATH_HDFS_DIR_PROCESSED + Counter.RECORDS_REWRITE.getPath(),
           Table.DDL_LOCATION_PROCESSED_REWRITE_SEQUENCE, "sequence", "true",
           "lz4", "org.apache.hadoop.io.compress.Lz4Codec", "BLOCK", "LZ4" });
-      add(new String[] { Counter.RECORDS_REWRITE.getPath(),
-          PATH_HDFS_DIR_PROCESSED, Table.DDL_LOCATION_PROCESSED_REWRITE_AVRO,
-          "avro", "true", "snappy",
+      add(new String[] {
+          "cyclehire_processed_"
+              + Counter.RECORDS_REWRITE.getPath().replace('/', '_'),
+          PATH_HDFS_DIR_PROCESSED + Counter.RECORDS_REWRITE.getPath(),
+          Table.DDL_LOCATION_PROCESSED_REWRITE_AVRO, "avro", "true", "snappy",
           "org.apache.hadoop.io.compress.SnappyCodec", "BLOCK", "SNAPPY" });
-      add(new String[] { Counter.RECORDS_REWRITE.getPath(),
-          PATH_HDFS_DIR_PROCESSED,
+      add(new String[] {
+          "cyclehire_processed_"
+              + Counter.RECORDS_REWRITE.getPath().replace('/', '_'),
+          PATH_HDFS_DIR_PROCESSED + Counter.RECORDS_REWRITE.getPath(),
           Table.DDL_LOCATION_PROCESSED_REWRITE_PARQUET, "parquet", "false",
-          "none", "", "BLOCK", "UNCOMPRESSED" });
+          "dict", "", "BLOCK", "UNCOMPRESSED" });
+
     }
   };
 
@@ -93,12 +115,11 @@ public class TableTest extends EmbeddedHiveTestCase {
 
     Assert.assertEquals(0, executeAndFetchAll("SHOW TABLES").size());
     for (String[] attribute : TABLES) {
-      getConf().set(Table.DDL_CONFIG_TABLE_NAME,
-          attribute[0].replace('/', '_'));
+      getConf().set(Table.DDL_CONFIG_TABLE_NAME, attribute[0]);
       getConf().set(
           Table.DDL_CONFIG_TABLE_LOCATION,
-          attribute[1] + attribute[0] + '/' + PartitionDriver.OUTPUT_FORMAT
-              + '/' + MapReduceUtil.getCodecString(getConf()));
+          attribute[1] + '/' + PartitionDriver.OUTPUT_FORMAT + '/'
+              + MapReduceUtil.getCodecString(getConf()));
       execute(Table.DDL_LOCATION, attribute[2]);
     }
     Assert
@@ -114,11 +135,9 @@ public class TableTest extends EmbeddedHiveTestCase {
             path.getParent().getName().replace("month=", ""));
         for (String[] attribute : TABLES_REWRITE) {
           getConf().set(Table.DDL_CONFIG_TABLE_NAME,
-              attribute[0].replace('/', '_'));
-          getConf().set(
-              Table.DDL_CONFIG_TABLE_LOCATION,
-              attribute[1] + attribute[0] + '/' + attribute[3] + '/'
-                  + attribute[5]);
+              attribute[0] + "_" + attribute[3] + "_" + attribute[5]);
+          getConf().set(Table.DDL_CONFIG_TABLE_LOCATION,
+              attribute[1] + '/' + attribute[3] + '/' + attribute[5]);
           getConf().set(Table.DDL_CONFIG_TABLE_CODEC, attribute[5]);
           getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, attribute[4]);
           getConf().set(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, attribute[6]);
@@ -139,12 +158,11 @@ public class TableTest extends EmbeddedHiveTestCase {
     Assert.assertEquals(0, executeAndFetchAll("SHOW TABLES").size());
 
     for (String[] attribute : TABLES) {
-      getConf().set(Table.DDL_CONFIG_TABLE_NAME,
-          attribute[0].replace('/', '_'));
+      getConf().set(Table.DDL_CONFIG_TABLE_NAME, attribute[0]);
       getConf().set(
           Table.DDL_CONFIG_TABLE_LOCATION,
-          attribute[1] + attribute[0] + '/' + PartitionDriver.OUTPUT_FORMAT
-              + '/' + MapReduceUtil.getCodecString(getConf()));
+          attribute[1] + '/' + PartitionDriver.OUTPUT_FORMAT + '/'
+              + MapReduceUtil.getCodecString(getConf()));
       execute(Table.DDL_LOCATION, attribute[2]);
     }
 
@@ -158,11 +176,9 @@ public class TableTest extends EmbeddedHiveTestCase {
             path.getParent().getName().replace("month=", ""));
         for (String[] attribute : TABLES_REWRITE) {
           getConf().set(Table.DDL_CONFIG_TABLE_NAME,
-              attribute[0].replace('/', '_'));
-          getConf().set(
-              Table.DDL_CONFIG_TABLE_LOCATION,
-              attribute[1] + attribute[0] + '/' + attribute[3] + '/'
-                  + attribute[5]);
+              attribute[0] + "_" + attribute[3] + "_" + attribute[5]);
+          getConf().set(Table.DDL_CONFIG_TABLE_LOCATION,
+              attribute[1] + '/' + attribute[3] + '/' + attribute[5]);
           getConf().set(Table.DDL_CONFIG_TABLE_CODEC, attribute[5]);
           getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, attribute[4]);
           getConf().set(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, attribute[6]);

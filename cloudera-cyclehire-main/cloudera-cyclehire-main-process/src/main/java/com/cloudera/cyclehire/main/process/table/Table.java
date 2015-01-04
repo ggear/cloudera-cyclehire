@@ -17,7 +17,7 @@ public interface Table {
   public static final String DDL_CONFIG_TABLE_PARTITION_YEAR = "cyclehire.table.partition.year";
   public static final String DDL_CONFIG_TABLE_PARTITION_MONTH = "cyclehire.table.partition.month";
 
-  public static final String DDL_CONFIG_TABLE_NAME = "cyclehire.table.modifier";
+  public static final String DDL_CONFIG_TABLE_NAME = "cyclehire.table.name";
   public static final String DDL_CONFIG_TABLE_LOCATION = "cyclehire.table.location";
   public static final String DDL_CONFIG_TABLE_CODEC = "cyclehire.table.codec";
 
