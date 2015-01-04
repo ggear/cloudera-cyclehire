@@ -84,7 +84,7 @@ public class TableTest extends EmbeddedHiveTestCase {
               + Counter.RECORDS_REWRITE.getPath().replace('/', '_'),
           PATH_HDFS_DIR_PROCESSED + Counter.RECORDS_REWRITE.getPath(),
           Table.DDL_LOCATION_PROCESSED_REWRITE_PARQUET, "parquet", "false",
-          "dict", "", "BLOCK", "UNCOMPRESSED" });
+          "none", "", "BLOCK", "UNCOMPRESSED" });
 
     }
   };
