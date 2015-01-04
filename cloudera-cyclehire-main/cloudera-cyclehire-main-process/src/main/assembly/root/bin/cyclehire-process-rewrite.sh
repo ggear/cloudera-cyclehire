@@ -23,10 +23,10 @@ if [ "$TABLE_COMPRESS" = "false" ]; then
 	TABLE_CODEC="none"
 fi
 
-TABLE_NAME=cyclehire_processed_cleansed_rewrite_$TABLE_FORMAT_$TABLE_CODEC
-TABLE_LOCATION=$ROOT_DIR_HDFS_PROCESSED/cleansed/rewrite/$TABLE_FORMAT/$TABLE_CODEC
-TABLE_DDL="$ROOT_DIR/lib/ddl/processed_rewrite_$TABLE_FORMAT.ddl"
-TABLE_LOCATION_CANONICAL=$ROOT_DIR_HDFS_PROCESSED/cleansed/canonical/sequence/none
+TABLE_NAME=cyclehire_processed_cleansed_rewrite_"$TABLE_FORMAT"_"$TABLE_CODEC"
+TABLE_LOCATION="$ROOT_DIR_HDFS_PROCESSED"/cleansed/rewrite/"$TABLE_FORMAT"/"$TABLE_CODEC"
+TABLE_DDL="$ROOT_DIR"/lib/ddl/processed_rewrite_"$TABLE_FORMAT".ddl
+TABLE_LOCATION_CANONICAL="$ROOT_DIR_HDFS_PROCESSED"/cleansed/canonical/sequence/none
 
 PARTITION_YEARS=()
 PARTITION_MONTHS=()
