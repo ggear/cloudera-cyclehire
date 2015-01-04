@@ -13,13 +13,12 @@ TABLE_PARTITION_YEAR=${4:-"_REWRITE"}
 TABLE_PARTITION_MONTH=${5:-"_REWRITE"}
 TABLE_COMPRESS=${6:-"false"}
 TABLE_CODEC=${7:-"none"}
-TABLE_CODEC_CLASS=${8:-"UNCOMPRESSED"}
+TABLE_CODEC_CLASS=${8:-"SNAPPY"}
 TABLE_BLOCKSIZE=${9:-"256000000"}
 TABLE_PARTITION_SPLIT=${10:-"250000000"}
 export HIVE_AUX_JARS_PATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
 
 if [ "$TABLE_COMPRESS" = "false" ]; then
-	TABLE_CODEC_CLASS="UNCOMPRESSED"
 	TABLE_CODEC="none"
 fi
 
@@ -57,17 +56,26 @@ for((i=0;i<${#PARTITION_YEARS[@]};i++)); do
 " --hiveconf dfs.blocksize=$TABLE_BLOCKSIZE"\
 " --hiveconf mapreduce.input.fileinputformat.split.minsize=$TABLE_PARTITION_SPLIT"
 	if [ "$TABLE_FORMAT" = "parquet" ]; then
-		CMD_LINE_ARGUMENTS="$CMD_LINE_ARGUMENTS_PARTITION"\
+		CMD_LINE_ARGUMENTS_PARTITION="$CMD_LINE_ARGUMENTS_PARTITION"\
 " --hiveconf parquet.block.size=$TABLE_PARTITION_SPLIT"\
 " --hiveconf parquet.page.size=1048576"\
-" --hiveconf parquet.dictionary.page.size=1048576"\
-" --hiveconf parquet.compression=$TABLE_CODEC_CLASS"\
-" --hiveconf parquet.enable.dictionary=true"
+" --hiveconf parquet.enable.dictionary=true"\
+" --hiveconf parquet.dictionary.page.size=1048576"
+		if [ "$TABLE_COMPRESS" = "true" ]; then
+			CMD_LINE_ARGUMENTS_PARTITION="$CMD_LINE_ARGUMENTS_PARTITION"\
+" --hiveconf parquet.compression=$TABLE_CODEC_CLASS"
+		else
+			CMD_LINE_ARGUMENTS_PARTITION="$CMD_LINE_ARGUMENTS_PARTITION"\
+" --hiveconf parquet.compression=UNCOMPRESSED"		
+		fi
 	else
-		CMD_LINE_ARGUMENTS="$CMD_LINE_ARGUMENTS_PARTITION"\
-" --hiveconf hive.exec.compress.output=$TABLE_COMPRESS"\
+		CMD_LINE_ARGUMENTS_PARTITION="$CMD_LINE_ARGUMENTS_PARTITION"\
+" --hiveconf hive.exec.compress.output=$TABLE_COMPRESS"
+		if [ "$TABLE_COMPRESS" = "true" ]; then
+			CMD_LINE_ARGUMENTS_PARTITION="$CMD_LINE_ARGUMENTS_PARTITION"\
 " --hiveconf mapreduce.map.output.compress.codec=$TABLE_CODEC_CLASS"\
 " --hiveconf mapreduce.output.fileoutputformat.compress.type=BLOCK"
+		fi
 	fi
 	hive $CMD_LINE_ARGUMENTS_PARTITION $CMD_LINE_ARGUMENTS -f "$TABLE_DDL" && \
 		hadoop fs -rm -f $TABLE_LOCATION/year=${PARTITION_YEARS[$i]}/month=${PARTITION_MONTHS[$i]}/_REWRITE

@@ -6,7 +6,7 @@ source $ROOT_DIR/bin/cyclehire.env
 
 $ROOT_DIR/lib/process/bin/cyclehire-process-rewrite.sh \
 	"" "$ROOT_DIR_HDFS_PROCESSED" "avro" "*" "*" \
-	"false" "none" "" "134217728" "5000000000"
+	"false" "none" "org.apache.hadoop.io.compress.Lz4Codec" "134217728" "5000000000"
 $ROOT_DIR/lib/process/bin/cyclehire-process-rewrite.sh \
 	"" "$ROOT_DIR_HDFS_PROCESSED" "parquet" "*" "*" \
 	"true" "snappy" "SNAPPY" "256000000" "250000000"
