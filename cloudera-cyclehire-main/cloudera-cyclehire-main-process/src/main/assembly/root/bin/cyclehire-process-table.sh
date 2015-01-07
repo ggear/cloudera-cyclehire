@@ -17,14 +17,14 @@ TABLES_LOCATION=("$ROOT_DIR_HDFS_RAW_PARTITIONED/valid" "$ROOT_DIR_HDFS_RAW_PART
 TABLES_DDL=("partitioned_create.ddl" "partitioned_create.ddl" "processed_create.ddl" "processed_create.ddl" "processed_create.ddl")
 
 for((i=0;i<${#TABLES_NAME[@]};i++)); do
-	TABLES_REAPIR="$TABLES_REAPIR""MSCK REPAIR TABLE ${TABLES_NAME[$i]};"
+  TABLES_REAPIR="$TABLES_REAPIR""MSCK REPAIR TABLE ${TABLES_NAME[$i]};"
 done
 
 if [ $(hive -e "$TABLES_REAPIR" | grep "Tables not in metastore" | wc -l) -gt 0 ]; then
-	for((i=0;i<${#TABLES_NAME[@]};i++)); do
-		hive \
-			--hiveconf "cyclehire.table.name=${TABLES_NAME[$i]}" \
-			--hiveconf "cyclehire.table.location=${TABLES_LOCATION[$i]}/sequence/none" \
-			-f "$ROOT_DIR/lib/ddl/${TABLES_DDL[$i]}"
-	done
+  for((i=0;i<${#TABLES_NAME[@]};i++)); do
+    hive \
+      --hiveconf "cyclehire.table.name=${TABLES_NAME[$i]}" \
+      --hiveconf "cyclehire.table.location=${TABLES_LOCATION[$i]}/sequence/none" \
+      -f "$ROOT_DIR/lib/ddl/${TABLES_DDL[$i]}"
+  done
 fi
