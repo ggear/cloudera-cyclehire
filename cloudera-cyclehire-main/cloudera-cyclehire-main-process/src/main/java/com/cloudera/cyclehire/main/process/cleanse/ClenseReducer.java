@@ -50,21 +50,24 @@ public class ClenseReducer extends
       for (List<String> valueStringLists : record.getTable()) {
         StringBuilder valueStringBuilder = new StringBuilder(
             RECORD_BUFFER_SIZE_DATA).append(valueTimestamps);
-        for (String valueStringList : valueStringLists) {
-          valueStringBuilder.append(MapReduceUtil.RECORD_COLUMN_DELIM).append(
-              valueStringList);
-        }
-        valueStringBuilder.append(MapReduceUtil.RECORD_COLUMN_DELIM);
-        if (record.isValid()) {
-          valueStringBuilder.append("");
-          if (!isDuplicate) {
+        if (!isDuplicate) {
+          for (String valueStringList : valueStringLists) {
+            valueStringBuilder.append(MapReduceUtil.RECORD_COLUMN_DELIM)
+                .append(valueStringList);
+          }
+          if (record.isValid()) {
             counter = Counter.RECORDS_CLEANSED;
           } else {
-            counter = Counter.RECORDS_DUPLICATE;
+            valueStringBuilder.append(MapReduceUtil.RECORD_COLUMN_DELIM)
+                .append(record.getXml());
+            counter = Counter.RECORDS_MALFORMED;
           }
         } else {
-          valueStringBuilder.append(record.getXml());
-          counter = Counter.RECORDS_MALFORMED;
+          if (valueStringLists.size() > 0) {
+            valueStringBuilder.append(MapReduceUtil.RECORD_COLUMN_DELIM)
+                .append(valueStringLists.get(0));
+          }
+          counter = Counter.RECORDS_DUPLICATE;
         }
         value = new Text(valueStringBuilder.toString());
         multipleOutputs.write(
