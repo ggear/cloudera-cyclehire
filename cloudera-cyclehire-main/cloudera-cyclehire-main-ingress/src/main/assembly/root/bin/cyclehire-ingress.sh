@@ -8,7 +8,8 @@ set -x
 
 CMD_LINE_ARGUMENTS="$1"
 ROOT_DIR_LOCAL_TAR=${2:-"$ROOT_DIR_LOCAL_TAR"}
-ROOT_DIR_HDFS_RAW_LANDED=${3:-"$ROOT_DIR_HDFS_RAW_LANDED"}
+ROOT_DIR_LOCAL_XML=${3:-"$ROOT_DIR_LOCAL_XML"}
+ROOT_DIR_HDFS_RAW_LANDED=${4:-"$ROOT_DIR_HDFS_RAW_LANDED"}
 LIBJARS="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /,/g')"
 export HADOOP_CLASSPATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
 
@@ -24,4 +25,5 @@ hadoop \
 	-Dio.file.buffer.size=16384 \
 	$CMD_LINE_ARGUMENTS \
 	"$ROOT_DIR_LOCAL_TAR" \
+	"$ROOT_DIR_LOCAL_XML" \
 	"$ROOT_DIR_HDFS_RAW_LANDED"
