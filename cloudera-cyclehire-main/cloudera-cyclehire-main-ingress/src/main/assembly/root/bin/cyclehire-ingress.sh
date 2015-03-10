@@ -25,5 +25,18 @@ hadoop \
 	-Dio.file.buffer.size=16384 \
 	$CMD_LINE_ARGUMENTS \
 	"$ROOT_DIR_LOCAL_TAR" \
+	"$ROOT_DIR_HDFS_RAW_LANDED"
+
+	hadoop \
+	jar "$ROOT_DIR"/lib/jar/cloudera-cyclehire-main-ingress-*.jar \
+	com.cloudera.cyclehire.main.ingress.copy.CopyDriver \
+	-libjars "$LIBJARS" \
+	-Ddir.include=true \
+	-Dblock.single=true \
+	-Dtimeout.secs=1000 \
+	-Dthread.number=3 \
+	-Dthread.queue=file \
+	-Dio.file.buffer.size=16384 \
+	$CMD_LINE_ARGUMENTS \
 	"$ROOT_DIR_LOCAL_XML" \
 	"$ROOT_DIR_HDFS_RAW_LANDED"
