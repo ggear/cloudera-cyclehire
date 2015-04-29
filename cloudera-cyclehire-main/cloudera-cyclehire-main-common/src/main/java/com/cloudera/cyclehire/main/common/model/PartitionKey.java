@@ -31,10 +31,10 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   public static final String TOKEN_NAME = "livecyclehireupdates";
 
   public static final Pattern REGEX_RECORD = Pattern.compile("([1-9][0-9]{9})_"
-      + TOKEN_NAME + "\\.xml");
+      + TOKEN_NAME + "([a-zA-Z0-9\\-\\.]*)\\.xml");
   public static final Pattern REGEX_BATCH = Pattern
       .compile("([1-9][0-9]{9})_([1-9][0-9]{9})_" + TOKEN_NAME
-          + "\\.([a-z]+)\\.?([a-z]*)");
+          + "([a-zA-Z0-9\\-]*)\\.([a-z]+)\\.?([a-z]*)");
   public static final Pattern REGEX_PATH = Pattern
       .compile(".*\\/([a-zA-Z0-9_]+)\\/([a-zA-Z0-9_]+)\\/(.*)\\/(.*\\.[a-z]+\\.?[a-z]*)\\/(.*\\.[a-z]+\\.?[a-z]*).*");
 
@@ -199,14 +199,14 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
 
   public String getType() {
     return type == null ? getMatcherBatch() == null ? PartitionFlag._UNKNOWN
-        .toString() : getMatcherBatch().group(3) : type;
+        .toString() : getMatcherBatch().group(4) : type;
   }
 
   public String getCodec() {
     return codec == null ? getMatcherBatch() == null ? PartitionFlag._UNKNOWN
         .toString()
-        : getMatcherBatch().group(4).equals("") ? MapReduceUtil.CODEC_NONE
-            : getMatcherBatch().group(4) : codec;
+        : getMatcherBatch().group(5).equals("") ? MapReduceUtil.CODEC_NONE
+            : getMatcherBatch().group(5) : codec;
   }
 
   public String getPartition() {

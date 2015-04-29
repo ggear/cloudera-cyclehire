@@ -22,7 +22,7 @@ public abstract class EmbeddedHiveTestCase extends EmbeddedCoreTestCase {
 
   private static final String COMMAND_DELIMETER = ";";
 
-  private static Logger log = LoggerFactory
+  private static Logger LOG = LoggerFactory
       .getLogger(EmbeddedHiveTestCase.class);
 
   private HiveInterface hive;
@@ -89,18 +89,18 @@ public abstract class EmbeddedHiveTestCase extends EmbeddedCoreTestCase {
   }
 
   private void _execute(String query) throws HiveServerException, TException {
-    if (log.isDebugEnabled()) {
-      log.debug("Hive client test pre-execute:\n" + query + "\n");
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Hive client test pre-execute:\n" + query + "\n");
     }
     hive.execute(query);
-    if (log.isDebugEnabled()) {
-      log.debug("Hive client test post-execute:\n" + query + "\n");
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Hive client test post-execute:\n" + query + "\n");
     }
   }
 
   private List<String> _fetch(String query, List<String> rows)
       throws HiveServerException, TException {
-    if (log.isDebugEnabled()) {
+    if (LOG.isDebugEnabled()) {
       StringBuilder rowsString = new StringBuilder();
       rowsString.append("Hive client test fetched results:\n" + query + "\n");
       for (String row : rows) {
@@ -108,7 +108,7 @@ public abstract class EmbeddedHiveTestCase extends EmbeddedCoreTestCase {
         rowsString.append(row);
       }
       rowsString.append('\n');
-      log.debug(rowsString.toString());
+      LOG.debug(rowsString.toString());
     }
     return rows;
   }

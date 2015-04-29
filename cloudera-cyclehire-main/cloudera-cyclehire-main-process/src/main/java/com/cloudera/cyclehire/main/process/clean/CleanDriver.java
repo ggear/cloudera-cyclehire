@@ -30,7 +30,7 @@ public class CleanDriver extends Driver {
       Counter.PARTITIONS_FAILED, Counter.PARTITIONS_SUCCESSFUL,
       Counter.PARTITIONS };
 
-  private static final Logger log = LoggerFactory.getLogger(CleanDriver.class);
+  private static final Logger LOG = LoggerFactory.getLogger(CleanDriver.class);
 
   private Path inputLandedPath;
   private Path inputStagedPath;
@@ -84,8 +84,8 @@ public class CleanDriver extends Driver {
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
-    if (log.isInfoEnabled()) {
-      log.info("HDFS landed directory [" + inputLandedPath + "] validated");
+    if (LOG.isInfoEnabled()) {
+      LOG.info("HDFS landed directory [" + inputLandedPath + "] validated");
     }
 
     inputStagedPath = new Path(arguments[1]);
@@ -97,8 +97,8 @@ public class CleanDriver extends Driver {
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
-    if (log.isInfoEnabled()) {
-      log.info("HDFS staged directory [" + inputStagedPath + "] validated");
+    if (LOG.isInfoEnabled()) {
+      LOG.info("HDFS staged directory [" + inputStagedPath + "] validated");
     }
 
     return RETURN_SUCCESS;

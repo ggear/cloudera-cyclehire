@@ -31,7 +31,7 @@ public class StageDriver extends Driver {
       Counter.PARTITIONS_FAILED, Counter.PARTITIONS_SUCCESSFUL,
       Counter.PARTITIONS };
 
-  private static final Logger log = LoggerFactory.getLogger(StageDriver.class);
+  private static final Logger LOG = LoggerFactory.getLogger(StageDriver.class);
 
   private Path inputLandedPath;
   private Path inputStagedPath;
@@ -85,8 +85,8 @@ public class StageDriver extends Driver {
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
-    if (log.isInfoEnabled()) {
-      log.info("HDFS landed directory [" + inputLandedPath + "] validated");
+    if (LOG.isInfoEnabled()) {
+      LOG.info("HDFS landed directory [" + inputLandedPath + "] validated");
     }
 
     inputStagedPath = new Path(arguments[1]);
@@ -106,8 +106,8 @@ public class StageDriver extends Driver {
       hdfs.mkdirs(inputStagedPath, new FsPermission(FsAction.ALL,
           FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
     }
-    if (log.isInfoEnabled()) {
-      log.info("HDFS staged directory [" + inputStagedPath + "] validated");
+    if (LOG.isInfoEnabled()) {
+      LOG.info("HDFS staged directory [" + inputStagedPath + "] validated");
     }
 
     return RETURN_SUCCESS;

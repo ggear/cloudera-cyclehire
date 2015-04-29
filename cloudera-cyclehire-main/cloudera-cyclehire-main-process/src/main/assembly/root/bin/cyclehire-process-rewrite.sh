@@ -77,6 +77,7 @@ for((i=0;i<${#PARTITION_YEARS[@]};i++)); do
 " --hiveconf mapreduce.output.fileoutputformat.compress.type=BLOCK"
     fi
   fi
-  hive $CMD_LINE_ARGUMENTS_PARTITION $CMD_LINE_ARGUMENTS -f "$TABLE_DDL" && \
+  $ROOT_DIR/../../bin/cyclehire-shell-hive.sh \
+    $CMD_LINE_ARGUMENTS_PARTITION $CMD_LINE_ARGUMENTS -f "$TABLE_DDL" && \
     hadoop fs -rm -f $TABLE_LOCATION/year=${PARTITION_YEARS[$i]}/month=${PARTITION_MONTHS[$i]}/_REWRITE
 done

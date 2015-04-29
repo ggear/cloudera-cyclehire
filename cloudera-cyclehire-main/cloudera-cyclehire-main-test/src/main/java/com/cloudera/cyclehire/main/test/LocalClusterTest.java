@@ -20,8 +20,8 @@ public class LocalClusterTest extends ClusterMapReduceTestCase implements
     if (System.getProperty("test.build.data") == null) {
       System.setProperty("test.build.data", WORKING_DIR_RUNTIME + "build");
     }
-    if (System.getProperty("hadoop.log.dir") == null) {
-      System.setProperty("hadoop.log.dir", WORKING_DIR_RUNTIME + "log");
+    if (System.getProperty("hadoop.LOG.dir") == null) {
+      System.setProperty("hadoop.LOG.dir", WORKING_DIR_RUNTIME + "log");
     }
     super.setUp();
   }

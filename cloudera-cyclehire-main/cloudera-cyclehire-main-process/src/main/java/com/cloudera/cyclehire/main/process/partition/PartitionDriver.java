@@ -46,7 +46,7 @@ public class PartitionDriver extends Driver {
 
   public static final String OUTPUT_FORMAT = "sequence";
 
-  private static final Logger log = LoggerFactory
+  private static final Logger LOG = LoggerFactory
       .getLogger(PartitionDriver.class);
 
   private Path inputStagedPath;
@@ -101,8 +101,8 @@ public class PartitionDriver extends Driver {
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
-    if (log.isInfoEnabled()) {
-      log.info("HDFS staged directory [" + inputStagedPath + "] validated");
+    if (LOG.isInfoEnabled()) {
+      LOG.info("HDFS staged directory [" + inputStagedPath + "] validated");
     }
 
     inputPartitionedPath = new Path(arguments[1]);
@@ -124,8 +124,8 @@ public class PartitionDriver extends Driver {
       hdfs.mkdirs(inputPartitionedPath, new FsPermission(FsAction.ALL,
           FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
     }
-    if (log.isInfoEnabled()) {
-      log.info("HDFS partitioned directory [" + inputPartitionedPath
+    if (LOG.isInfoEnabled()) {
+      LOG.info("HDFS partitioned directory [" + inputPartitionedPath
           + "] validated");
     }
 
@@ -196,7 +196,7 @@ public class PartitionDriver extends Driver {
       MultipleOutputs.addNamedOutput(job, OUTPUT_FORMAT,
           SequenceFileOutputFormat.class, PartitionKey.class, Text.class);
       job.setJarByClass(PartitionDriver.class);
-      jobSuccess = job.waitForCompletion(log.isInfoEnabled());
+      jobSuccess = job.waitForCompletion(LOG.isInfoEnabled());
       if (job != null) {
         importCounters(job, new Counter[] { Counter.RECORDS });
       }

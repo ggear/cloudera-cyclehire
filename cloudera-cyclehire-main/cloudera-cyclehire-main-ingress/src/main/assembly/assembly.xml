@@ -53,8 +53,7 @@
 			</includes>
 			<unpackOptions>
 				<includes>
-					<include>**/*.ddl</include>
-					<include>**/*.sql</include>
+					<include>**/flume-conf.properties</include>
 				</includes>
 			</unpackOptions>
 		</dependencySet>

@@ -50,7 +50,7 @@ public class CleanseDriver extends Driver {
 
   public static final String NAMED_OUTPUT_SEQUENCE = "sequence";
 
-  private static final Logger log = LoggerFactory
+  private static final Logger LOG = LoggerFactory
       .getLogger(CleanseDriver.class);
 
   private Path inputStagedPath;
@@ -107,8 +107,8 @@ public class CleanseDriver extends Driver {
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
-    if (log.isInfoEnabled()) {
-      log.info("HDFS staged directory [" + inputStagedPath + "] validated");
+    if (LOG.isInfoEnabled()) {
+      LOG.info("HDFS staged directory [" + inputStagedPath + "] validated");
     }
 
     inputPartitionedPath = new Path(arguments[1]);
@@ -121,8 +121,8 @@ public class CleanseDriver extends Driver {
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
-    if (log.isInfoEnabled()) {
-      log.info("HDFS partitioned directory [" + inputPartitionedPath
+    if (LOG.isInfoEnabled()) {
+      LOG.info("HDFS partitioned directory [" + inputPartitionedPath
           + "] validated");
     }
 
@@ -143,8 +143,8 @@ public class CleanseDriver extends Driver {
       hdfs.mkdirs(inputProcessedPath, new FsPermission(FsAction.ALL,
           FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
     }
-    if (log.isInfoEnabled()) {
-      log.info("HDFS processed directory [" + inputProcessedPath
+    if (LOG.isInfoEnabled()) {
+      LOG.info("HDFS processed directory [" + inputProcessedPath
           + "] validated");
     }
 
@@ -234,7 +234,7 @@ public class CleanseDriver extends Driver {
           partitionKeys.keySet());
       job.setNumReduceTasks(partitionKeys.size());
       job.setJarByClass(CleanseDriver.class);
-      jobSuccess = job.waitForCompletion(log.isInfoEnabled());
+      jobSuccess = job.waitForCompletion(LOG.isInfoEnabled());
       if (job != null) {
         importCounters(job, new Counter[] { Counter.RECORDS_MALFORMED,
             Counter.RECORDS_DUPLICATE, Counter.RECORDS_CLEANSED,

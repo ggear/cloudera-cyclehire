@@ -32,7 +32,7 @@ public abstract class Driver extends Configured implements Tool {
 
   private Map<String, Map<Enum<?>, Long>> counters = new LinkedHashMap<String, Map<Enum<?>, Long>>();
 
-  private static final Logger log = LoggerFactory.getLogger(Driver.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Driver.class);
 
   public Driver() {
     super();
@@ -71,8 +71,8 @@ public abstract class Driver extends Configured implements Tool {
   @Override
   final public int run(String[] args) {
 
-    if (log.isInfoEnabled()) {
-      log.info("Driver [" + this.getClass().getSimpleName() + "] started");
+    if (LOG.isInfoEnabled()) {
+      LOG.info("Driver [" + this.getClass().getSimpleName() + "] started");
     }
 
     long timeTotal = System.currentTimeMillis();
@@ -83,8 +83,8 @@ public abstract class Driver extends Configured implements Tool {
         try {
           cleanup();
         } catch (Exception exception) {
-          if (log.isErrorEnabled()) {
-            log.error("Exception raised executing shutdown handler", exception);
+          if (LOG.isErrorEnabled()) {
+            LOG.error("Exception raised executing shutdown handler", exception);
           }
         }
       }
@@ -96,12 +96,12 @@ public abstract class Driver extends Configured implements Tool {
 
     reset();
 
-    if (log.isDebugEnabled() && getConf() != null) {
-      log.debug("Driver [" + this.getClass().getCanonicalName()
+    if (LOG.isDebugEnabled() && getConf() != null) {
+      LOG.debug("Driver [" + this.getClass().getCanonicalName()
           + "] initialised with configuration properties:");
       for (Entry<String, String> entry : getConf())
-        if (log.isDebugEnabled())
-          log.debug("\t" + entry.getKey() + "=" + entry.getValue());
+        if (LOG.isDebugEnabled())
+          LOG.debug("\t" + entry.getKey() + "=" + entry.getValue());
     }
 
     int exitValue = RETURN_FAILURE_RUNTIME;
@@ -110,16 +110,16 @@ public abstract class Driver extends Configured implements Tool {
         exitValue = execute();
       }
     } catch (Exception exception) {
-      if (log.isErrorEnabled()) {
-        log.error("Exception raised executing runtime pipeline handlers",
+      if (LOG.isErrorEnabled()) {
+        LOG.error("Exception raised executing runtime pipeline handlers",
             exception);
       }
     } finally {
       try {
         cleanup();
       } catch (Exception exception) {
-        if (log.isErrorEnabled()) {
-          log.error("Exception raised cleaning up runtime pipeline handlers",
+        if (LOG.isErrorEnabled()) {
+          LOG.error("Exception raised cleaning up runtime pipeline handlers",
               exception);
         }
       }
@@ -127,19 +127,19 @@ public abstract class Driver extends Configured implements Tool {
 
     timeTotal = System.currentTimeMillis() - timeTotal;
 
-    if (log.isInfoEnabled()) {
-      log.info("Driver [" + this.getClass().getCanonicalName() + "] counters:");
+    if (LOG.isInfoEnabled()) {
+      LOG.info("Driver [" + this.getClass().getCanonicalName() + "] counters:");
       for (String group : getCountersGroups()) {
         Map<Enum<?>, Long> counters = getCounters(group);
         for (Enum<?> counter : counters.keySet()) {
-          log.info("\t" + group + "." + counter.toString() + "="
+          LOG.info("\t" + group + "." + counter.toString() + "="
               + counters.get(counter));
         }
       }
     }
 
-    if (log.isInfoEnabled()) {
-      log.info("Driver [" + this.getClass().getSimpleName() + "] finshed "
+    if (LOG.isInfoEnabled()) {
+      LOG.info("Driver [" + this.getClass().getSimpleName() + "] finshed "
           + (exitValue == RETURN_SUCCESS ? "successfully" : "unsuccessfully")
           + " with exit value [" + exitValue + "] in " + formatTime(timeTotal));
     }
@@ -153,13 +153,13 @@ public abstract class Driver extends Configured implements Tool {
     try {
       returnValue = ToolRunner.run(this, arguments);
     } catch (Exception exception) {
-      if (log.isErrorEnabled()) {
-        log.error("Fatal error encountered", exception);
+      if (LOG.isErrorEnabled()) {
+        LOG.error("Fatal error encountered", exception);
       }
       returnValue = RETURN_FAILURE_RUNTIME;
     }
     if (returnValue != RETURN_SUCCESS) {
-      if (log.isInfoEnabled()) {
+      if (LOG.isInfoEnabled()) {
         StringBuilder optionsAndParamaters = new StringBuilder(256);
         for (int i = 0; i < options().length; i++) {
           optionsAndParamaters.append(" [-D" + options()[i] + "]");
@@ -169,14 +169,14 @@ public abstract class Driver extends Configured implements Tool {
               + paramaters()[i] + ">");
         }
         if (description() != null && !description().equals("")) {
-          log.info("Description: " + description());
+          LOG.info("Description: " + description());
         }
-        log.info("Usage: hadoop " + this.getClass().getCanonicalName()
+        LOG.info("Usage: hadoop " + this.getClass().getCanonicalName()
             + " [generic options]" + optionsAndParamaters);
         ByteArrayOutputStream byteArrayPrintStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(byteArrayPrintStream);
         ToolRunner.printGenericCommandUsage(printStream);
-        log.info(byteArrayPrintStream.toString());
+        LOG.info(byteArrayPrintStream.toString());
         printStream.close();
       }
     }

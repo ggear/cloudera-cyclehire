@@ -216,11 +216,11 @@ public class PartitionKeyTest {
     Assert.assertEquals(
         TAR_CODEC,
         new PartitionKey().batch(TAR_REPO).record(FILE)
-        .epochPoll(EPOCH_POLL + 1).getCodec());
+            .epochPoll(EPOCH_POLL + 1).getCodec());
     Assert.assertEquals(
         TAR_CODEC,
         new PartitionKey().batch(TAR_REPO).record(FILE)
-        .epochPoll(EPOCH_POLL - 1).getCodec());
+            .epochPoll(EPOCH_POLL - 1).getCodec());
   }
 
   @Test
@@ -269,11 +269,11 @@ public class PartitionKeyTest {
     Assert.assertEquals(
         PARTITION.iterator().next(),
         new PartitionKey().batch(TAR_REPO).record(FILE)
-        .epochPoll(EPOCH_POLL + 1).getPartition());
+            .epochPoll(EPOCH_POLL + 1).getPartition());
     Assert.assertEquals(
         PARTITION.iterator().next(),
         new PartitionKey().batch(TAR_REPO).record(FILE)
-        .epochPoll(EPOCH_POLL - 1).getPartition());
+            .epochPoll(EPOCH_POLL - 1).getPartition());
   }
 
   @Test
@@ -322,11 +322,11 @@ public class PartitionKeyTest {
     Assert.assertEquals(
         PARTITION,
         new PartitionKey().batch(TAR_REPO).record(FILE)
-        .epochPoll(EPOCH_POLL + 1).getPartitions());
+            .epochPoll(EPOCH_POLL + 1).getPartitions());
     Assert.assertEquals(
         PARTITION,
         new PartitionKey().batch(TAR_REPO).record(FILE)
-        .epochPoll(EPOCH_POLL - 1).getPartitions());
+            .epochPoll(EPOCH_POLL - 1).getPartitions());
   }
 
   @Test

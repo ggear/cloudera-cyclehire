@@ -40,7 +40,7 @@ public class CopyDriver extends Driver {
   public static final String CONF_THREAD_QUEUE_FILE = "file";
   public static final String CONF_THREAD_QUEUE_DIR = "dir";
 
-  private static final Logger log = LoggerFactory.getLogger(CopyDriver.class);
+  private static final Logger LOG = LoggerFactory.getLogger(CopyDriver.class);
 
   private Path hdfsLandedPath;
   private List<FileSetCopy> localLandedFileSets;
@@ -111,8 +111,8 @@ public class CopyDriver extends Driver {
       hdfs.mkdirs(hdfsLandedPath, new FsPermission(FsAction.ALL,
           FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
     }
-    if (log.isInfoEnabled()) {
-      log.info("HDFS landed directory [" + hdfsLandedPath + "] validated");
+    if (LOG.isInfoEnabled()) {
+      LOG.info("HDFS landed directory [" + hdfsLandedPath + "] validated");
     }
 
     List<File> localLandedDirs = new ArrayList<File>();
@@ -164,8 +164,8 @@ public class CopyDriver extends Driver {
           + hdfsLandedNamespaceClash
           + ", consider including directories in ingress path or file renaming");
     }
-    if (log.isInfoEnabled()) {
-      log.info("Local landed directories " + localLandedDirs + " validated");
+    if (LOG.isInfoEnabled()) {
+      LOG.info("Local landed directories " + localLandedDirs + " validated");
     }
 
     return RETURN_SUCCESS;
@@ -281,12 +281,12 @@ public class CopyDriver extends Driver {
           }
         } catch (Exception exception) {
           files.put(file, Counter.FILES_FAILED);
-          if (log.isErrorEnabled()) {
-            log.error("File could not be processed with fatal error", exception);
+          if (LOG.isErrorEnabled()) {
+            LOG.error("File could not be processed with fatal error", exception);
           }
         } finally {
-          if (log.isInfoEnabled()) {
-            log.info("File ingress [" + files.get(file) + "] from [" + fileFrom
+          if (LOG.isInfoEnabled()) {
+            LOG.info("File ingress [" + files.get(file) + "] from [" + fileFrom
                 + "] to [" + fileTo + "]");
           }
         }
