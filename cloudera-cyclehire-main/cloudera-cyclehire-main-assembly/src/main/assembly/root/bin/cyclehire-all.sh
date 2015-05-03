@@ -7,3 +7,4 @@ source $ROOT_DIR/bin/cyclehire.env
 $ROOT_DIR/bin/cyclehire-initialise.sh
 $ROOT_DIR/bin/cyclehire-ingest.sh
 $ROOT_DIR/bin/cyclehire-rewrite.sh
+$ROOT_DIR/bin/cyclehire-initialise.sh

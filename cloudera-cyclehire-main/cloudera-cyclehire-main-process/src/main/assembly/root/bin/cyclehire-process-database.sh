@@ -26,3 +26,5 @@ if [ $($ROOT_DIR/../../bin/cyclehire-shell-hive.sh -e "SHOW ROLES" 2> /dev/null|
     --hivevar cyclehire.database.location=$ROOT_DIR_HDFS" \
     -f "$ROOT_DIR/lib/ddl/database_create.ddl"
 fi
+
+$ROOT_DIR/../../bin/cyclehire-shell-impala.sh -r -q "SHOW DATABASES; SHOW TABLES; SHOW ROLES; SHOW CURRENT ROLES;"

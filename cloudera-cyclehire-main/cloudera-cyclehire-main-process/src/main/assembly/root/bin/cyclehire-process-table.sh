@@ -26,5 +26,6 @@ if [ $(hive -e "$TABLES_REAPIR" | grep "Tables not in metastore" | wc -l) -gt 0 
       --hivevar cyclehire.table.name=${TABLES_NAME[$i]} \
       --hivevar cyclehire.table.location=${TABLES_LOCATION[$i]}/sequence/none \
       -f "$ROOT_DIR/lib/ddl/${TABLES_DDL[$i]}"
+    $ROOT_DIR/../../bin/cyclehire-shell-impala.sh -q "REFRESH ${TABLES_NAME[$i]};"
   done
 fi
