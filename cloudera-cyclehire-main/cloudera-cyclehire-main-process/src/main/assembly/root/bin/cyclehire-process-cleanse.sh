@@ -13,11 +13,11 @@ ROOT_DIR_HDFS_PROCESSED=${4:-"$ROOT_DIR_HDFS_PROCESSED"}
 LIBJARS="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /,/g')"
 export HADOOP_CLASSPATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
 
-hadoop \
-  jar "$ROOT_DIR"/lib/jar/cloudera-cyclehire-main-process-*.jar \
+$ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "\
+  jar $ROOT_DIR/lib/jar/cloudera-cyclehire-main-process-*.jar \
   com.cloudera.cyclehire.main.process.cleanse.CleanseDriver \
-  -libjars "$LIBJARS" \
+  -libjars $LIBJARS \
   $CMD_LINE_ARGUMENTS \
-  "$ROOT_DIR_HDFS_RAW_STAGED" \
-  "$ROOT_DIR_HDFS_RAW_PARTITIONED" \
-  "$ROOT_DIR_HDFS_PROCESSED"
+  $ROOT_DIR_HDFS_RAW_STAGED \
+  $ROOT_DIR_HDFS_RAW_PARTITIONED \
+  $ROOT_DIR_HDFS_PROCESSED"

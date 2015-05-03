@@ -30,12 +30,12 @@ TABLE_LOCATION_CANONICAL="$ROOT_DIR_HDFS_PROCESSED"/cleansed/canonical/sequence/
 PARTITION_YEARS=()
 PARTITION_MONTHS=()
 if [ "$TABLE_PARTITION_YEAR" = "_REWRITE" ] && [ "$TABLE_PARTITION_MONTH" = "_REWRITE" ]; then
-  for PATH_REWRITE in $(hadoop jar $HADOOP_LIB_SEARCH org.apache.solr.hadoop.HdfsFindTool -find $TABLE_LOCATION -name _REWRITE 2> /dev/null); do
+  for PATH_REWRITE in $($ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "jar $HADOOP_LIB_SEARCH org.apache.solr.hadoop.HdfsFindTool -find $TABLE_LOCATION -name _REWRITE 2> /dev/null"); do
        PARTITION_YEARS+=("$(basename $(dirname $(dirname $PATH_REWRITE))|cut -c 6-|tr -d '\n')")
        PARTITION_MONTHS+=("$(basename $(dirname $PATH_REWRITE)|cut -c 7-|tr -d '\n')")
   done
 elif [ "$TABLE_PARTITION_YEAR" = "*" ] && [ "$TABLE_PARTITION_MONTH" = "*" ]; then
-  for PATH_SUCCESS in $(hadoop jar $HADOOP_LIB_SEARCH org.apache.solr.hadoop.HdfsFindTool -find $TABLE_LOCATION_CANONICAL -name _SUCCESS 2> /dev/null); do
+  for PATH_SUCCESS in $($ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "jar $HADOOP_LIB_SEARCH org.apache.solr.hadoop.HdfsFindTool -find $TABLE_LOCATION_CANONICAL -name _SUCCESS 2> /dev/null"); do
        PARTITION_YEARS+=("$(basename $(dirname $(dirname $PATH_SUCCESS))|cut -c 6-|tr -d '\n')")
        PARTITION_MONTHS+=("$(basename $(dirname $PATH_SUCCESS)|cut -c 7-|tr -d '\n')")
   done
@@ -79,5 +79,5 @@ for((i=0;i<${#PARTITION_YEARS[@]};i++)); do
   fi
   $ROOT_DIR/../../bin/cyclehire-shell-hive.sh \
     $CMD_LINE_ARGUMENTS_PARTITION $CMD_LINE_ARGUMENTS -f "$TABLE_DDL" && \
-    hadoop fs -rm -f $TABLE_LOCATION/year=${PARTITION_YEARS[$i]}/month=${PARTITION_MONTHS[$i]}/_REWRITE
+    $ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -rm -f $TABLE_LOCATION/year=${PARTITION_YEARS[$i]}/month=${PARTITION_MONTHS[$i]}/_REWRITE"
 done

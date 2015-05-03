@@ -13,10 +13,10 @@ ROOT_DIR_HDFS_RAW_LANDED=${4:-"$ROOT_DIR_HDFS_RAW_LANDED"}
 LIBJARS="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /,/g')"
 export HADOOP_CLASSPATH="$(echo -n $(ls -m $ROOT_DIR/lib/jar/dep/*.jar)|sed 's/, /:/g')"
 
-hadoop \
-	jar "$ROOT_DIR"/lib/jar/cloudera-cyclehire-main-ingress-*.jar \
+$ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "\
+	jar $ROOT_DIR/lib/jar/cloudera-cyclehire-main-ingress-*.jar \
 	com.cloudera.cyclehire.main.ingress.copy.CopyDriver \
-	-libjars "$LIBJARS" \
+	-libjars $LIBJARS \
 	-Ddir.include=false \
 	-Dblock.single=true \
 	-Dtimeout.secs=1000 \
@@ -24,13 +24,13 @@ hadoop \
 	-Dthread.queue=file \
 	-Dio.file.buffer.size=16384 \
 	$CMD_LINE_ARGUMENTS \
-	"$ROOT_DIR_LOCAL_TAR" \
-	"$ROOT_DIR_HDFS_RAW_LANDED"
+	$ROOT_DIR_LOCAL_TAR \
+	$ROOT_DIR_HDFS_RAW_LANDED"
 
-	hadoop \
-	jar "$ROOT_DIR"/lib/jar/cloudera-cyclehire-main-ingress-*.jar \
+$ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "\
+	jar $ROOT_DIR/lib/jar/cloudera-cyclehire-main-ingress-*.jar \
 	com.cloudera.cyclehire.main.ingress.copy.CopyDriver \
-	-libjars "$LIBJARS" \
+	-libjars $LIBJARS \
 	-Ddir.include=true \
 	-Dblock.single=true \
 	-Dtimeout.secs=1000 \
@@ -38,5 +38,5 @@ hadoop \
 	-Dthread.queue=file \
 	-Dio.file.buffer.size=16384 \
 	$CMD_LINE_ARGUMENTS \
-	"$ROOT_DIR_LOCAL_XML" \
-	"$ROOT_DIR_HDFS_RAW_LANDED"
+	$ROOT_DIR_LOCAL_XML \
+	$ROOT_DIR_HDFS_RAW_LANDED"
