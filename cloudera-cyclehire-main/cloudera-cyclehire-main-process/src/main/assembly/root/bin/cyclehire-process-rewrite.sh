@@ -51,30 +51,30 @@ for((i=0;i<${#PARTITION_YEARS[@]};i++)); do
 " --hivevar cyclehire.table.codec=$TABLE_CODEC"\
 " --hivevar cyclehire.table.partition.year=${PARTITION_YEARS[$i]}"\
 " --hivevar cyclehire.table.partition.month=${PARTITION_MONTHS[$i]}"\
-" --hivevar hive.stats.autogather=false"\
-" --hivevar hive.exec.dynamic.partition.mode=nonstrict"\
-" --hivevar dfs.blocksize=$TABLE_BLOCKSIZE"\
-" --hivevar mapreduce.input.fileinputformat.split.minsize=$TABLE_PARTITION_SPLIT"
+" --hiveconf hive.stats.autogather=false"\
+" --hiveconf hive.exec.dynamic.partition.mode=nonstrict"\
+" --hiveconf dfs.blocksize=$TABLE_BLOCKSIZE"\
+" --hiveconf mapreduce.input.fileinputformat.split.minsize=$TABLE_PARTITION_SPLIT"
   if [ "$TABLE_FORMAT" = "parquet" ]; then
     CMD_LINE_ARGUMENTS_PARTITION="$CMD_LINE_ARGUMENTS_PARTITION"\
-" --hivevar parquet.block.size=$TABLE_PARTITION_SPLIT"\
-" --hivevar parquet.page.size=1048576"\
-" --hivevar parquet.enable.dictionary=true"\
-" --hivevar parquet.dictionary.page.size=1048576"
+" --hiveconf parquet.block.size=$TABLE_PARTITION_SPLIT"\
+" --hiveconf parquet.page.size=1048576"\
+" --hiveconf parquet.enable.dictionary=true"\
+" --hiveconf parquet.dictionary.page.size=1048576"
     if [ "$TABLE_COMPRESS" = "true" ]; then
       CMD_LINE_ARGUMENTS_PARTITION="$CMD_LINE_ARGUMENTS_PARTITION"\
-" --hivevar parquet.compression=$TABLE_CODEC_CLASS"
+" --hiveconf parquet.compression=$TABLE_CODEC_CLASS"
     else
       CMD_LINE_ARGUMENTS_PARTITION="$CMD_LINE_ARGUMENTS_PARTITION"\
-" --hivevar parquet.compression=UNCOMPRESSED"    
+" --hiveconf parquet.compression=UNCOMPRESSED"    
     fi
   else
     CMD_LINE_ARGUMENTS_PARTITION="$CMD_LINE_ARGUMENTS_PARTITION"\
-" --hivevar hive.exec.compress.output=$TABLE_COMPRESS"
+" --hiveconf hive.exec.compress.output=$TABLE_COMPRESS"
     if [ "$TABLE_COMPRESS" = "true" ]; then
       CMD_LINE_ARGUMENTS_PARTITION="$CMD_LINE_ARGUMENTS_PARTITION"\
-" --hivevar mapreduce.map.output.compress.codec=$TABLE_CODEC_CLASS"\
-" --hivevar mapreduce.output.fileoutputformat.compress.type=BLOCK"
+" --hiveconf mapreduce.map.output.compress.codec=$TABLE_CODEC_CLASS"\
+" --hiveconf mapreduce.output.fileoutputformat.compress.type=BLOCK"
     fi
   fi
   $ROOT_DIR/../../bin/cyclehire-shell-hive.sh \
