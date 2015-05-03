@@ -2,6 +2,6 @@
 -- Cyclehire Database Create
 --
 
-CREATE DATABASE IF NOT EXISTS cyclehire
+CREATE DATABASE IF NOT EXISTS ${hivevar:cyclehire.database.name}
 COMMENT 'TFL Cyclehire database'
-LOCATION '${hiveconf:cyclehire.database.location}';
+LOCATION '${hivevar:cyclehire.database.location}';

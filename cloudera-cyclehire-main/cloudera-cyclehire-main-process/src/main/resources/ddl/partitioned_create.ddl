@@ -2,7 +2,7 @@
 -- Cyclehire Partitioned Schema Create
 --
 
-CREATE EXTERNAL TABLE IF NOT EXISTS ${hiveconf:cyclehire.table.name} (
+CREATE EXTERNAL TABLE IF NOT EXISTS ${hivevar:cyclehire.table.name} (
   source STRING,
   batch STRING,
   record STRING
@@ -14,6 +14,6 @@ PARTITIONED BY (
 )
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001'
 STORED AS SEQUENCEFILE
-LOCATION '${hiveconf:cyclehire.table.location}';
+LOCATION '${hivevar:cyclehire.table.location}';
 
-MSCK REPAIR TABLE ${hiveconf:cyclehire.table.name};
+MSCK REPAIR TABLE ${hivevar:cyclehire.table.name};

@@ -2,7 +2,7 @@
 -- Cyclehire Database Grants
 --
 
-CREATE ROLE hive;
-GRANT ALL ON SERVER server1 TO ROLE hive;
-GRANT ALL ON DATABASE cyclehire TO ROLE hive;
-GRANT ROLE hive TO GROUP hive;
+CREATE ROLE ${hivevar:${hivevar:cyclehire.user};
+GRANT ALL ON SERVER ${hivevar:cyclehire.server.name} TO ROLE ${hivevar:${hivevar:cyclehire.user};
+GRANT ALL ON DATABASE ${hivevar:cyclehire.database.name} TO ROLE ${hivevar:${hivevar:cyclehire.user};
+GRANT ROLE ${hivevar:${hivevar:cyclehire.user} TO GROUP ${hivevar:${hivevar:cyclehire.user};

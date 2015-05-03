@@ -2,7 +2,7 @@
 -- Cyclehire Processed Schema Rewrite Avro
 --
 
-CREATE EXTERNAL TABLE IF NOT EXISTS ${hiveconf:cyclehire.table.name}
+CREATE EXTERNAL TABLE IF NOT EXISTS ${hivevar:cyclehire.table.name}
 COMMENT 'TFL Cyclehire processed data'
 PARTITIONED BY (
   year SMALLINT,
@@ -11,7 +11,7 @@ PARTITIONED BY (
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
 STORED AS INPUTFORMAT 'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
 OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
-LOCATION '${hiveconf:cyclehire.table.location}'
+LOCATION '${hivevar:cyclehire.table.location}'
 TBLPROPERTIES (
   'avro.schema.literal'='{
     "namespace": "com.cloudera",
@@ -38,8 +38,8 @@ TBLPROPERTIES (
   }'
 );
 
-INSERT OVERWRITE TABLE ${hiveconf:cyclehire.table.name}
+INSERT OVERWRITE TABLE ${hivevar:cyclehire.table.name}
 PARTITION (year, month)
 SELECT *
 FROM cyclehire_processed_cleansed_canonical
-WHERE year='${hiveconf:cyclehire.table.partition.year}' AND month='${hiveconf:cyclehire.table.partition.month}';
+WHERE year='${hivevar:cyclehire.table.partition.year}' AND month='${hivevar:cyclehire.table.partition.month}';

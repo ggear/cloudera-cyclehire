@@ -23,8 +23,8 @@ done
 if [ $(hive -e "$TABLES_REAPIR" | grep "Tables not in metastore" | wc -l) -gt 0 ]; then
   for((i=0;i<${#TABLES_NAME[@]};i++)); do
     $ROOT_DIR/../../bin/cyclehire-shell-hive.sh \
-      --hiveconf "cyclehire.table.name=${TABLES_NAME[$i]}" \
-      --hiveconf "cyclehire.table.location=${TABLES_LOCATION[$i]}/sequence/none" \
+      --hivevar "cyclehire.table.name=${TABLES_NAME[$i]}" \
+      --hivevar "cyclehire.table.location=${TABLES_LOCATION[$i]}/sequence/none" \
       -f "$ROOT_DIR/lib/ddl/${TABLES_DDL[$i]}"
   done
 fi
