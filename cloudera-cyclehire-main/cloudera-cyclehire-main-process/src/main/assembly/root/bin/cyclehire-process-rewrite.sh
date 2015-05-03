@@ -78,7 +78,7 @@ for((i=0;i<${#PARTITION_YEARS[@]};i++)); do
     fi
   fi
   $ROOT_DIR/../../bin/cyclehire-shell-hive.sh \
-    $CMD_LINE_ARGUMENTS_PARTITION $CMD_LINE_ARGUMENTS -f "$TABLE_DDL" && \
+    $CMD_LINE_ARGUMENTS_PARTITION $CMD_LINE_ARGUMENTS -f $TABLE_DDL && \
     $ROOT_DIR/../../bin/cyclehire-shell-impala.sh -q "REFRESH $TABLE_NAME;" && \
     $ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -rm -f $TABLE_LOCATION/year=${PARTITION_YEARS[$i]}/month=${PARTITION_MONTHS[$i]}/_REWRITE"
 done

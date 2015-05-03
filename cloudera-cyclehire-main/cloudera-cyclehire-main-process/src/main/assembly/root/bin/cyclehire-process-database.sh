@@ -13,18 +13,16 @@ NAME_SPACE_DATABASE=${4:-"$NAME_SPACE_DATABASE"}
 ROOT_DIR_HDFS=${5:-"$ROOT_DIR_HDFS"}
 
 if [ $($ROOT_DIR/../../bin/cyclehire-shell-hive.sh -e "SHOW ROLES" 2> /dev/null| grep $USER_ADMIN|wc -l) -eq 0 ]; then
-  $ROOT_DIR/../../bin/cyclehire-shell-hive.sh "\
+  $ROOT_DIR/../../bin/cyclehire-shell-hive.sh \
     --hivevar cyclehire.user=$USER_ADMIN \
     --hivevar cyclehire.server.name=$NAME_SPACE_SERVER \
     --hivevar cyclehire.database.name=$NAME_SPACE_DATABASE \
-    --hivevar cyclehire.database.location=$ROOT_DIR_HDFS" \
-    -f "$ROOT_DIR/lib/ddl/database_grant.ddl"
-  $ROOT_DIR/../../bin/cyclehire-shell-hive.sh "\
+    --hivevar cyclehire.database.location=$ROOT_DIR_HDFS \
+    -f $ROOT_DIR/lib/ddl/database_grant.ddl
+  $ROOT_DIR/../../bin/cyclehire-shell-hive.sh \
     --hivevar cyclehire.user=$USER_ADMIN \
     --hivevar cyclehire.server.name=$NAME_SPACE_SERVER \
     --hivevar cyclehire.database.name=$NAME_SPACE_DATABASE \
-    --hivevar cyclehire.database.location=$ROOT_DIR_HDFS" \
-    -f "$ROOT_DIR/lib/ddl/database_create.ddl"
+    --hivevar cyclehire.database.location=$ROOT_DIR_HDFS \
+    -f $ROOT_DIR/lib/ddl/database_create.ddl
 fi
-
-$ROOT_DIR/../../bin/cyclehire-shell-impala.sh -r -q "SHOW DATABASES; SHOW TABLES; SHOW ROLES; SHOW CURRENT ROLES;"
