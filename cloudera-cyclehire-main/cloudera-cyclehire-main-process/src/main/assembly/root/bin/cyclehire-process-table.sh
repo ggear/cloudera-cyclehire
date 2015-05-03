@@ -20,12 +20,12 @@ for((i=0;i<${#TABLES_NAME[@]};i++)); do
   TABLES_REAPIR="$TABLES_REAPIR""MSCK REPAIR TABLE ${TABLES_NAME[$i]};"
 done
 
-if [ $(hive -e "$TABLES_REAPIR" | grep "Tables not in metastore" | wc -l) -gt 0 ]; then
+if [ $($ROOT_DIR/../../bin/cyclehire-shell-hive.sh -e "$TABLES_REAPIR" | grep "Tables not in metastore" | wc -l) -gt 0 ]; then
   for((i=0;i<${#TABLES_NAME[@]};i++)); do
     $ROOT_DIR/../../bin/cyclehire-shell-hive.sh "\
       --hivevar cyclehire.table.name=${TABLES_NAME[$i]} \
       --hivevar cyclehire.table.location=${TABLES_LOCATION[$i]}/sequence/none \
-      -f "$ROOT_DIR/lib/ddl/${TABLES_DDL[$i]}"
+      -f $ROOT_DIR/lib/ddl/${TABLES_DDL[$i]}"
     $ROOT_DIR/../../bin/cyclehire-shell-impala.sh -q "REFRESH ${TABLES_NAME[$i]};"
   done
 fi
