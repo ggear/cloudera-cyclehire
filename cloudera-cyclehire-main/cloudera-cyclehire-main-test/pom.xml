@@ -1,16 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cloudera.cyclehire.main</groupId>
 	<artifactId>cloudera-cyclehire-main-test</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 
 	<parent>
 		<groupId>com.cloudera.cyclehire</groupId>
 		<artifactId>cloudera-cyclehire-main</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.2</version>
 	</parent>
 
 	<dependencies>
@@ -61,27 +60,17 @@
 						<configuration>
 							<target>
 								<mkdir dir="${project.build.directory}/${project.runtime-test-dir}" />
-								<symlink
-									link="${project.build.directory}/${project.runtime-test-dir}/hadoop"
-									resource="../../../../cloudera-cyclehire-repo/cloudera-cyclehire-repo-runtime/target/test-runtime/hadoop"
-									failonerror="false" />
-								<copy
-									tofile="${project.build.directory}/${project.runtime-test-dir}/hadoop/bin/hadoop-config.sh_tmp"
-									file="${project.build.directory}/${project.runtime-test-dir}/hadoop/bin/hadoop-config.sh"
-									overwrite="true">
+								<symlink link="${project.build.directory}/${project.runtime-test-dir}/hadoop" resource="../../../../cloudera-cyclehire-repo/cloudera-cyclehire-repo-runtime/target/test-runtime/hadoop" failonerror="false" />
+								<copy tofile="${project.build.directory}/${project.runtime-test-dir}/hadoop/bin/hadoop-config.sh_tmp" file="${project.build.directory}/${project.runtime-test-dir}/hadoop/bin/hadoop-config.sh" overwrite="true">
 									<filterchain>
 										<linecontains negate="true">
 											<contains value="HADOOP_CLASSPATH" />
 										</linecontains>
 									</filterchain>
 								</copy>
-								<copy
-									tofile="${project.build.directory}/${project.runtime-test-dir}/hadoop/bin/hadoop-config.sh"
-									file="${project.build.directory}/${project.runtime-test-dir}/hadoop/bin/hadoop-config.sh_tmp" />
+								<copy tofile="${project.build.directory}/${project.runtime-test-dir}/hadoop/bin/hadoop-config.sh" file="${project.build.directory}/${project.runtime-test-dir}/hadoop/bin/hadoop-config.sh_tmp" />
 								<property name="classpath" refid="maven.compile.classpath" />
-								<echo
-									file="${project.build.directory}/${project.runtime-test-dir}/hadoop/bin/hadoop-config.sh"
-									append="true">HADOOP_CLASSPATH=${classpath}${line.separator}</echo>
+								<echo file="${project.build.directory}/${project.runtime-test-dir}/hadoop/bin/hadoop-config.sh" append="true">HADOOP_CLASSPATH=${classpath}${line.separator}</echo>
 							</target>
 						</configuration>
 						<goals>
