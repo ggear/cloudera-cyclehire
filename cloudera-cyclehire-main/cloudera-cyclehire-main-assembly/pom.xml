@@ -4,26 +4,26 @@
 	<groupId>com.cloudera.cyclehire.main</groupId>
 	<artifactId>cloudera-cyclehire-main-assembly</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.2</version>
+	<version>0.0.3-SNAPSHOT</version>
 
 	<parent>
 		<groupId>com.cloudera.cyclehire</groupId>
 		<artifactId>cloudera-cyclehire-main</artifactId>
-		<version>0.0.2</version>
+		<version>0.0.3-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.cloudera.cyclehire.main</groupId>
 			<artifactId>cloudera-cyclehire-main-ingress</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3-SNAPSHOT</version>
 			<classifier>assembly</classifier>
 			<type>tar.gz</type>
 		</dependency>
 		<dependency>
 			<groupId>com.cloudera.cyclehire.main</groupId>
 			<artifactId>cloudera-cyclehire-main-process</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3-SNAPSHOT</version>
 			<classifier>assembly</classifier>
 			<type>tar.gz</type>
 		</dependency>

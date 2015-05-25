@@ -4,12 +4,12 @@
 	<groupId>com.cloudera.cyclehire</groupId>
 	<artifactId>cloudera-cyclehire-main</artifactId>
 	<packaging>pom</packaging>
-	<version>0.0.2</version>
+	<version>0.0.3-SNAPSHOT</version>
 
 	<parent>
 		<groupId>com.cloudera</groupId>
 		<artifactId>cloudera-cyclehire</artifactId>
-		<version>0.0.2</version>
+		<version>0.0.3-SNAPSHOT</version>
 	</parent>
 
 	<modules>
