@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.cloudera.cyclehire.repo.bom.cdh</groupId>
-			<artifactId>cloudera-cyclehire-repo-bom-cdh${hadoop-cdh.version}-client</artifactId>
+			<artifactId>cloudera-cyclehire-repo-bom-cdh-client</artifactId>
 			<version>${project.version}</version>
 			<type>pom</type>
 			<scope>provided</scope>

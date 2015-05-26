@@ -2,13 +2,13 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cloudera.cyclehire.repo.bom.cdh</groupId>
-	<artifactId>cloudera-cyclehire-repo-bom-cdh4-runtime</artifactId>
+	<artifactId>cloudera-cyclehire-repo-bom-cdh-runtime</artifactId>
 	<packaging>pom</packaging>
 	<version>0.0.3-SNAPSHOT</version>
 
 	<parent>
 		<groupId>com.cloudera.cyclehire.repo.bom</groupId>
-		<artifactId>cloudera-cyclehire-repo-bom-cdh4</artifactId>
+		<artifactId>cloudera-cyclehire-repo-bom-cdh</artifactId>
 		<version>0.0.3-SNAPSHOT</version>
 	</parent>
 
@@ -40,12 +40,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hive</groupId>
-			<artifactId>hive-exec</artifactId>
+			<artifactId>hive</artifactId>
 			<version>${hadoop-hive.version}</version>
+			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hive</groupId>
-			<artifactId>hive-builtins</artifactId>
+			<artifactId>hive-exec</artifactId>
 			<version>${hadoop-hive.version}</version>
 		</dependency>
 		<dependency>
@@ -62,6 +63,21 @@
 			<groupId>org.apache.hive</groupId>
 			<artifactId>hive-cli</artifactId>
 			<version>${hadoop-hive.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-cli</artifactId>
+			<version>${hadoop-hive.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.flume</groupId>
+			<artifactId>flume-ng-core</artifactId>
+			<version>${hadoop-flume.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.flume</groupId>
+			<artifactId>flume-ng-sdk</artifactId>
+			<version>${hadoop-flume.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>

@@ -44,7 +44,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.cloudera.cyclehire.repo.bom.cdh</groupId>
-			<artifactId>cloudera-cyclehire-repo-bom-cdh${hadoop-cdh.version}-runtime</artifactId>
+			<artifactId>cloudera-cyclehire-repo-bom-cdh-runtime</artifactId>
 			<version>${project.version}</version>
 			<type>pom</type>
 			<scope>test</scope>

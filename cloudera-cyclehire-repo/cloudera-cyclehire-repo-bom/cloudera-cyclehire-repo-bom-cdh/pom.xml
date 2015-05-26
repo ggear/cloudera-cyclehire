@@ -2,7 +2,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cloudera.cyclehire.repo.bom</groupId>
-	<artifactId>cloudera-cyclehire-repo-bom-cdh5</artifactId>
+	<artifactId>cloudera-cyclehire-repo-bom-cdh</artifactId>
 	<packaging>pom</packaging>
 	<version>0.0.3-SNAPSHOT</version>
 
@@ -13,8 +13,8 @@
 	</parent>
 
 	<modules>
-		<module>cloudera-cyclehire-repo-bom-cdh5-client</module>
-		<module>cloudera-cyclehire-repo-bom-cdh5-runtime</module>
+		<module>cloudera-cyclehire-repo-bom-cdh-client</module>
+		<module>cloudera-cyclehire-repo-bom-cdh-runtime</module>
 	</modules>
 
 </project>

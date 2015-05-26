@@ -13,8 +13,7 @@
 	</parent>
 
 	<modules>
-		<module>cloudera-cyclehire-repo-bom-cdh4</module>
-		<module>cloudera-cyclehire-repo-bom-cdh5</module>
+		<module>cloudera-cyclehire-repo-bom-cdh</module>
 	</modules>
 
 </project>
