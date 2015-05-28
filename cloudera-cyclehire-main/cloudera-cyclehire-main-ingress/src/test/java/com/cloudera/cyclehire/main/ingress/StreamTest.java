@@ -69,7 +69,7 @@ public class StreamTest extends EmbeddedCoreTestCase {
     server.setStopAtShutdown(true);
     SelectChannelConnector connector = new SelectChannelConnector();
     connector.setPort(HTTP_PORT);
-    connector.setMaxIdleTime(Integer.MAX_VALUE);    
+    connector.setMaxIdleTime(Integer.MAX_VALUE);
     server.setConnectors(new Connector[] { connector });
     ResourceHandler serverResourceHandler = new ResourceHandler();
     serverResourceHandler.setResourceBase(HTTP_WEBROOT);
