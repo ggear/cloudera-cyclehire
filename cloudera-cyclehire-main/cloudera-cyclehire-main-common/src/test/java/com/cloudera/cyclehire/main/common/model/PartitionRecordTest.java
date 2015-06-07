@@ -11,12 +11,16 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.cloudera.cyclehire.data.DataConstants;
-import com.cloudera.cyclehire.main.test.BaseTestCase;
+import com.cloudera.cyclehire.main.test.TestConstants;
+import com.cloudera.framework.main.test.LocalClusterDfsMrBaseTest;
 
 public class PartitionRecordTest {
 
-  private static final File FILE = new File(BaseTestCase.PATH_LOCAL_DIRS_XML[0]
-      + '/' + DataConstants.PATH_LOCAL_XMLSS[0][50]);
+  private static final File FILE = new File(
+      new LocalClusterDfsMrBaseTest()
+          .getPathLocal(TestConstants.PATH_LOCAL_DIRS_XML[0])
+          + '/'
+          + DataConstants.PATH_LOCAL_XMLSS[0][50]);
   private static final PartitionKey KEY = new PartitionKey().batch(
       FILE.getParentFile().getName()).record(FILE.getName());
   private static String XML = "";

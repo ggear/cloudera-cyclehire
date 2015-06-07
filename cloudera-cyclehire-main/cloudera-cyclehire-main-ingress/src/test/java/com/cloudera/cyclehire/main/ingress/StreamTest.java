@@ -1,11 +1,8 @@
 package com.cloudera.cyclehire.main.ingress;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
@@ -30,17 +27,18 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.cloudera.cyclehire.data.DataConstants;
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
 import com.cloudera.cyclehire.main.ingress.stream.StreamHttpSource;
-import com.cloudera.cyclehire.main.test.BaseTestCase;
-import com.cloudera.cyclehire.main.test.EmbeddedCoreTestCase;
+import com.cloudera.cyclehire.main.test.TestConstants;
+import com.cloudera.framework.main.test.LocalClusterDfsMrBaseTest;
 import com.google.common.collect.ImmutableMap;
 
-public class StreamTest extends EmbeddedCoreTestCase {
+public class StreamTest extends LocalClusterDfsMrBaseTest {
 
   private static final int HTTP_PORT = 10901;
   private static final String HTTP_URL_BASE = "http://127.0.0.1:" + HTTP_PORT
@@ -58,13 +56,8 @@ public class StreamTest extends EmbeddedCoreTestCase {
   private static String httpFile1;
   private static String httpFile2;
 
-  public StreamTest() throws IOException {
-    super();
-  }
-
-  @Override
   @BeforeClass
-  public void setUpClass() throws Exception {
+  public static void setUpServer() throws Exception {
     server = new Server();
     server.setStopAtShutdown(true);
     SelectChannelConnector connector = new SelectChannelConnector();
@@ -83,24 +76,24 @@ public class StreamTest extends EmbeddedCoreTestCase {
     httpFile2 = IOUtils.toString(new URL(HTTP_URL_2), Charsets.UTF_8.name());
   }
 
-  @Override
   @AfterClass
-  public void tearDownClass() throws Exception {
+  public static void tearDownServer() throws Exception {
     server.stop();
   }
 
   @Test
   public void testStreamHttpSourceInvalid() throws Exception {
-    assertEquals(
+    Assert.assertEquals(
         -1,
         processStreamHttpSource(new String[] { "" }, new String[] { "" },
             "250", "0", "1", 1, true, null));
-    assertEquals(
-        0,
-        processStreamHttpSource(
-            new String[] { "http://some-non-existant-host-891237081231.com/test.xml" },
-            new String[] { "" }, "250", "0", "1", 1, true, null));
-    assertEquals(
+    Assert
+        .assertEquals(
+            0,
+            processStreamHttpSource(
+                new String[] { "http://some-non-existant-host-891237081231.com/test.xml" },
+                new String[] { "" }, "250", "0", "1", 1, true, null));
+    Assert.assertEquals(
         0,
         processStreamHttpSource(new String[] { HTTP_URL_1
             + "-some-non-existant-resource" }, new String[] { "" }, "250", "0",
@@ -109,11 +102,11 @@ public class StreamTest extends EmbeddedCoreTestCase {
 
   @Test
   public void testStreamHttpSourceSingle() throws Exception {
-    assertEquals(
+    Assert.assertEquals(
         1,
         processStreamHttpSource(new String[] { HTTP_URL_EMPTY },
             new String[] { "" }, "250", "0", "1", 1, true, null));
-    assertEquals(
+    Assert.assertEquals(
         1,
         processStreamHttpSource(new String[] { HTTP_URL_1 },
             new String[] { httpFile1 }, "250", "0", "1", 3, true, null));
@@ -121,23 +114,23 @@ public class StreamTest extends EmbeddedCoreTestCase {
 
   @Test
   public void testStreamHttpSourceBatch() throws Exception {
-    assertEquals(
+    Assert.assertEquals(
         0,
         processStreamHttpSource(new String[] { HTTP_URL_1 },
             new String[] { httpFile1 }, "250", "0", "3", 3, true, null));
-    assertEquals(
+    Assert.assertEquals(
         4,
         processStreamHttpSource(new String[] { HTTP_URL_1 },
             new String[] { httpFile1 }, "250", "1", "1", 3, true, null));
-    assertEquals(
+    Assert.assertEquals(
         3,
         processStreamHttpSource(new String[] { HTTP_URL_1 },
             new String[] { httpFile1 }, "250", "1", "3", 3, true, null));
-    assertEquals(
+    Assert.assertEquals(
         28,
         processStreamHttpSource(new String[] { HTTP_URL_1 },
             new String[] { httpFile1 }, "250", "9", "1", 3, true, null));
-    assertEquals(
+    Assert.assertEquals(
         27,
         processStreamHttpSource(new String[] { HTTP_URL_1 },
             new String[] { httpFile1 }, "250", "9", "3", 3, true, null));
@@ -145,32 +138,32 @@ public class StreamTest extends EmbeddedCoreTestCase {
 
   @Test
   public void testStreamHttpSourceBatchPoll() throws Exception {
-    assertEquals(
+    Assert.assertEquals(
         3,
         processStreamHttpSource(new String[] { HTTP_URL_1, HTTP_URL_2 },
             new String[] { httpFile1, httpFile2 }, "250", "0", "1", 3, true,
             null));
-    assertEquals(
+    Assert.assertEquals(
         3,
         processStreamHttpSource(new String[] { HTTP_URL_1, HTTP_URL_2 },
             new String[] { httpFile1, httpFile2 }, "250", "0", "3", 3, true,
             null));
-    assertEquals(
+    Assert.assertEquals(
         6,
         processStreamHttpSource(new String[] { HTTP_URL_1, HTTP_URL_2 },
             new String[] { httpFile1, httpFile2 }, "250", "1", "1", 3, true,
             null));
-    assertEquals(
+    Assert.assertEquals(
         6,
         processStreamHttpSource(new String[] { HTTP_URL_1, HTTP_URL_2 },
             new String[] { httpFile1, httpFile2 }, "250", "1", "3", 3, true,
             null));
-    assertEquals(
+    Assert.assertEquals(
         30,
         processStreamHttpSource(new String[] { HTTP_URL_1, HTTP_URL_2 },
             new String[] { httpFile1, httpFile2 }, "250", "9", "1", 3, true,
             null));
-    assertEquals(
+    Assert.assertEquals(
         30,
         processStreamHttpSource(new String[] { HTTP_URL_1, HTTP_URL_2 },
             new String[] { httpFile1, httpFile2 }, "250", "9", "3", 3, true,
@@ -260,7 +253,7 @@ public class StreamTest extends EmbeddedCoreTestCase {
         new Context(ImmutableMap.of("keep-alive", "1")));
     channel.start();
     Context context = new Context();
-    context.put("hdfs.path", BaseTestCase.PATH_HDFS_DIR_RAW_LANDED
+    context.put("hdfs.path", getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)
         + "/xml/none/%{batch}_livecyclehireupdates-%{host}.xml");
     context.put("hdfs.filePrefix",
         "%t_livecyclehireupdates-%{index}-of-%{total}");
@@ -286,7 +279,7 @@ public class StreamTest extends EmbeddedCoreTestCase {
     sink.stop();
     int fileCount = 0;
     RemoteIterator<LocatedFileStatus> paths = getFileSystem().listFiles(
-        new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
+        new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
     while (paths.hasNext()) {
       Path path = paths.next().getPath();
       PartitionKey partitionKey = new PartitionKey().batch(
@@ -296,10 +289,6 @@ public class StreamTest extends EmbeddedCoreTestCase {
     }
     channel.stop();
     return fileCount;
-  }
-
-  public static junit.framework.Test suite() throws Exception {
-    return new StreamTest().getTestSuiteWithClassLifecycleMethods();
   }
 
 }

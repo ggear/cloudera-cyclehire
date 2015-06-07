@@ -19,11 +19,11 @@ import com.cloudera.cyclehire.main.common.Counter;
 import com.cloudera.cyclehire.main.common.Driver;
 import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
 import com.cloudera.cyclehire.main.ingress.copy.CopyDriver;
-import com.cloudera.cyclehire.main.test.BaseTestCase;
-import com.cloudera.cyclehire.main.test.EmbeddedCoreTestCase;
+import com.cloudera.cyclehire.main.test.TestConstants;
+import com.cloudera.framework.main.test.LocalClusterDfsMrBaseTest;
 
 @RunWith(Parameterized.class)
-public class CopyTest extends EmbeddedCoreTestCase {
+public class CopyTest extends LocalClusterDfsMrBaseTest {
 
   public static String[] THREAD_NUMBER = new String[] { null, "1", "3" };
   public static String[] THREAD_QUEUE = new String[] { null,
@@ -55,73 +55,74 @@ public class CopyTest extends EmbeddedCoreTestCase {
   }
 
   @Before
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public void setUpDriver() throws Exception {
     if (threadNumber != null) {
-      getFileSystem().getConf()
-          .set(CopyDriver.CONF_THREAD_NUMBER, threadNumber);
+      getConf().set(CopyDriver.CONF_THREAD_NUMBER, threadNumber);
     }
     if (threadQueue != null) {
-      getFileSystem().getConf().set(CopyDriver.CONF_THREAD_QUEUE, threadQueue);
+      getConf().set(CopyDriver.CONF_THREAD_QUEUE, threadQueue);
     }
-    copyDriver = new CopyDriver(getFileSystem().getConf());
+    copyDriver = new CopyDriver(getConf());
   }
 
   @After
-  @Override
-  public void tearDown() throws Exception {
+  public void tearDownDriver() throws Exception {
     if (threadNumber != null) {
-      getFileSystem().getConf().unset(CopyDriver.CONF_THREAD_NUMBER);
+      getConf().unset(CopyDriver.CONF_THREAD_NUMBER);
     }
     if (threadQueue != null) {
-      getFileSystem().getConf().unset(CopyDriver.CONF_THREAD_QUEUE);
+      getConf().unset(CopyDriver.CONF_THREAD_QUEUE);
     }
-    super.tearDown();
   }
 
   @Test
   public void testExecuteInvalid() throws Exception {
     Assert.assertEquals(Driver.RETURN_FAILURE_RUNTIME,
         copyDriver.runner(new String[0]));
-    Assert.assertEquals(Driver.RETURN_FAILURE_RUNTIME, copyDriver
-        .runner(new String[] { BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT }));
+    Assert
+        .assertEquals(
+            Driver.RETURN_FAILURE_RUNTIME,
+            copyDriver
+                .runner(new String[] { getPathLocal(TestConstants.PATH_LOCAL_DIR_NON_EXISTANT) }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         copyDriver.runner(new String[] {
-            BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
+            getPathLocal(TestConstants.PATH_LOCAL_DIR_NON_EXISTANT),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         copyDriver.runner(new String[] {
-            BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT,
-            BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
+            getPathLocal(TestConstants.PATH_LOCAL_DIR_NON_EXISTANT),
+            getPathLocal(TestConstants.PATH_LOCAL_DIR_NON_EXISTANT),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         copyDriver.runner(new String[] {
-            BaseTestCase.PATH_LOCAL_DIR_NON_EXISTANT,
-            BaseTestCase.PATH_LOCAL_DIR_TAR,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
+            getPathLocal(TestConstants.PATH_LOCAL_DIR_NON_EXISTANT),
+            getPathLocal(TestConstants.PATH_LOCAL_DIR_TAR),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
-        copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIR_TAR,
-            BaseTestCase.PATH_LOCAL_DIR_TAR,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
+        copyDriver.runner(new String[] {
+            getPathLocal(TestConstants.PATH_LOCAL_DIR_TAR),
+            getPathLocal(TestConstants.PATH_LOCAL_DIR_TAR),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
   }
 
   @Test
   public void testExecuteDirExclude() throws Exception {
 
     List<Path> fileOutputs = null;
-    int fileCountInput = new File(BaseTestCase.PATH_LOCAL_DIR_TAR).list().length;
+    int fileCountInput = new File(
+        getPathLocal(TestConstants.PATH_LOCAL_DIR_TAR)).list().length;
 
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
-        copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIR_TAR,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
+        copyDriver.runner(new String[] {
+            getPathLocal(TestConstants.PATH_LOCAL_DIR_TAR),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
     fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
-        BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
+        getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
     Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
     Assert.assertEquals(
         0L,
@@ -144,10 +145,11 @@ public class CopyTest extends EmbeddedCoreTestCase {
 
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
-        copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIR_TAR,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
+        copyDriver.runner(new String[] {
+            getPathLocal(TestConstants.PATH_LOCAL_DIR_TAR),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
     fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
-        BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
+        getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
     Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
     Assert.assertEquals(
         fileCountInput,
@@ -179,10 +181,11 @@ public class CopyTest extends EmbeddedCoreTestCase {
     getFileSystem().delete(fileOutputs.get(fileOutputs.size() - 1), true);
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
-        copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIR_TAR,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
+        copyDriver.runner(new String[] {
+            getPathLocal(TestConstants.PATH_LOCAL_DIR_TAR),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
     fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
-        BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
+        getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
     Assert.assertEquals(fileCountInput * 2 - fileCountFailed,
         fileOutputs.size());
     Assert.assertEquals(
@@ -206,22 +209,25 @@ public class CopyTest extends EmbeddedCoreTestCase {
 
   @Test
   public void testExecuteDirInclude() throws Exception {
-    getFileSystem().getConf().set(CopyDriver.CONF_DIR_INCLUDE, "true");
+    getConf().set(CopyDriver.CONF_DIR_INCLUDE, "true");
     try {
 
       List<Path> fileOutputs = null;
-      int fileCountInput = new File(BaseTestCase.PATH_LOCAL_DIRS_XML[0]).list().length;
+      int fileCountInput = new File(
+          getPathLocal(TestConstants.PATH_LOCAL_DIRS_XML[0])).list().length;
 
       Assert.assertEquals(
           Driver.RETURN_SUCCESS,
-          copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIRS_XML[0],
-              BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
-      Assert.assertEquals(
-          1,
-          getFileSystem().listStatus(
-              new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDED)).length);
+          copyDriver.runner(new String[] {
+              getPathLocal(TestConstants.PATH_LOCAL_DIRS_XML[0]),
+              getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
+      Assert
+          .assertEquals(
+              1,
+              getFileSystem().listStatus(
+                  new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED))).length);
       fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
-          BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
+          getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
       Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
       Assert.assertEquals(
           0L,
@@ -244,14 +250,16 @@ public class CopyTest extends EmbeddedCoreTestCase {
 
       Assert.assertEquals(
           Driver.RETURN_SUCCESS,
-          copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIRS_XML[0],
-              BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
-      Assert.assertEquals(
-          1,
-          getFileSystem().listStatus(
-              new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDED)).length);
+          copyDriver.runner(new String[] {
+              getPathLocal(TestConstants.PATH_LOCAL_DIRS_XML[0]),
+              getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
+      Assert
+          .assertEquals(
+              1,
+              getFileSystem().listStatus(
+                  new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED))).length);
       fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
-          BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
+          getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
       Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
       Assert.assertEquals(
           fileCountInput,
@@ -274,8 +282,8 @@ public class CopyTest extends EmbeddedCoreTestCase {
 
       Path dirTodo = getFileSystem().listStatus(
           getFileSystem().listStatus(
-              new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDED))[0].getPath())[0]
-          .getPath();
+              new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)))[0]
+              .getPath())[0].getPath();
       int fileCountSuccessful = HDFSClientUtil.listFiles(getFileSystem(),
           dirTodo, true).size() / 2;
       int fileCountFailed = 2;
@@ -286,14 +294,16 @@ public class CopyTest extends EmbeddedCoreTestCase {
       getFileSystem().delete(fileOutputs.get(fileOutputs.size() - 1), true);
       Assert.assertEquals(
           Driver.RETURN_SUCCESS,
-          copyDriver.runner(new String[] { BaseTestCase.PATH_LOCAL_DIRS_XML[0],
-              BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
-      Assert.assertEquals(
-          1,
-          getFileSystem().listStatus(
-              new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDED)).length);
+          copyDriver.runner(new String[] {
+              getPathLocal(TestConstants.PATH_LOCAL_DIRS_XML[0]),
+              getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
+      Assert
+          .assertEquals(
+              1,
+              getFileSystem().listStatus(
+                  new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED))).length);
       fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
-          BaseTestCase.PATH_HDFS_DIR_RAW_LANDED), true);
+          getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
       Assert.assertEquals(fileCountInput * 2 - fileCountFailed,
           fileOutputs.size());
       Assert.assertEquals(
@@ -314,7 +324,7 @@ public class CopyTest extends EmbeddedCoreTestCase {
               Counter.FILES).longValue());
 
     } finally {
-      getFileSystem().getConf().unset(CopyDriver.CONF_DIR_INCLUDE);
+      getConf().unset(CopyDriver.CONF_DIR_INCLUDE);
     }
   }
 

@@ -128,12 +128,15 @@ public abstract class Driver extends Configured implements Tool {
     timeTotal = System.currentTimeMillis() - timeTotal;
 
     if (LOG.isInfoEnabled()) {
-      LOG.info("Driver [" + this.getClass().getCanonicalName() + "] counters:");
-      for (String group : getCountersGroups()) {
-        Map<Enum<?>, Long> counters = getCounters(group);
-        for (Enum<?> counter : counters.keySet()) {
-          LOG.info("\t" + group + "." + counter.toString() + "="
-              + counters.get(counter));
+      if (getCountersGroups().size() > 0) {
+        LOG.info("Driver [" + this.getClass().getCanonicalName()
+            + "] counters:");
+        for (String group : getCountersGroups()) {
+          Map<Enum<?>, Long> counters = getCounters(group);
+          for (Enum<?> counter : counters.keySet()) {
+            LOG.info("\t" + group + "." + counter.toString() + "="
+                + counters.get(counter));
+          }
         }
       }
     }

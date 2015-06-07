@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.cloudera.framework.main</groupId>
+  <artifactId>cloudera-framework-main-runtime</artifactId>
+  <versioning>
+    <versions>
+      <version>0.0.5-cdhcdh5.4.0-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20150607034326</lastUpdated>
+  </versioning>
+</metadata>

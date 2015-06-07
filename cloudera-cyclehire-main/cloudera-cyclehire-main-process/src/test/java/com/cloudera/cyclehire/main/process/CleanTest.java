@@ -5,58 +5,57 @@ import java.io.IOException;
 
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.cloudera.cyclehire.main.common.Counter;
 import com.cloudera.cyclehire.main.common.Driver;
 import com.cloudera.cyclehire.main.process.clean.CleanDriver;
-import com.cloudera.cyclehire.main.test.BaseTestCase;
+import com.cloudera.cyclehire.main.test.TestConstants;
 
 public class CleanTest extends BaseTest {
 
   protected Driver cleanDriver;
   protected Driver processDriver;
 
-  public CleanTest() throws IOException {
-    super();
-  }
-
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-    cleanDriver = new CleanDriver(getFileSystem().getConf());
-    processDriver = new ProcessDriver(getFileSystem().getConf());
+  @Before
+  public void setUpDriver() throws Exception {
+    cleanDriver = new CleanDriver(getConf());
+    processDriver = new ProcessDriver(getConf());
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         processDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED,
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
-            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED,
-            BaseTestCase.PATH_HDFS_DIR_PROCESSED }));
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_PARTITIONED),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_PROCESSED) }));
   }
 
   @Test
   public void testCleanInvalid() {
     Assert.assertEquals(Driver.RETURN_FAILURE_RUNTIME,
         cleanDriver.runner(new String[0]));
-    Assert.assertEquals(Driver.RETURN_FAILURE_RUNTIME, cleanDriver
-        .runner(new String[] { BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
+    Assert
+        .assertEquals(
+            Driver.RETURN_FAILURE_RUNTIME,
+            cleanDriver
+                .runner(new String[] { getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         cleanDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_NON_EXISTANT,
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED }));
+            getPathDfs(TestConstants.PATH_HDFS_DIR_NON_EXISTANT),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         cleanDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED,
-            BaseTestCase.PATH_HDFS_DIR_NON_EXISTANT }));
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_NON_EXISTANT) }));
     Assert.assertEquals(
         Driver.RETURN_FAILURE_RUNTIME,
         cleanDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED,
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED,
-            BaseTestCase.PATH_HDFS_DIR_RAW_PARTITIONED }));
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_PARTITIONED) }));
   }
 
   @Test
@@ -66,8 +65,8 @@ public class CleanTest extends BaseTest {
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         cleanDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED,
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED }));
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED) }));
     Assert.assertEquals(
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
@@ -105,8 +104,8 @@ public class CleanTest extends BaseTest {
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         cleanDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED,
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED }));
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED) }));
     long filesCount = cleanDriver.getCounter(
         CleanDriver.class.getCanonicalName(), Counter.FILES_SKIPPED)
         .longValue();
@@ -171,8 +170,8 @@ public class CleanTest extends BaseTest {
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         cleanDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED,
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED }));
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED) }));
     Assert.assertEquals(
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),
@@ -247,16 +246,16 @@ public class CleanTest extends BaseTest {
 
     cleanDriver.reset();
 
-    getFileSystem().delete(new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDED),
-        true);
+    getFileSystem().delete(
+        new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
     getFileSystem().copyFromLocalFile(
-        new Path(BaseTestCase.PATH_LOCAL_DIR_XML),
-        new Path(BaseTestCase.PATH_HDFS_DIR_RAW_LANDED));
+        new Path(getPathLocal(TestConstants.PATH_LOCAL_DIR_XML)),
+        new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)));
     Assert.assertEquals(
         Driver.RETURN_SUCCESS,
         cleanDriver.runner(new String[] {
-            BaseTestCase.PATH_HDFS_DIR_RAW_LANDED,
-            BaseTestCase.PATH_HDFS_DIR_RAW_STAGED }));
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED),
+            getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED) }));
     Assert.assertEquals(
         cleanDriver.getCounter(CleanDriver.class.getCanonicalName(),
             Counter.FILES).longValue(),

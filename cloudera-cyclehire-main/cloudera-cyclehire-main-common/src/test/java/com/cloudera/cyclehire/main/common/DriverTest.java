@@ -1,27 +1,19 @@
 package com.cloudera.cyclehire.main.common;
 
-import java.io.IOException;
-
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cloudera.cyclehire.main.test.EmbeddedCoreTestCase;
+import com.cloudera.framework.main.test.LocalClusterDfsMrBaseTest;
 
-public class DriverTest extends EmbeddedCoreTestCase {
-
-  public DriverTest() throws IOException {
-    super();
-  }
+public class DriverTest extends LocalClusterDfsMrBaseTest {
 
   private Driver driver;
 
   @Before
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-    driver = new DriverNoOp(getFileSystem().getConf());
+  public void setUpDriver() throws Exception {
+    driver = new DriverNoOp(getConf());
   }
 
   @Test

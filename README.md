@@ -4,6 +4,8 @@ Sample Cloudera project to investigate the usage characteristics of the Transpor
 
 http://www.tfl.gov.uk/modes/cycling/barclays-cycle-hire
 
+Note that this project ships with the [cloudera-framework](https://github.com/ggear/cloudera-framework) binary dependencies.
+
 ##Compile
 
 ```bash
