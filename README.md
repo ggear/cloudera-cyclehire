@@ -31,10 +31,11 @@ mvn clean install -PDEV,BLD
 
 ##Package
 
-The project can be packaged for release purposes as per:
+The project can be packaged for release purposes (with assemblies built and exploded in the cloudera-cyclehire-main-assembly and cloudera-cyclehire-main-systest modules build dirs respectively) as per:
 
 ```bash
 mvn clean install -PREL,ALL
+ls cloudera-cyclehire-main/cloudera-cyclehire-main-systest/target/test-assembly
 ```
 
 ##Release
