@@ -1,17 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cloudera</groupId>
 	<artifactId>cloudera-framework</artifactId>
 	<packaging>pom</packaging>
-	<version>0.0.5-cdhcdh5.4.0-SNAPSHOT</version>
+	<version>1.0.0-cdh5.4.2</version>
 
 	<scm>
 		<connection>scm:git:git@github.com:ggear/cloudera-framework.git</connection>
 		<url>scm:git:git@github.com:ggear/cloudera-framework.git</url>
 		<developerConnection>scm:git:git@github.com:ggear/cloudera-framework.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>cloudera-framework-1.0.0-cdh5.4.2</tag>
 	</scm>
 
 	<distributionManagement>
@@ -48,10 +47,10 @@
 		<maven.assembly.skip>false</maven.assembly.skip>
 
 		<hadoop-cdh.version>5</hadoop-cdh.version>
-		<hadoop.version>2.6.0-cdh5.4.0</hadoop.version>
-		<hadoop-hive.version>1.1.0-cdh5.4.0</hadoop-hive.version>
-		<hadoop-flume.version>1.5.0-cdh5.4.0</hadoop-flume.version>
-		<hadoop-parquet.version>1.5.0-cdh5.4.0</hadoop-parquet.version>
+		<hadoop.version>2.6.0-cdh5.4.2</hadoop.version>
+		<hadoop-hive.version>1.1.0-cdh5.4.2</hadoop-hive.version>
+		<hadoop-flume.version>1.5.0-cdh5.4.2</hadoop-flume.version>
+		<hadoop-parquet.version>1.5.0-cdh5.4.2</hadoop-parquet.version>
 
 		<slf4j.version>1.7.5</slf4j.version>
 		<sysout-over-slf4j.version>1.0.2</sysout-over-slf4j.version>
@@ -199,7 +198,22 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>cloudera-framework-repo/cloudera-framework-repo-external/src/main/repository</directory>
+							<includes>
+								<include>**/${project.artifactId}/**</include>
+							</includes>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
+				<inherited>false</inherited>
 				<executions>
 					<execution>
 						<id>install-artifact</id>

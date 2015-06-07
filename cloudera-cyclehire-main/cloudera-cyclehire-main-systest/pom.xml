@@ -13,16 +13,6 @@
 		<version>0.0.3-SNAPSHOT</version>
 	</parent>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.cloudera.cyclehire.main</groupId>
-			<artifactId>cloudera-cyclehire-main-assembly</artifactId>
-			<version>${project.version}</version>
-			<classifier>assembly</classifier>
-			<type>tar.gz</type>
-		</dependency>
-	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
