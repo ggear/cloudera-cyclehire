@@ -15,11 +15,16 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.cloudera.framework.main</groupId>
-			<artifactId>cloudera-framework-main-client</artifactId>
+			<groupId>com.cloudera.framework.main.client</groupId>
+			<artifactId>cloudera-framework-main-client-core</artifactId>
 			<version>${cloudera-framework.version}</version>
 			<type>pom</type>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.cloudera.framework.main</groupId>
+			<artifactId>cloudera-framework-main-common</artifactId>
+			<version>${cloudera-framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cloudera.cyclehire.main</groupId>

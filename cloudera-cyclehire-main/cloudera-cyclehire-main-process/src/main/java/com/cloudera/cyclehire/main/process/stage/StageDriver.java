@@ -17,10 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.Driver;
 import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
 import com.cloudera.cyclehire.main.common.model.PartitionFlag;
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
+import com.cloudera.framework.main.common.Driver;
 
 public class StageDriver extends Driver {
 

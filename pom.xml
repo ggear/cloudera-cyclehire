@@ -49,7 +49,7 @@
 		<maven.data-download.skip>true</maven.data-download.skip>
 		<maven.assembly.skip>false</maven.assembly.skip>
 
-		<cloudera-framework.version>1.0.0-cdh5.4.3</cloudera-framework.version>
+		<cloudera-framework.version>1.1.0-cdh5.4.3-SNAPSHOT</cloudera-framework.version>
 
 		<opencsv.version>2.3</opencsv.version>
 		<slf4j.version>1.7.12</slf4j.version>

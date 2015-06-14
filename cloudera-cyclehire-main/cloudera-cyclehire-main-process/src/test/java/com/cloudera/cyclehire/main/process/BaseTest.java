@@ -4,9 +4,9 @@ import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
 import org.junit.Before;
 
-import com.cloudera.cyclehire.main.common.Driver;
 import com.cloudera.cyclehire.main.ingress.copy.CopyDriver;
 import com.cloudera.cyclehire.main.test.TestConstants;
+import com.cloudera.framework.main.common.Driver;
 import com.cloudera.framework.main.test.LocalClusterDfsMrBaseTest;
 
 public abstract class BaseTest extends LocalClusterDfsMrBaseTest {

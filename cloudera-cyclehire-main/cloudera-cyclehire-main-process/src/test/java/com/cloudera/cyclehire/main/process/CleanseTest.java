@@ -11,12 +11,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.Driver;
 import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
 import com.cloudera.cyclehire.main.process.cleanse.CleanseDriver;
 import com.cloudera.cyclehire.main.process.partition.PartitionDriver;
 import com.cloudera.cyclehire.main.process.stage.StageDriver;
 import com.cloudera.cyclehire.main.test.TestConstants;
+import com.cloudera.framework.main.common.Driver;
 
 public class CleanseTest extends BaseTest {
 

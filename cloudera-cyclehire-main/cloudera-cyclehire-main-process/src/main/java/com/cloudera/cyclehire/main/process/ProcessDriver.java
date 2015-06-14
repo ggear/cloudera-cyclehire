@@ -6,10 +6,10 @@ import java.util.concurrent.ExecutionException;
 import org.apache.hadoop.conf.Configuration;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.Driver;
 import com.cloudera.cyclehire.main.process.cleanse.CleanseDriver;
 import com.cloudera.cyclehire.main.process.partition.PartitionDriver;
 import com.cloudera.cyclehire.main.process.stage.StageDriver;
+import com.cloudera.framework.main.common.Driver;
 
 public class ProcessDriver extends Driver {
 
