@@ -37,7 +37,7 @@ public class ProcessDriver extends Driver {
   }
 
   @Override
-  public String[] paramaters() {
+  public String[] parameters() {
     return new String[] { "hdfs-dir-landed", "hdfs-dir-staged",
         "hdfs-dir-partitioned", "hdfs-dir-processed" };
   }

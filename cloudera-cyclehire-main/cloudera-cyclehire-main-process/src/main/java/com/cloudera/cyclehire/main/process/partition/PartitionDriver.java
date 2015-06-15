@@ -71,7 +71,7 @@ public class PartitionDriver extends Driver {
   }
 
   @Override
-  public String[] paramaters() {
+  public String[] parameters() {
     return new String[] { "hdfs-dir-staged", "hdfs-dir-partitioned" };
   }
 

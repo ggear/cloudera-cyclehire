@@ -55,7 +55,7 @@ public class StageDriver extends Driver {
   }
 
   @Override
-  public String[] paramaters() {
+  public String[] parameters() {
     return new String[] { "hdfs-dir-landed", "hdfs-dir-staged" };
   }
 

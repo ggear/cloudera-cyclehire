@@ -71,7 +71,7 @@ public class CopyDriver extends Driver {
   }
 
   @Override
-  public String[] paramaters() {
+  public String[] parameters() {
     return new String[] { "local-dir-landed ...", "hdfs-dir-landed" };
   }
 
