@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
+import com.cloudera.cyclehire.main.common.DfsUtil;
 import com.cloudera.cyclehire.main.process.cleanse.CleanseDriver;
 import com.cloudera.cyclehire.main.process.partition.PartitionDriver;
 import com.cloudera.cyclehire.main.process.stage.StageDriver;
@@ -245,7 +245,7 @@ public class CleanseTest extends BaseTest {
 
     cleanseDriver.reset();
 
-    List<Path> stagedPaths = HDFSClientUtil.listFiles(getFileSystem(),
+    List<Path> stagedPaths = DfsUtil.listFiles(getFileSystem(),
         new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED),
             Counter.BATCHES_SUCCESSFUL.getPath()), true);
     Collections.sort(stagedPaths);

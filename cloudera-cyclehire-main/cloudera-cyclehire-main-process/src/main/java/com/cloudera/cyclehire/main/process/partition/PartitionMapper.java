@@ -8,7 +8,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
+import com.cloudera.cyclehire.main.common.MrUtil;
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
 
 public class PartitionMapper extends
@@ -40,15 +40,15 @@ public class PartitionMapper extends
     // implementations and a multiple scan/copy OK given a rare positive match
     // Also permit this slight modification (escaping) but leave source data
     // otherwise intact for full history
-    if (value.find(MapReduceUtil.RECORD_COLUMN_DELIM) != -1) {
-      value.set(value.toString().replace(MapReduceUtil.RECORD_COLUMN_DELIM,
-          MapReduceUtil.RECORD_COLUMN_DELIM_ESCAPED));
+    if (value.find(MrUtil.RECORD_COLUMN_DELIM) != -1) {
+      value.set(value.toString().replace(MrUtil.RECORD_COLUMN_DELIM,
+          MrUtil.RECORD_COLUMN_DELIM_ESCAPED));
     }
     // 1-copy of O(RECORD_BUFFER_SIZE_DATA) sized value data, naive
     // implementations can easily result in 3-copy
     byte[] valueMetaData = new StringBuilder(RECORD_BUFFER_SIZE_METADATA)
-        .append(MapReduceUtil.RECORD_COLUMN_DELIM).append(key.getBatch())
-        .append(MapReduceUtil.RECORD_COLUMN_DELIM).append(key.getRecord())
+        .append(MrUtil.RECORD_COLUMN_DELIM).append(key.getBatch())
+        .append(MrUtil.RECORD_COLUMN_DELIM).append(key.getRecord())
         .toString().getBytes("UTF-8");
     value.append(valueMetaData, 0, valueMetaData.length);
     multipleOutputs
@@ -61,7 +61,7 @@ public class PartitionMapper extends
                 .append(
                     key.type(PartitionDriver.OUTPUT_FORMAT)
                         .codec(
-                            MapReduceUtil.getCodecString(context
+                            MrUtil.getCodecString(context
                                 .getConfiguration())).getPathPartition())
                 .append('/').append(key.getBatch()).append(pathSuffix)
                 .toString());

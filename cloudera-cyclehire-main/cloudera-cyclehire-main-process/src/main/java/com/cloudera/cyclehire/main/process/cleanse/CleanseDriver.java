@@ -32,8 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
-import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
+import com.cloudera.cyclehire.main.common.DfsUtil;
+import com.cloudera.cyclehire.main.common.MrUtil;
 import com.cloudera.cyclehire.main.common.model.PartitionFlag;
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
 import com.cloudera.cyclehire.main.process.table.Table;
@@ -100,7 +100,7 @@ public class CleanseDriver extends Driver {
 
     inputStagedPath = new Path(arguments[0]);
     if (!hdfs.exists(inputStagedPath)
-        || !HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
+        || !DfsUtil.canDoAction(hdfs, UserGroupInformation
             .getCurrentUser().getUserName(), UserGroupInformation
             .getCurrentUser().getGroupNames(), inputStagedPath, FsAction.READ)) {
       throw new Exception("HDFS staged directory [" + inputStagedPath
@@ -113,7 +113,7 @@ public class CleanseDriver extends Driver {
 
     inputPartitionedPath = new Path(arguments[1]);
     if (!hdfs.exists(inputPartitionedPath)
-        || !HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
+        || !DfsUtil.canDoAction(hdfs, UserGroupInformation
             .getCurrentUser().getUserName(), UserGroupInformation
             .getCurrentUser().getGroupNames(), inputPartitionedPath,
             FsAction.READ)) {
@@ -132,7 +132,7 @@ public class CleanseDriver extends Driver {
         throw new Exception("HDFS processed directory [" + inputProcessedPath
             + "] is not a directory");
       }
-      if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
+      if (!DfsUtil.canDoAction(hdfs, UserGroupInformation
           .getCurrentUser().getUserName(), UserGroupInformation
           .getCurrentUser().getGroupNames(), inputProcessedPath, FsAction.ALL)) {
         throw new Exception("HDFS processed directory [" + inputProcessedPath
@@ -161,7 +161,7 @@ public class CleanseDriver extends Driver {
     Set<String> counterPartitions = new HashSet<String>();
     List<Path> stagedPaths = new ArrayList<Path>();
     Map<String, PartitionKey> partitionKeys = new HashMap<String, PartitionKey>();
-    for (Path stagedPath : HDFSClientUtil
+    for (Path stagedPath : DfsUtil
         .listFiles(hdfs, inputStagedPath, true)) {
       if (!PartitionFlag.isValue(stagedPath.getName())) {
         PartitionKey partitionKey = new PartitionKey().path(stagedPath
@@ -180,7 +180,7 @@ public class CleanseDriver extends Driver {
                   .append(
                       new PartitionKey().path(stagedPath.toString())
                           .type(NAMED_OUTPUT_SEQUENCE)
-                          .codec(MapReduceUtil.getCodecString(getConf()))
+                          .codec(MrUtil.getCodecString(getConf()))
                           .getPathPartition()).toString());
               hdfs.delete(cleansedPath, true);
             }
@@ -213,7 +213,7 @@ public class CleanseDriver extends Driver {
                 .append(Counter.BATCHES_SUCCESSFUL.getPath())
                 .append(
                     partitionKey.type(NAMED_OUTPUT_SEQUENCE)
-                        .codec(MapReduceUtil.getCodecString(getConf()))
+                        .codec(MrUtil.getCodecString(getConf()))
                         .getPathPartition()).toString()));
       }
       job.setMapOutputKeyClass(PartitionKey.class);
@@ -245,7 +245,7 @@ public class CleanseDriver extends Driver {
     for (Path stagedPath : stagedPaths) {
       PartitionKey partitionKey = new PartitionKey()
           .path(stagedPath.toString()).type(NAMED_OUTPUT_SEQUENCE)
-          .codec(MapReduceUtil.getCodecString(getConf()));
+          .codec(MrUtil.getCodecString(getConf()));
       boolean cleansed = false;
       for (Counter counter : new Counter[] { Counter.RECORDS_MALFORMED,
           Counter.RECORDS_DUPLICATE, Counter.RECORDS_CLEANSED }) {
@@ -253,7 +253,7 @@ public class CleanseDriver extends Driver {
             PartitionKey.PATH_NOMINAL_LENGTH).append(inputProcessedPath)
             .append('/').append(counter.getPath())
             .append(partitionKey.getPathPartition()).toString());
-        if (HDFSClientUtil.listFiles(hdfs, cleansedPath, false).size() > 0) {
+        if (DfsUtil.listFiles(hdfs, cleansedPath, false).size() > 0) {
           cleansed = true;
           PartitionFlag.update(hdfs, cleansedPath, PartitionFlag._SUCCESS);
           if (counter.equals(Counter.RECORDS_CLEANSED)) {

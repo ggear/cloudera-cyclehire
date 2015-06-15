@@ -16,7 +16,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
+import com.cloudera.cyclehire.main.common.DfsUtil;
 import com.cloudera.cyclehire.main.ingress.copy.CopyDriver;
 import com.cloudera.cyclehire.main.test.TestConstants;
 import com.cloudera.framework.main.common.Driver;
@@ -121,7 +121,7 @@ public class CopyTest extends LocalClusterDfsMrBaseTest {
         copyDriver.runner(new String[] {
             getPathLocal(TestConstants.PATH_LOCAL_DIR_TAR),
             getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
-    fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
+    fileOutputs = DfsUtil.listFiles(getFileSystem(), new Path(
         getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
     Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
     Assert.assertEquals(
@@ -148,7 +148,7 @@ public class CopyTest extends LocalClusterDfsMrBaseTest {
         copyDriver.runner(new String[] {
             getPathLocal(TestConstants.PATH_LOCAL_DIR_TAR),
             getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
-    fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
+    fileOutputs = DfsUtil.listFiles(getFileSystem(), new Path(
         getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
     Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
     Assert.assertEquals(
@@ -171,7 +171,7 @@ public class CopyTest extends LocalClusterDfsMrBaseTest {
     copyDriver.reset();
 
     Path dirTodo = fileOutputs.get(0).getParent();
-    int fileCountSuccessful = HDFSClientUtil.listFiles(getFileSystem(),
+    int fileCountSuccessful = DfsUtil.listFiles(getFileSystem(),
         dirTodo, true).size() / 2;
     int fileCountFailed = 2;
     int fileCountTodo = fileOutputs.size() / 2 - fileCountSuccessful
@@ -184,7 +184,7 @@ public class CopyTest extends LocalClusterDfsMrBaseTest {
         copyDriver.runner(new String[] {
             getPathLocal(TestConstants.PATH_LOCAL_DIR_TAR),
             getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED) }));
-    fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
+    fileOutputs = DfsUtil.listFiles(getFileSystem(), new Path(
         getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
     Assert.assertEquals(fileCountInput * 2 - fileCountFailed,
         fileOutputs.size());
@@ -226,7 +226,7 @@ public class CopyTest extends LocalClusterDfsMrBaseTest {
               1,
               getFileSystem().listStatus(
                   new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED))).length);
-      fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
+      fileOutputs = DfsUtil.listFiles(getFileSystem(), new Path(
           getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
       Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
       Assert.assertEquals(
@@ -258,7 +258,7 @@ public class CopyTest extends LocalClusterDfsMrBaseTest {
               1,
               getFileSystem().listStatus(
                   new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED))).length);
-      fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
+      fileOutputs = DfsUtil.listFiles(getFileSystem(), new Path(
           getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
       Assert.assertEquals(fileCountInput * 2, fileOutputs.size());
       Assert.assertEquals(
@@ -284,7 +284,7 @@ public class CopyTest extends LocalClusterDfsMrBaseTest {
           getFileSystem().listStatus(
               new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)))[0]
               .getPath())[0].getPath();
-      int fileCountSuccessful = HDFSClientUtil.listFiles(getFileSystem(),
+      int fileCountSuccessful = DfsUtil.listFiles(getFileSystem(),
           dirTodo, true).size() / 2;
       int fileCountFailed = 2;
       int fileCountTodo = fileOutputs.size() / 2 - fileCountSuccessful
@@ -302,7 +302,7 @@ public class CopyTest extends LocalClusterDfsMrBaseTest {
               1,
               getFileSystem().listStatus(
                   new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED))).length);
-      fileOutputs = HDFSClientUtil.listFiles(getFileSystem(), new Path(
+      fileOutputs = DfsUtil.listFiles(getFileSystem(), new Path(
           getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
       Assert.assertEquals(fileCountInput * 2 - fileCountFailed,
           fileOutputs.size());

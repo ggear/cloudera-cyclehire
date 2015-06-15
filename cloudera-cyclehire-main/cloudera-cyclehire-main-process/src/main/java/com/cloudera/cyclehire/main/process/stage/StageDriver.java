@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
+import com.cloudera.cyclehire.main.common.DfsUtil;
 import com.cloudera.cyclehire.main.common.model.PartitionFlag;
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
 import com.cloudera.framework.main.common.Driver;
@@ -78,7 +78,7 @@ public class StageDriver extends Driver {
 
     inputLandedPath = new Path(arguments[0]);
     if (!hdfs.exists(inputLandedPath)
-        || !HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
+        || !DfsUtil.canDoAction(hdfs, UserGroupInformation
             .getCurrentUser().getUserName(), UserGroupInformation
             .getCurrentUser().getGroupNames(), inputLandedPath, FsAction.READ)) {
       throw new Exception("HDFS landed directory [" + inputLandedPath
@@ -95,7 +95,7 @@ public class StageDriver extends Driver {
         throw new Exception("HDFS staged directory [" + inputStagedPath
             + "] is not a directory");
       }
-      if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
+      if (!DfsUtil.canDoAction(hdfs, UserGroupInformation
           .getCurrentUser().getUserName(), UserGroupInformation
           .getCurrentUser().getGroupNames(), inputStagedPath, FsAction.ALL)) {
         throw new Exception("HDFS staged directory [" + inputStagedPath
@@ -124,7 +124,7 @@ public class StageDriver extends Driver {
     Set<String> counterPartitions = new HashSet<String>();
     Map<Path, PartitionKey> stagedFailed = new HashMap<>();
     Map<Path, PartitionKey> stagedTodo = new HashMap<>();
-    for (Path landedPath : HDFSClientUtil
+    for (Path landedPath : DfsUtil
         .listFiles(hdfs, inputLandedPath, true)) {
       if (!PartitionFlag.isValue(landedPath.getName())) {
         for (PartitionKey partitionKey : PartitionKey.getKeys(landedPath
@@ -142,7 +142,7 @@ public class StageDriver extends Driver {
           if (PartitionFlag.list(hdfs, landedPath, PartitionFlag._SUCCESS)
               && PartitionFlag.list(hdfs, stagedPath).isEmpty()) {
             if (partitionKey.isValid() && landedPathExists) {
-              HDFSClientUtil.createSymlinkOrCopy(hdfs, landedPath, stagedPath);
+              DfsUtil.createSymlinkOrCopy(hdfs, landedPath, stagedPath);
               PartitionFlag.update(hdfs, stagedPath.getParent(),
                   PartitionFlag._PARTITION);
               incrementCounter(Counter.FILES_SUCCESSFUL, 1,

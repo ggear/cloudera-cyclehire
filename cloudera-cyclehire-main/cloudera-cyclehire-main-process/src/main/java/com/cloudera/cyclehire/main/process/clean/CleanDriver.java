@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
+import com.cloudera.cyclehire.main.common.DfsUtil;
 import com.cloudera.cyclehire.main.common.model.PartitionFlag;
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
 import com.cloudera.framework.main.common.Driver;
@@ -77,7 +77,7 @@ public class CleanDriver extends Driver {
 
     inputLandedPath = new Path(arguments[0]);
     if (!hdfs.exists(inputLandedPath)
-        || !HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
+        || !DfsUtil.canDoAction(hdfs, UserGroupInformation
             .getCurrentUser().getUserName(), UserGroupInformation
             .getCurrentUser().getGroupNames(), inputLandedPath, FsAction.READ)) {
       throw new Exception("HDFS landed directory [" + inputLandedPath
@@ -90,7 +90,7 @@ public class CleanDriver extends Driver {
 
     inputStagedPath = new Path(arguments[1]);
     if (!hdfs.exists(inputStagedPath)
-        || !HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
+        || !DfsUtil.canDoAction(hdfs, UserGroupInformation
             .getCurrentUser().getUserName(), UserGroupInformation
             .getCurrentUser().getGroupNames(), inputStagedPath, FsAction.READ)) {
       throw new Exception("HDFS landed directory [" + inputStagedPath
@@ -116,7 +116,7 @@ public class CleanDriver extends Driver {
     Map<Path, PartitionKey> stagedCleaned = new HashMap<>();
     Map<Path, PartitionKey> landedCleaned = new HashMap<>();
     Map<Path, PartitionKey> stagedTodo = new HashMap<>();
-    for (Path landedPath : HDFSClientUtil
+    for (Path landedPath : DfsUtil
         .listFiles(hdfs, inputLandedPath, true)) {
       if (!PartitionFlag.isValue(landedPath.getName())) {
         for (PartitionKey partitionKey : PartitionKey.getKeys(landedPath

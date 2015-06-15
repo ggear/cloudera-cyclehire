@@ -9,7 +9,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
+import com.cloudera.cyclehire.main.common.MrUtil;
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
 import com.cloudera.cyclehire.main.common.model.PartitionRecord;
 import com.cloudera.cyclehire.main.process.partition.PartitionDriver;
@@ -39,32 +39,32 @@ public class ClenseReducer extends
       throws IOException, InterruptedException {
     boolean isDuplicate = false;
     String valueTimestamps = new StringBuilder().append(key.getEpochGet())
-        .append(MapReduceUtil.RECORD_COLUMN_DELIM).append(key.getEpochUpdate())
+        .append(MrUtil.RECORD_COLUMN_DELIM).append(key.getEpochUpdate())
         .toString();
     for (Text value : values) {
       Counter counter = null;
       String valueString = value.toString();
       PartitionRecord record = new PartitionRecord().key(key).xml(
           valueString.substring(0,
-              valueString.indexOf(MapReduceUtil.RECORD_COLUMN_DELIM)));
+              valueString.indexOf(MrUtil.RECORD_COLUMN_DELIM)));
       for (List<String> valueStringLists : record.getTable()) {
         StringBuilder valueStringBuilder = new StringBuilder(
             RECORD_BUFFER_SIZE_DATA).append(valueTimestamps);
         if (!isDuplicate) {
           for (String valueStringList : valueStringLists) {
-            valueStringBuilder.append(MapReduceUtil.RECORD_COLUMN_DELIM)
+            valueStringBuilder.append(MrUtil.RECORD_COLUMN_DELIM)
                 .append(valueStringList);
           }
           if (record.isValid()) {
             counter = Counter.RECORDS_CLEANSED;
           } else {
-            valueStringBuilder.append(MapReduceUtil.RECORD_COLUMN_DELIM)
+            valueStringBuilder.append(MrUtil.RECORD_COLUMN_DELIM)
                 .append(record.getXml());
             counter = Counter.RECORDS_MALFORMED;
           }
         } else {
           if (valueStringLists.size() > 0) {
-            valueStringBuilder.append(MapReduceUtil.RECORD_COLUMN_DELIM)
+            valueStringBuilder.append(MrUtil.RECORD_COLUMN_DELIM)
                 .append(valueStringLists.get(0));
           }
           counter = Counter.RECORDS_DUPLICATE;
@@ -80,7 +80,7 @@ public class ClenseReducer extends
                 .append(
                     key.type(PartitionDriver.OUTPUT_FORMAT)
                         .codec(
-                            MapReduceUtil.getCodecString(context
+                            MrUtil.getCodecString(context
                                 .getConfiguration())).getPathPartition())
                 .append('/').append(PartitionKey.TOKEN_NAME).toString());
       }

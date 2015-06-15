@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
+import com.cloudera.cyclehire.main.common.DfsUtil;
 import com.cloudera.cyclehire.main.process.stage.StageDriver;
 import com.cloudera.cyclehire.main.test.TestConstants;
 import com.cloudera.framework.main.common.Driver;
@@ -240,12 +240,12 @@ public class StageTest extends BaseTest {
 
     stageDriver.reset();
 
-    List<Path> stagedPaths = HDFSClientUtil.listFiles(getFileSystem(),
+    List<Path> stagedPaths = DfsUtil.listFiles(getFileSystem(),
         new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED),
             Counter.BATCHES_SUCCESSFUL.getPath()), true);
     Collections.sort(stagedPaths);
     Path stagedPathToDelete = stagedPaths.get(16).getParent();
-    long filesCountDeleted = HDFSClientUtil.listFiles(getFileSystem(),
+    long filesCountDeleted = DfsUtil.listFiles(getFileSystem(),
         stagedPathToDelete, false).size() - 1;
     getFileSystem().delete(stagedPathToDelete, true);
     Assert.assertEquals(

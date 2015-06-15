@@ -16,8 +16,8 @@ import org.junit.Test;
 import parquet.hadoop.ParquetOutputFormat;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
-import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
+import com.cloudera.cyclehire.main.common.DfsUtil;
+import com.cloudera.cyclehire.main.common.MrUtil;
 import com.cloudera.cyclehire.main.common.model.PartitionFlag;
 import com.cloudera.cyclehire.main.ingress.copy.CopyDriver;
 import com.cloudera.cyclehire.main.process.ProcessDriver;
@@ -103,13 +103,13 @@ public class QueryTest extends MiniClusterDfsMrHiveBaseTest {
       paramaters.put(Table.DDL_CONFIG_TABLE_NAME, attribute[0]);
       paramaters.put(Table.DDL_CONFIG_TABLE_LOCATION,
           attribute[1] + '/' + PartitionDriver.OUTPUT_FORMAT + '/'
-              + MapReduceUtil.getCodecString(getConf()));
+              + MrUtil.getCodecString(getConf()));
       Assert
           .assertEquals(2,
               processStatement(Table.DDL_LOCATION, attribute[2], paramaters)
                   .size());
     }
-    for (Path path : HDFSClientUtil.listFiles(getFileSystem(), new Path(
+    for (Path path : DfsUtil.listFiles(getFileSystem(), new Path(
         getPathDfs(TestConstants.PATH_HDFS_DIR_PROCESSED),
         Counter.RECORDS_REWRITE.getPath() + '/'
             + Table.DDL_LOCATION_PROCESSED_REWRITE_FORMATS[0]), true)) {

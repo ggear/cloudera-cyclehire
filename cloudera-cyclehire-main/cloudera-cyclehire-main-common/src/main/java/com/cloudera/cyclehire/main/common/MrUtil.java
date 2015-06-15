@@ -1,4 +1,4 @@
-package com.cloudera.cyclehire.main.common.mapreduce;
+package com.cloudera.cyclehire.main.common;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
@@ -6,7 +6,7 @@ import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.compress.DefaultCodec;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-public class MapReduceUtil {
+public class MrUtil {
 
   public static final String RECORD_COLUMN_DELIM = "\u0001";
   public static final String RECORD_COLUMN_DELIM_ESCAPED = "\\u0001";

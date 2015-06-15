@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cloudera.cyclehire.main.common.Counter;
-import com.cloudera.cyclehire.main.common.hdfs.HDFSClientUtil;
+import com.cloudera.cyclehire.main.common.DfsUtil;
 import com.cloudera.framework.main.common.Driver;
 
 public class CopyDriver extends Driver {
@@ -100,7 +100,7 @@ public class CopyDriver extends Driver {
         throw new Exception("HDFS landed directory [" + hdfsLandedPath
             + "] is not a directory");
       }
-      if (!HDFSClientUtil.canDoAction(hdfs, UserGroupInformation
+      if (!DfsUtil.canDoAction(hdfs, UserGroupInformation
           .getCurrentUser().getUserName(), UserGroupInformation
           .getCurrentUser().getGroupNames(), hdfsLandedPath, FsAction.ALL)) {
         throw new Exception("HDFS landed directory [" + hdfsLandedPath
@@ -269,7 +269,7 @@ public class CopyDriver extends Driver {
               .getInt("dfs.bytes-per-checksum", 512);
           long bytesPerBlock = getConf().getLong("fs.local.block.size",
               128000000L / bytesPerChecksum * bytesPerChecksum);
-          if (HDFSClientUtil.copyFromLocalFile(hdfs, fileFrom, fileTo, true,
+          if (DfsUtil.copyFromLocalFile(hdfs, fileFrom, fileTo, true,
               fileSize, getConf().getInt("io.file.buffer.size", 8192),
               getConf().getInt("dfs.replication", 3),
               getConf().getBoolean(CONF_BLOCK_SINGLE, false) ? (fileSize

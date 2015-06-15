@@ -1,4 +1,4 @@
-package com.cloudera.cyclehire.main.common.hdfs;
+package com.cloudera.cyclehire.main.common;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +21,7 @@ import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter;
 import org.apache.hadoop.security.AccessControlException;
 
-public class HDFSClientUtil {
+public class DfsUtil {
 
   public static boolean canDoAction(FileSystem hdfs, String user,
       String[] groups, Path path, FsAction action) throws IOException {

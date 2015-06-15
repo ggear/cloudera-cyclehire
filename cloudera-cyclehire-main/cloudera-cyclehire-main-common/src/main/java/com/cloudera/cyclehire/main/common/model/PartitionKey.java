@@ -20,7 +20,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableUtils;
 
-import com.cloudera.cyclehire.main.common.mapreduce.MapReduceUtil;
+import com.cloudera.cyclehire.main.common.MrUtil;
 
 public class PartitionKey implements WritableComparable<PartitionKey> {
 
@@ -205,7 +205,7 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   public String getCodec() {
     return codec == null ? getMatcherBatch() == null ? PartitionFlag._UNKNOWN
         .toString()
-        : getMatcherBatch().group(5).equals("") ? MapReduceUtil.CODEC_NONE
+        : getMatcherBatch().group(5).equals("") ? MrUtil.CODEC_NONE
             : getMatcherBatch().group(5) : codec;
   }
 
