@@ -25,4 +25,8 @@ if [ $($ROOT_DIR/../../bin/cyclehire-shell-hive.sh -e "SHOW ROLES" 2> /dev/null|
     --hivevar cyclehire.database.name=$NAME_SPACE_DATABASE \
     --hivevar cyclehire.database.location=$ROOT_DIR_HDFS \
     -f $ROOT_DIR/lib/ddl/database_create.ddl
+  until $ROOT_DIR/../../bin/cyclehire-shell-impala.sh -r -q "SHOW TABLES"; do
+  	echo "Sleeping while waiting for database and roles to sync ... "
+    sleep 5
+  done
 fi
