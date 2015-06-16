@@ -84,6 +84,12 @@ for((i=0;i<${#PARTITION_YEARS[@]};i++)); do
   fi  
   $ROOT_DIR/../../bin/cyclehire-shell-hive.sh \
     $CMD_LINE_ARGUMENTS_PARTITION $CMD_LINE_ARGUMENTS -f $TABLE_DDL && \
-    $ROOT_DIR/../../bin/cyclehire-shell-impala.sh -q "$TABLE_IMPALA_REFRESH_DDL; COMPUTE STATS $TABLE_NAME" && \
+    $ROOT_DIR/../../bin/cyclehire-shell-impala.sh -q "$TABLE_IMPALA_REFRESH_DDL" && \
     $ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -rm -f $TABLE_LOCATION/year=${PARTITION_YEARS[$i]}/month=${PARTITION_MONTHS[$i]}/_REWRITE"
+  if $ROOT_DIR/../../bin/cyclehire-shell-impala.sh -q "DESCRIBE $TABLE_NAME" 2> /dev/null; then
+    until $ROOT_DIR/../../bin/cyclehire-shell-impala.sh -q "COMPUTE STATS $TABLE_NAME"; do
+  	  echo "Sleeping while waiting for meta-data to sync ... "
+      sleep 5
+    done
+  fi
 done
