@@ -218,9 +218,9 @@ public class PartitionTest extends BaseTest {
 
     partitionDriver.reset();
 
-    List<Path> stagedPaths = DfsUtil.listFiles(getFileSystem(),
-        new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED),
-            Counter.BATCHES_SUCCESSFUL.getPath()), true);
+    List<Path> stagedPaths = DfsUtil.listFiles(getFileSystem(), new Path(
+        getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED),
+        Counter.BATCHES_SUCCESSFUL.getPath()), true);
     Collections.sort(stagedPaths);
     Path stagedPathToDelete = stagedPaths.get(1).getParent();
     getFileSystem().delete(stagedPathToDelete, true);
@@ -250,11 +250,11 @@ public class PartitionTest extends BaseTest {
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES_SKIPPED).longValue());
     Assert.assertEquals(
-        0L,
+        1L,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES_FAILED).longValue());
     Assert.assertEquals(
-        1L,
+        0L,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.BATCHES_SUCCESSFUL).longValue());
     Assert.assertEquals(
@@ -277,11 +277,11 @@ public class PartitionTest extends BaseTest {
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS_SKIPPED).longValue());
     Assert.assertEquals(
-        0L,
+        1L,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS_FAILED).longValue());
     Assert.assertEquals(
-        1L,
+        0L,
         partitionDriver.getCounter(PartitionDriver.class.getCanonicalName(),
             Counter.PARTITIONS_SUCCESSFUL).longValue());
     Assert.assertEquals(

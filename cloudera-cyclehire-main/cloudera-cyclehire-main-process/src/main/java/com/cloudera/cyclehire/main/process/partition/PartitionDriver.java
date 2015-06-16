@@ -94,9 +94,9 @@ public class PartitionDriver extends Driver {
 
     inputStagedPath = new Path(arguments[0]);
     if (!hdfs.exists(inputStagedPath)
-        || !DfsUtil.canDoAction(hdfs, UserGroupInformation
-            .getCurrentUser().getUserName(), UserGroupInformation
-            .getCurrentUser().getGroupNames(), inputStagedPath, FsAction.READ)) {
+        || !DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser()
+            .getUserName(), UserGroupInformation.getCurrentUser()
+            .getGroupNames(), inputStagedPath, FsAction.READ)) {
       throw new Exception("HDFS staged directory [" + inputStagedPath
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
@@ -111,10 +111,10 @@ public class PartitionDriver extends Driver {
         throw new Exception("HDFS partitioned directory ["
             + inputPartitionedPath + "] is not a directory");
       }
-      if (!DfsUtil
-          .canDoAction(hdfs, UserGroupInformation.getCurrentUser()
-              .getUserName(), UserGroupInformation.getCurrentUser()
-              .getGroupNames(), inputPartitionedPath, FsAction.ALL)) {
+      if (!DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser()
+          .getUserName(),
+          UserGroupInformation.getCurrentUser().getGroupNames(),
+          inputPartitionedPath, FsAction.ALL)) {
         throw new Exception("HDFS partitioned directory ["
             + inputPartitionedPath
             + "] has too restrictive permissions to read/write as user ["
@@ -142,8 +142,7 @@ public class PartitionDriver extends Driver {
     Set<String> counterPartitions = new HashSet<String>();
     List<Path> stagedPaths = new ArrayList<Path>();
     Map<String, PartitionKey> partitionKeys = new HashMap<String, PartitionKey>();
-    for (Path stagedPath : DfsUtil
-        .listFiles(hdfs, inputStagedPath, true)) {
+    for (Path stagedPath : DfsUtil.listFiles(hdfs, inputStagedPath, true)) {
       if (!PartitionFlag.isValue(stagedPath.getName())) {
         PartitionKey partitionKey = new PartitionKey().path(stagedPath
             .toString());
@@ -213,10 +212,10 @@ public class PartitionDriver extends Driver {
           .append(Counter.BATCHES_SUCCESSFUL.getPath())
           .append(
               partitionKey.type(OUTPUT_FORMAT)
-                  .codec(MrUtil.getCodecString(getConf()))
-                  .getPathPartition()).toString());
-      boolean partitioned = DfsUtil.listFiles(hdfs, partitionedPath,
-          false).size() > 0;
+                  .codec(MrUtil.getCodecString(getConf())).getPathPartition())
+          .toString());
+      boolean partitioned = DfsUtil.listFiles(hdfs, partitionedPath, false)
+          .size() > 0;
       if (partitioned) {
         PartitionFlag.update(hdfs, partitionedPath, PartitionFlag._SUCCESS);
       }

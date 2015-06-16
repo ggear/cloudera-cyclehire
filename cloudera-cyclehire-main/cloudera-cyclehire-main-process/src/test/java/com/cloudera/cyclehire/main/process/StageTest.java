@@ -240,9 +240,9 @@ public class StageTest extends BaseTest {
 
     stageDriver.reset();
 
-    List<Path> stagedPaths = DfsUtil.listFiles(getFileSystem(),
-        new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED),
-            Counter.BATCHES_SUCCESSFUL.getPath()), true);
+    List<Path> stagedPaths = DfsUtil.listFiles(getFileSystem(), new Path(
+        getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED),
+        Counter.BATCHES_SUCCESSFUL.getPath()), true);
     Collections.sort(stagedPaths);
     Path stagedPathToDelete = stagedPaths.get(16).getParent();
     long filesCountDeleted = DfsUtil.listFiles(getFileSystem(),

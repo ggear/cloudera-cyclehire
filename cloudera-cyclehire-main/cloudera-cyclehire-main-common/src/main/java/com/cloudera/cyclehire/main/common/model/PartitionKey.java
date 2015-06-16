@@ -204,9 +204,8 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
 
   public String getCodec() {
     return codec == null ? getMatcherBatch() == null ? PartitionFlag._UNKNOWN
-        .toString()
-        : getMatcherBatch().group(5).equals("") ? MrUtil.CODEC_NONE
-            : getMatcherBatch().group(5) : codec;
+        .toString() : getMatcherBatch().group(5).equals("") ? MrUtil.CODEC_NONE
+        : getMatcherBatch().group(5) : codec;
   }
 
   public String getPartition() {
@@ -252,8 +251,7 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
             || calendarMin.before(calendarMax)) {
           partitions.add(TOKEN_PARTITION_YEAR + "="
               + calendarMin.get(Calendar.YEAR) + "/" + TOKEN_PARTITION_MONTH
-              + "="
-              + String.format("%02d", calendarMin.get(Calendar.MONTH) + 1));
+              + "=" + String.format("%d", calendarMin.get(Calendar.MONTH) + 1));
           calendarMin.add(Calendar.MONTH, 1);
         }
       }

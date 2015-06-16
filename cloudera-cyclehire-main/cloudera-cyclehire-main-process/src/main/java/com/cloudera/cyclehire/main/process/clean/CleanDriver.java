@@ -77,9 +77,9 @@ public class CleanDriver extends Driver {
 
     inputLandedPath = new Path(arguments[0]);
     if (!hdfs.exists(inputLandedPath)
-        || !DfsUtil.canDoAction(hdfs, UserGroupInformation
-            .getCurrentUser().getUserName(), UserGroupInformation
-            .getCurrentUser().getGroupNames(), inputLandedPath, FsAction.READ)) {
+        || !DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser()
+            .getUserName(), UserGroupInformation.getCurrentUser()
+            .getGroupNames(), inputLandedPath, FsAction.READ)) {
       throw new Exception("HDFS landed directory [" + inputLandedPath
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
@@ -90,9 +90,9 @@ public class CleanDriver extends Driver {
 
     inputStagedPath = new Path(arguments[1]);
     if (!hdfs.exists(inputStagedPath)
-        || !DfsUtil.canDoAction(hdfs, UserGroupInformation
-            .getCurrentUser().getUserName(), UserGroupInformation
-            .getCurrentUser().getGroupNames(), inputStagedPath, FsAction.READ)) {
+        || !DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser()
+            .getUserName(), UserGroupInformation.getCurrentUser()
+            .getGroupNames(), inputStagedPath, FsAction.READ)) {
       throw new Exception("HDFS landed directory [" + inputStagedPath
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
@@ -116,8 +116,7 @@ public class CleanDriver extends Driver {
     Map<Path, PartitionKey> stagedCleaned = new HashMap<>();
     Map<Path, PartitionKey> landedCleaned = new HashMap<>();
     Map<Path, PartitionKey> stagedTodo = new HashMap<>();
-    for (Path landedPath : DfsUtil
-        .listFiles(hdfs, inputLandedPath, true)) {
+    for (Path landedPath : DfsUtil.listFiles(hdfs, inputLandedPath, true)) {
       if (!PartitionFlag.isValue(landedPath.getName())) {
         for (PartitionKey partitionKey : PartitionKey.getKeys(landedPath
             .getParent().getName(), landedPath.getName())) {

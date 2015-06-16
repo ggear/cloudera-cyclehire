@@ -48,23 +48,20 @@ public class PartitionMapper extends
     // implementations can easily result in 3-copy
     byte[] valueMetaData = new StringBuilder(RECORD_BUFFER_SIZE_METADATA)
         .append(MrUtil.RECORD_COLUMN_DELIM).append(key.getBatch())
-        .append(MrUtil.RECORD_COLUMN_DELIM).append(key.getRecord())
-        .toString().getBytes("UTF-8");
+        .append(MrUtil.RECORD_COLUMN_DELIM).append(key.getRecord()).toString()
+        .getBytes("UTF-8");
     value.append(valueMetaData, 0, valueMetaData.length);
-    multipleOutputs
-        .write(
-            PartitionDriver.OUTPUT_FORMAT,
-            key,
-            value,
-            new StringBuilder(RECORD_BUFFER_SIZE_METADATA)
-                .append(pathPrefix)
-                .append(
-                    key.type(PartitionDriver.OUTPUT_FORMAT)
-                        .codec(
-                            MrUtil.getCodecString(context
-                                .getConfiguration())).getPathPartition())
-                .append('/').append(key.getBatch()).append(pathSuffix)
-                .toString());
+    multipleOutputs.write(
+        PartitionDriver.OUTPUT_FORMAT,
+        key,
+        value,
+        new StringBuilder(RECORD_BUFFER_SIZE_METADATA)
+            .append(pathPrefix)
+            .append(
+                key.type(PartitionDriver.OUTPUT_FORMAT)
+                    .codec(MrUtil.getCodecString(context.getConfiguration()))
+                    .getPathPartition()).append('/').append(key.getBatch())
+            .append(pathSuffix).toString());
     context.getCounter(Counter.RECORDS).increment(1);
   }
 }

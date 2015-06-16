@@ -323,9 +323,9 @@ public class ProcessTest extends BaseTest {
 
     processDriver.reset();
 
-    List<Path> stagedPaths = DfsUtil.listFiles(getFileSystem(),
-        new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED),
-            Counter.BATCHES_SUCCESSFUL.getPath()), true);
+    List<Path> stagedPaths = DfsUtil.listFiles(getFileSystem(), new Path(
+        getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED),
+        Counter.BATCHES_SUCCESSFUL.getPath()), true);
     Collections.sort(stagedPaths);
     Path stagedPathToDelete = stagedPaths.get(1).getParent();
     getFileSystem().delete(stagedPathToDelete, true);

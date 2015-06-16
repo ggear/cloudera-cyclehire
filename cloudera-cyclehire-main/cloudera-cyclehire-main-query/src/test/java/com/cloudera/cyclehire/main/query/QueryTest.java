@@ -101,7 +101,8 @@ public class QueryTest extends MiniClusterDfsMrHiveBaseTest {
     getConf().set(HiveConf.ConfVars.COMPRESSRESULT.varname, "false");
     for (String[] attribute : TABLES) {
       paramaters.put(Table.DDL_CONFIG_TABLE_NAME, attribute[0]);
-      paramaters.put(Table.DDL_CONFIG_TABLE_LOCATION,
+      paramaters.put(
+          Table.DDL_CONFIG_TABLE_LOCATION,
           attribute[1] + '/' + PartitionDriver.OUTPUT_FORMAT + '/'
               + MrUtil.getCodecString(getConf()));
       Assert

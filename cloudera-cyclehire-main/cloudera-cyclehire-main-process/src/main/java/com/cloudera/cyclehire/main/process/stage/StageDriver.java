@@ -78,9 +78,9 @@ public class StageDriver extends Driver {
 
     inputLandedPath = new Path(arguments[0]);
     if (!hdfs.exists(inputLandedPath)
-        || !DfsUtil.canDoAction(hdfs, UserGroupInformation
-            .getCurrentUser().getUserName(), UserGroupInformation
-            .getCurrentUser().getGroupNames(), inputLandedPath, FsAction.READ)) {
+        || !DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser()
+            .getUserName(), UserGroupInformation.getCurrentUser()
+            .getGroupNames(), inputLandedPath, FsAction.READ)) {
       throw new Exception("HDFS landed directory [" + inputLandedPath
           + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
@@ -95,9 +95,10 @@ public class StageDriver extends Driver {
         throw new Exception("HDFS staged directory [" + inputStagedPath
             + "] is not a directory");
       }
-      if (!DfsUtil.canDoAction(hdfs, UserGroupInformation
-          .getCurrentUser().getUserName(), UserGroupInformation
-          .getCurrentUser().getGroupNames(), inputStagedPath, FsAction.ALL)) {
+      if (!DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser()
+          .getUserName(),
+          UserGroupInformation.getCurrentUser().getGroupNames(),
+          inputStagedPath, FsAction.ALL)) {
         throw new Exception("HDFS staged directory [" + inputStagedPath
             + "] has too restrictive permissions to read/write as user ["
             + UserGroupInformation.getCurrentUser().getUserName() + "]");
@@ -124,8 +125,7 @@ public class StageDriver extends Driver {
     Set<String> counterPartitions = new HashSet<String>();
     Map<Path, PartitionKey> stagedFailed = new HashMap<>();
     Map<Path, PartitionKey> stagedTodo = new HashMap<>();
-    for (Path landedPath : DfsUtil
-        .listFiles(hdfs, inputLandedPath, true)) {
+    for (Path landedPath : DfsUtil.listFiles(hdfs, inputLandedPath, true)) {
       if (!PartitionFlag.isValue(landedPath.getName())) {
         for (PartitionKey partitionKey : PartitionKey.getKeys(landedPath
             .getParent().getName(), landedPath.getName())) {

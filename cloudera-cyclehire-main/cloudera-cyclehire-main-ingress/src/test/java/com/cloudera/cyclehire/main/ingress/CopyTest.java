@@ -171,8 +171,8 @@ public class CopyTest extends LocalClusterDfsMrBaseTest {
     copyDriver.reset();
 
     Path dirTodo = fileOutputs.get(0).getParent();
-    int fileCountSuccessful = DfsUtil.listFiles(getFileSystem(),
-        dirTodo, true).size() / 2;
+    int fileCountSuccessful = DfsUtil.listFiles(getFileSystem(), dirTodo, true)
+        .size() / 2;
     int fileCountFailed = 2;
     int fileCountTodo = fileOutputs.size() / 2 - fileCountSuccessful
         - fileCountFailed;
@@ -284,8 +284,8 @@ public class CopyTest extends LocalClusterDfsMrBaseTest {
           getFileSystem().listStatus(
               new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)))[0]
               .getPath())[0].getPath();
-      int fileCountSuccessful = DfsUtil.listFiles(getFileSystem(),
-          dirTodo, true).size() / 2;
+      int fileCountSuccessful = DfsUtil.listFiles(getFileSystem(), dirTodo,
+          true).size() / 2;
       int fileCountFailed = 2;
       int fileCountTodo = fileOutputs.size() / 2 - fileCountSuccessful
           - fileCountFailed;

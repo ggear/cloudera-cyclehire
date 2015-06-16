@@ -245,9 +245,9 @@ public class CleanseTest extends BaseTest {
 
     cleanseDriver.reset();
 
-    List<Path> stagedPaths = DfsUtil.listFiles(getFileSystem(),
-        new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED),
-            Counter.BATCHES_SUCCESSFUL.getPath()), true);
+    List<Path> stagedPaths = DfsUtil.listFiles(getFileSystem(), new Path(
+        getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_STAGED),
+        Counter.BATCHES_SUCCESSFUL.getPath()), true);
     Collections.sort(stagedPaths);
     Path stagedPathToDelete = stagedPaths.get(1).getParent();
     getFileSystem().delete(stagedPathToDelete, true);
@@ -278,7 +278,7 @@ public class CleanseTest extends BaseTest {
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.BATCHES_SUCCESSFUL));
     Assert.assertEquals(
-        batchesCount - 1,
+        batchesCount,
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES_SKIPPED).longValue());
     Assert.assertEquals(
@@ -286,7 +286,7 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES_FAILED).longValue());
     Assert.assertEquals(
-        1L,
+        0L,
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.BATCHES_SUCCESSFUL).longValue());
     Assert.assertEquals(
@@ -303,7 +303,7 @@ public class CleanseTest extends BaseTest {
             + cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
                 Counter.PARTITIONS_SUCCESSFUL));
     Assert.assertEquals(
-        partitionsCount - 1,
+        partitionsCount,
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.PARTITIONS_SKIPPED).longValue());
     Assert.assertEquals(
@@ -311,7 +311,7 @@ public class CleanseTest extends BaseTest {
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.PARTITIONS_FAILED).longValue());
     Assert.assertEquals(
-        1L,
+        0L,
         cleanseDriver.getCounter(CleanseDriver.class.getCanonicalName(),
             Counter.PARTITIONS_SUCCESSFUL).longValue());
     Assert.assertEquals(
@@ -329,12 +329,12 @@ public class CleanseTest extends BaseTest {
                 Counter.RECORDS_CLEANSED));
     Assert.assertEquals(new Long(0), cleanseDriver.getCounter(
         CleanseDriver.class.getCanonicalName(), Counter.RECORDS_MALFORMED));
-    Assert.assertTrue(cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.RECORDS_DUPLICATE) > 0);
-    Assert.assertEquals(new Long(1), cleanseDriver.getCounter(
+    Assert.assertEquals(new Long(0), cleanseDriver.getCounter(
+        CleanseDriver.class.getCanonicalName(), Counter.RECORDS_DUPLICATE));
+    Assert.assertEquals(new Long(0), cleanseDriver.getCounter(
         CleanseDriver.class.getCanonicalName(), Counter.RECORDS_CLEANSED));
-    Assert.assertTrue(cleanseDriver.getCounter(
-        CleanseDriver.class.getCanonicalName(), Counter.RECORDS) > 0);
+    Assert.assertEquals(new Long(0), cleanseDriver.getCounter(
+        CleanseDriver.class.getCanonicalName(), Counter.RECORDS));
 
   }
 

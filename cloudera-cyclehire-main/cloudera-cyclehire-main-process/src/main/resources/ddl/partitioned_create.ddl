@@ -9,8 +9,8 @@ CREATE EXTERNAL TABLE IF NOT EXISTS ${hivevar:cyclehire.table.name} (
 )
 COMMENT 'TFL Cyclehire raw partitioned data'
 PARTITIONED BY (
-  year STRING,
-  month STRING
+  year SMALLINT,
+  month TINYINT
 )
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001'
 STORED AS SEQUENCEFILE
