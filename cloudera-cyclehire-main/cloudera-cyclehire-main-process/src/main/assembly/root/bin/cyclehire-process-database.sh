@@ -12,7 +12,7 @@ NAME_SPACE_SERVER=${3:-"$NAME_SPACE_SERVER"}
 NAME_SPACE_DATABASE=${4:-"$NAME_SPACE_DATABASE"}
 ROOT_DIR_HDFS=${5:-"$ROOT_DIR_HDFS"}
 
-if [ $($ROOT_DIR/../../bin/cyclehire-shell-hive.sh -e "SHOW ROLES" 2> /dev/null| grep $USER_ADMIN|wc -l) -eq 0 ]; then
+if [ $($ROOT_DIR/../../bin/cyclehire-shell-impala.sh -q "SHOW ROLES" 2> /dev/null| grep $USER_ADMIN|wc -l) -eq 0 ]; then
   $ROOT_DIR/../../bin/cyclehire-shell-hive.sh \
     --hivevar cyclehire.user=$USER_ADMIN \
     --hivevar cyclehire.server.name=$NAME_SPACE_SERVER \

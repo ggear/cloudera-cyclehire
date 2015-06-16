@@ -77,7 +77,7 @@ for((i=0;i<${#PARTITION_YEARS[@]};i++)); do
 " --hiveconf mapreduce.output.fileoutputformat.compress.type=BLOCK"
     fi
   fi
-  if $ROOT_DIR/../../bin/cyclehire-shell-hive.sh -e "DESCRIBE $TABLE_NAME" 2> /dev/null; then
+  if $ROOT_DIR/../../bin/cyclehire-shell-impala.sh -q "DESCRIBE $TABLE_NAME" 2> /dev/null; then
     TABLE_IMPALA_REFRESH_DDL="REFRESH $TABLE_NAME"
   else
     TABLE_IMPALA_REFRESH_DDL="INVALIDATE METADATA $TABLE_NAME"
