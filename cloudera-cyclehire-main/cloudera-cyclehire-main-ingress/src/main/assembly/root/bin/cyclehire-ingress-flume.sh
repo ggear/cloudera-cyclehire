@@ -17,14 +17,15 @@ HDFS_NAMENODE_HOST=${8:-"$HDFS_NAMENODE_HOST"}
 FLUME_AGENT_HOSTS=${9:-"$FLUME_AGENT_HOSTS"}
 FLUME_AGENT_DIR_LIB=${10:-"/usr/lib/flume-ng/plugins.d/cyclehire"}
 FLUME_AGENT_NAME=${11:-"agent"}
-ROOT_DIR_HDFS_RAW_LANDED_XML=${12:-"ROOT_DIR_HDFS_RAW_LANDED_XML"}
+ROOT_DIR_HDFS_RAW_LANDED_XML=${12:-"$ROOT_DIR_HDFS_RAW_LANDED_XML"}
 
-DIR=$ROOT_DIR_HDFS_RAW_LANDED_XML/.
+DIR=$ROOT_DIR_HDFS_RAW_LANDED_XML
 while [ $DIR != "/" ]; do
-  echo $ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -mkdir -p $DIR"
-  echo $ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -chmod 755 $DIR"
+  $ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -mkdir -p $DIR"
+  $ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -chmod 755 $DIR"
   DIR=$(dirname $DIR)
 done
+$ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -chmod 777 $ROOT_DIR_HDFS_RAW_LANDED_XML"
 
 FLUME_AGENT_HOSTS_ARRAY=(${FLUME_AGENT_HOSTS//,/ })
 for FLUME_AGENT_HOST in "${FLUME_AGENT_HOSTS_ARRAY[@]}"; do
