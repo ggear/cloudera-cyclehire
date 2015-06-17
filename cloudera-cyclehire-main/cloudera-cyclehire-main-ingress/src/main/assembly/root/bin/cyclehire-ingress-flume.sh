@@ -29,12 +29,13 @@ $ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -chmod 777 $ROOT_DIR_HDFS_RAW_
 
 FLUME_AGENT_HOSTS_ARRAY=(${FLUME_AGENT_HOSTS//,/ })
 for FLUME_AGENT_HOST in "${FLUME_AGENT_HOSTS_ARRAY[@]}"; do
-  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i $CLUSTER_NODE_KEY $CLUSTER_NODE_USER@$FLUME_AGENT_HOST "mkdir -p $FLUME_AGENT_DIR_LIB"
+  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i $CLUSTER_NODE_KEY $CLUSTER_NODE_USER@$FLUME_AGENT_HOST "mkdir -p $FLUME_AGENT_DIR_LIB/lib"
   scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i $CLUSTER_NODE_KEY $ROOT_DIR/lib/jar/*.jar $CLUSTER_NODE_USER@$FLUME_AGENT_HOST:$FLUME_AGENT_DIR_LIB/lib
-  scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i $ROOT_DIR/lib/jar/dep/*.jar $CLUSTER_NODE_USER@$FLUME_AGENT_HOST:$FLUME_AGENT_DIR_LIB/libext
+  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i $CLUSTER_NODE_KEY $CLUSTER_NODE_USER@$FLUME_AGENT_HOST "mkdir -p $FLUME_AGENT_DIR_LIB/libext"
+  scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i $CLUSTER_NODE_KEY $ROOT_DIR/lib/jar/dep/*.jar $CLUSTER_NODE_USER@$FLUME_AGENT_HOST:$FLUME_AGENT_DIR_LIB/libext
 done
-
-FLUME_AGENT_CONFIG=$(cat $ROOT_DIR/lib/cfg/flume-conf.properties | sed -e "s/\$HDFS_NAMENODE_HOST/$HDFS_NAMENODE_HOST/g | sed -e "s/\$ROOT_DIR_HDFS_RAW_LANDED_XML/$ROOT_DIR_HDFS_RAW_LANDED_XML/g")
+ 
+FLUME_AGENT_CONFIG=$(cat ./cloudera-cyclehire-main/cloudera-cyclehire-main-ingress/src/main/resources/cfg/flume-conf.properties | sed -e "s/\$HDFS_NAMENODE_HOST/$HDFS_NAMENODE_HOST/g" | sed -e "s|\$ROOT_DIR_HDFS_RAW_LANDED_XML|"$ROOT_DIR_HDFS_RAW_LANDED_XML"|g")
 
 python - "$MANAGER_SERVER_USER" "$MANAGER_SERVER_PWORD" "$MANAGER_SERVER_HOST" "$MANAGER_SERVER_PORT" "$FLUME_AGENT_NAME" "$FLUME_AGENT_CONFIG" << END
 
