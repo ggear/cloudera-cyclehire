@@ -20,6 +20,7 @@ import org.apache.flume.EventDeliveryException;
 import org.apache.flume.PollableSource;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.event.EventBuilder;
+import org.apache.flume.instrumentation.SourceCounter;
 import org.apache.flume.source.AbstractSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,7 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
   private HttpClient httpClient;
   private String eventBodyCache;
   private List<Event> eventBatch;
+  private SourceCounter sourceCounter;
 
   @Override
   public void configure(Context context) {
@@ -83,6 +85,9 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
           + "] has illegal paramater [" + PROPERTY_BATCH_SIZE + "] value ["
           + batchSize + "]");
     }
+    if (sourceCounter == null) {
+      sourceCounter = new SourceCounter(getName());
+    }
     if (LOG.isInfoEnabled()) {
       LOG.info("Source [" + getName() + "] configured with context [" + context
           + "]");
@@ -106,6 +111,7 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
         "UTF-8");
     eventBodyCache = null;
     eventBatch = new ArrayList<Event>();
+    sourceCounter.start();
     if (LOG.isInfoEnabled()) {
       LOG.info("Source [" + getName() + "] started");
     }
@@ -114,6 +120,7 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
   @Override
   public synchronized void stop() {
     processEvent(null, true);
+    sourceCounter.stop();
     super.stop();
     if (LOG.isInfoEnabled()) {
       LOG.info("Source [" + getName() + "] stopped");
@@ -159,6 +166,8 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
       }
       getChannelProcessor().processEventBatch(eventBatch);
       eventBatch.clear();
+      sourceCounter.incrementAppendBatchAcceptedCount();
+      sourceCounter.addToEventAcceptedCount(eventBatch.size());
       if (LOG.isDebugEnabled()) {
         LOG.debug("Source [" + getName() + "] post commit, buffered events ["
             + eventBatch.size() + "]");
@@ -189,6 +198,8 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
       }
       if (eventBodyCache == null
           || !eventBodyCache.equals(httpClientGetResponse)) {
+        sourceCounter.incrementAppendBatchReceivedCount();
+        sourceCounter.addToEventReceivedCount(1);
         processEvent(
             EventBuilder.withBody(httpClientGetResponse,
                 Charset.forName(Charsets.UTF_8.name()),
@@ -199,6 +210,7 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
       int sleepMs = 0;
       for (int i = 0; i <= pollTicks; i++) {
         if (pollTicks > 0 && i < pollTicks) {
+          sourceCounter.addToEventReceivedCount(1);
           processEvent(
               EventBuilder.withBody(httpClientGetResponse,
                   Charset.forName(Charsets.UTF_8.name()),

@@ -203,6 +203,7 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
       context.put(StreamHttpSource.PROPERTY_BATCH_SIZE, batchSize);
       StreamHttpSource source = new StreamHttpSource();
       source.setName("simple-stream-source");
+      source.configure(context);
       source.setChannelProcessor(new ChannelProcessor(channelSelector));
       source.start();
       long transactionTimestamp = System.currentTimeMillis() / 1000;
@@ -247,14 +248,17 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
   }
 
   private int processHdfsSink(int batchCount, int batchSize) throws Exception {
+    String pathLanded = getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)
+        + "/xml/none";
+    getFileSystem().mkdirs(new Path(pathLanded));
     Channel channel = new MemoryChannel();
     channel.setName("simple-memory-channel");
     Configurables.configure(channel,
         new Context(ImmutableMap.of("keep-alive", "1")));
     channel.start();
     Context context = new Context();
-    context.put("hdfs.path", getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)
-        + "/xml/none/%{batch}_livecyclehireupdates-%{host}.xml");
+    context.put("hdfs.path", pathLanded
+        + "/%{batch}_livecyclehireupdates-%{host}.xml");
     context.put("hdfs.filePrefix",
         "%t_livecyclehireupdates-%{index}-of-%{total}");
     context.put("hdfs.fileSuffix", ".xml");
@@ -266,9 +270,9 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
     context.put("hdfs.useRawLocalFileSystem", Boolean.toString(true));
     context.put("hdfs.fileType", "DataStream");
     HDFSEventSink sink = new HDFSEventSink();
-    Configurables.configure(sink, context);
-    sink.setChannel(channel);
     sink.setName("simple-hdfs-sink");
+    sink.configure(context);
+    sink.setChannel(channel);
     sink.start();
     for (int i = 0; i < batchCount; i++) {
       processStreamHttpSource(new String[] { HTTP_URL_1, HTTP_URL_2 },
@@ -279,7 +283,7 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
     sink.stop();
     int fileCount = 0;
     RemoteIterator<LocatedFileStatus> paths = getFileSystem().listFiles(
-        new Path(getPathDfs(TestConstants.PATH_HDFS_DIR_RAW_LANDED)), true);
+        new Path(pathLanded), true);
     while (paths.hasNext()) {
       Path path = paths.next().getPath();
       PartitionKey partitionKey = new PartitionKey().batch(
