@@ -123,7 +123,8 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
     sourceCounter.stop();
     super.stop();
     if (LOG.isInfoEnabled()) {
-      LOG.info("Source [" + getName() + "] stopped");
+      LOG.info("Source [" + getName() + "] stopped, metrics [" + sourceCounter
+          + "]");
     }
   }
 
@@ -166,7 +167,6 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
       }
       getChannelProcessor().processEventBatch(eventBatch);
       eventBatch.clear();
-      sourceCounter.incrementAppendBatchAcceptedCount();
       sourceCounter.addToEventAcceptedCount(eventBatch.size());
       if (LOG.isDebugEnabled()) {
         LOG.debug("Source [" + getName() + "] post commit, buffered events ["
@@ -198,8 +198,7 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
       }
       if (eventBodyCache == null
           || !eventBodyCache.equals(httpClientGetResponse)) {
-        sourceCounter.incrementAppendBatchReceivedCount();
-        sourceCounter.addToEventReceivedCount(1);
+        sourceCounter.incrementEventReceivedCount();
         processEvent(
             EventBuilder.withBody(httpClientGetResponse,
                 Charset.forName(Charsets.UTF_8.name()),
@@ -210,7 +209,7 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
       int sleepMs = 0;
       for (int i = 0; i <= pollTicks; i++) {
         if (pollTicks > 0 && i < pollTicks) {
-          sourceCounter.addToEventReceivedCount(1);
+          sourceCounter.incrementEventReceivedCount();
           processEvent(
               EventBuilder.withBody(httpClientGetResponse,
                   Charset.forName(Charsets.UTF_8.name()),
