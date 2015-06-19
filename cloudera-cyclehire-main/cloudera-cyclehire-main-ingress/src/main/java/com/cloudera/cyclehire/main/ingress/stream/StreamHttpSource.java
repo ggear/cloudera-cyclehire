@@ -165,9 +165,20 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
         LOG.debug("Source [" + getName()
             + "] pending commit, buffered events [" + eventBatch.size() + "]");
       }
-      getChannelProcessor().processEventBatch(eventBatch);
+      if (batchSize == 1 && eventBatch.size() == 1) {
+        sourceCounter.incrementAppendReceivedCount();
+        sourceCounter.incrementEventReceivedCount();
+        getChannelProcessor().processEvent(eventBatch.get(0));
+        sourceCounter.incrementAppendAcceptedCount();
+        sourceCounter.incrementEventAcceptedCount();
+      } else {
+        sourceCounter.incrementAppendBatchReceivedCount();
+        sourceCounter.addToEventReceivedCount(eventBatch.size());
+        getChannelProcessor().processEventBatch(eventBatch);
+        sourceCounter.incrementAppendBatchAcceptedCount();
+        sourceCounter.addToEventAcceptedCount(eventBatch.size());
+      }
       eventBatch.clear();
-      sourceCounter.addToEventAcceptedCount(eventBatch.size());
       if (LOG.isDebugEnabled()) {
         LOG.debug("Source [" + getName() + "] post commit, buffered events ["
             + eventBatch.size() + "]");
@@ -198,7 +209,6 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
       }
       if (eventBodyCache == null
           || !eventBodyCache.equals(httpClientGetResponse)) {
-        sourceCounter.incrementEventReceivedCount();
         processEvent(
             EventBuilder.withBody(httpClientGetResponse,
                 Charset.forName(Charsets.UTF_8.name()),
@@ -209,7 +219,6 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
       int sleepMs = 0;
       for (int i = 0; i <= pollTicks; i++) {
         if (pollTicks > 0 && i < pollTicks) {
-          sourceCounter.incrementEventReceivedCount();
           processEvent(
               EventBuilder.withBody(httpClientGetResponse,
                   Charset.forName(Charsets.UTF_8.name()),
