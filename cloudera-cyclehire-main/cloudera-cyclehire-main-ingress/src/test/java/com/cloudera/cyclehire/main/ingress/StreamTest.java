@@ -119,7 +119,7 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
         processStreamHttpSource(new String[] { HTTP_URL_1 },
             new String[] { httpFile1 }, "250", "0", "3", 3, true, null));
     Assert.assertEquals(
-        4,
+        3,
         processStreamHttpSource(new String[] { HTTP_URL_1 },
             new String[] { httpFile1 }, "250", "1", "1", 3, true, null));
     Assert.assertEquals(
@@ -127,13 +127,13 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
         processStreamHttpSource(new String[] { HTTP_URL_1 },
             new String[] { httpFile1 }, "250", "1", "3", 3, true, null));
     Assert.assertEquals(
-        28,
+        27,
         processStreamHttpSource(new String[] { HTTP_URL_1 },
             new String[] { httpFile1 }, "250", "9", "1", 3, true, null));
     Assert.assertEquals(
-        27,
+        25,
         processStreamHttpSource(new String[] { HTTP_URL_1 },
-            new String[] { httpFile1 }, "250", "9", "3", 3, true, null));
+            new String[] { httpFile1 }, "250", "9", "5", 3, true, null));
   }
 
   @Test
@@ -149,22 +149,22 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
             new String[] { httpFile1, httpFile2 }, "250", "0", "3", 3, true,
             null));
     Assert.assertEquals(
-        6,
+        3,
         processStreamHttpSource(new String[] { HTTP_URL_1, HTTP_URL_2 },
             new String[] { httpFile1, httpFile2 }, "250", "1", "1", 3, true,
             null));
     Assert.assertEquals(
-        6,
+        3,
         processStreamHttpSource(new String[] { HTTP_URL_1, HTTP_URL_2 },
             new String[] { httpFile1, httpFile2 }, "250", "1", "3", 3, true,
             null));
     Assert.assertEquals(
-        30,
+        27,
         processStreamHttpSource(new String[] { HTTP_URL_1, HTTP_URL_2 },
             new String[] { httpFile1, httpFile2 }, "250", "9", "1", 3, true,
             null));
     Assert.assertEquals(
-        30,
+        27,
         processStreamHttpSource(new String[] { HTTP_URL_1, HTTP_URL_2 },
             new String[] { httpFile1, httpFile2 }, "250", "9", "3", 3, true,
             null));
@@ -177,7 +177,7 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
 
   @Test
   public void testHdfsSinkBatch() throws Exception {
-    Assert.assertEquals(12, processHdfsSink(3, 4));
+    Assert.assertEquals(9, processHdfsSink(3, 4));
   }
 
   private int processStreamHttpSource(String[] httpUrls,

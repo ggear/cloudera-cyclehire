@@ -207,8 +207,10 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
         LOG.debug("Source [" + getName() + "] polled HTTP source, ms ["
             + (System.currentTimeMillis() - httpMs) + "]");
       }
+      boolean tickRequired = true;
       if (eventBodyCache == null
           || !eventBodyCache.equals(httpClientGetResponse)) {
+        tickRequired = false;
         processEvent(
             EventBuilder.withBody(httpClientGetResponse,
                 Charset.forName(Charsets.UTF_8.name()),
@@ -219,10 +221,15 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
       int sleepMs = 0;
       for (int i = 0; i <= pollTicks; i++) {
         if (pollTicks > 0 && i < pollTicks) {
-          processEvent(
-              EventBuilder.withBody(httpClientGetResponse,
-                  Charset.forName(Charsets.UTF_8.name()),
-                  getEventHeader(System.currentTimeMillis(), Type.TICK)), false);
+          if (tickRequired) {
+            processEvent(
+                EventBuilder.withBody(httpClientGetResponse,
+                    Charset.forName(Charsets.UTF_8.name()),
+                    getEventHeader(System.currentTimeMillis(), Type.TICK)),
+                false);
+          } else {
+            tickRequired = true;
+          }
           if (i < pollTicks - 1) {
             if (LOG.isDebugEnabled()) {
               LOG.debug("Source [" + getName()
