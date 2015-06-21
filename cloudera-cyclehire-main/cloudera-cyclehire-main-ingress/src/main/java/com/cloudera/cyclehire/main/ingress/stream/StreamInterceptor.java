@@ -46,24 +46,28 @@ public class StreamInterceptor implements Interceptor, StreamEvent {
   }
 
   private String getEventBatchHeader(Event first, Event last, long timestamp) {
-    return putHeaderIfAbsent(first, HEADER_TIMESTAMP, "" + (timestamp / 1000))
-        + "_"
-        + putHeaderIfAbsent(last, HEADER_TIMESTAMP, "" + (timestamp / 1000));
+    return putHeader(first, HEADER_TIMESTAMP, "" + (timestamp / 1000)) + "_"
+        + putHeader(last, HEADER_TIMESTAMP, "" + (timestamp / 1000));
   }
 
   private Event getEventWithHeaders(Event event, String batch, int index,
       int total, long timestamp) {
-    putHeaderIfAbsent(event, HEADER_HOST, host);
-    putHeaderIfAbsent(event, HEADER_TYPE, Type.POLL.toString().toLowerCase());
-    putHeaderIfAbsent(event, HEADER_TIMESTAMP, "" + timestamp / 1000);
-    putHeaderIfAbsent(event, HEADER_BATCH, batch);
-    putHeaderIfAbsent(event, HEADER_INDEX, String.format("%03d", index + 1));
-    putHeaderIfAbsent(event, HEADER_TOTAL, String.format("%03d", total));
+    putHeader(event, HEADER_HOST, host);
+    putHeader(event, HEADER_TYPE, Type.POLL.toString().toLowerCase());
+    putHeader(event, HEADER_TIMESTAMP, "" + timestamp / 1000);
+    putHeader(event, HEADER_BATCH, batch, true);
+    putHeader(event, HEADER_INDEX, String.format("%03d", index), true);
+    putHeader(event, HEADER_TOTAL, String.format("%03d", total), true);
     return event;
   }
 
-  private static String putHeaderIfAbsent(Event event, String key, String value) {
-    if (!event.getHeaders().containsKey(key)) {
+  private static String putHeader(Event event, String key, String value) {
+    return putHeader(event, key, value, false);
+  }
+
+  private static String putHeader(Event event, String key, String value,
+      boolean force) {
+    if (force || !event.getHeaders().containsKey(key)) {
       event.getHeaders().put(key, value);
     }
     return value;
