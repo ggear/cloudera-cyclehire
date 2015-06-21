@@ -265,10 +265,11 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
         new Context(ImmutableMap.of("keep-alive", "1")));
     channel.start();
     Context context = new Context();
-    context.put("hdfs.path", pathLanded
-        + "/%{batch}_livecyclehireupdates-%{host}.xml");
-    context.put("hdfs.filePrefix",
-        "%t_livecyclehireupdates-%{index}-of-%{total}");
+    context.put("hdfs.path", pathLanded + "/%{" + StreamEvent.HEADER_BATCH
+        + "}_livecyclehireupdates-%{" + StreamEvent.HEADER_HOST + "}.xml");
+    context.put("hdfs.filePrefix", "%{" + StreamEvent.HEADER_TIMESTAMP
+        + "}_livecyclehireupdates-%{" + StreamEvent.HEADER_INDEX + "}-of-%{"
+        + StreamEvent.HEADER_TOTAL + "}");
     context.put("hdfs.fileSuffix", ".xml");
     context.put("hdfs.inUsePrefix", "_");
     context.put("hdfs.inUseSuffix", "");
