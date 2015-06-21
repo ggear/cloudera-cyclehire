@@ -33,10 +33,6 @@ public class StreamSource extends AbstractSource implements Configurable,
   public static final String PROPERTY_POLL_TICKS = "pollTicks";
   public static final String PROPERTY_BATCH_SIZE = "batchSize";
 
-  public enum Type {
-    POLL, TICK
-  };
-
   private static final Logger LOG = LoggerFactory.getLogger(StreamSource.class);
 
   private String httpUrl = "http://www.tfl.gov.uk/tfl/"

@@ -1,5 +1,7 @@
 package com.cloudera.cyclehire.main.ingress.stream;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import org.apache.flume.Context;
@@ -8,26 +10,33 @@ import org.apache.flume.interceptor.Interceptor;
 
 public class StreamInterceptor implements Interceptor, StreamEvent {
 
+  private String host = null;
+
   @Override
   public void initialize() {
+    try {
+      host = System.getenv("HOSTNAME") != null ? System.getenv("HOSTNAME")
+          : InetAddress.getLocalHost().getCanonicalHostName();
+    } catch (UnknownHostException exception) {
+      throw new RuntimeException("Could not determine local hostname",
+          exception);
+    }
   }
 
   @Override
   public Event intercept(Event event) {
-    return addEventBatchHeaders(
-        event,
-        getEventBatchAddTimestampHeaders(event, event,
-            System.currentTimeMillis()), 1, 1);
+    long timestamp = System.currentTimeMillis();
+    return getEventWithHeaders(event,
+        getEventBatchHeader(event, event, timestamp), 1, 1, timestamp);
   }
 
   @Override
   public List<Event> intercept(List<Event> events) {
     long timestamp = System.currentTimeMillis();
-    String batch = getEventBatchAddTimestampHeaders(events.get(0),
+    String batch = getEventBatchHeader(events.get(0),
         events.get(events.size() - 1), timestamp);
     for (int i = 0; i < events.size(); i++) {
-      getEventTimestampAddEventTimestampHeaders(events.get(0), timestamp);
-      addEventBatchHeaders(events.get(i), batch, i + 1, events.size());
+      getEventWithHeaders(events.get(i), batch, i + 1, events.size(), timestamp);
     }
     return events;
   }
@@ -36,28 +45,28 @@ public class StreamInterceptor implements Interceptor, StreamEvent {
   public void close() {
   }
 
-  private String getEventBatchAddTimestampHeaders(Event first, Event last,
-      long timestamp) {
-    return getEventTimestampAddEventTimestampHeaders(first, timestamp) + "_"
-        + getEventTimestampAddEventTimestampHeaders(last, timestamp);
+  private String getEventBatchHeader(Event first, Event last, long timestamp) {
+    return putHeaderIfAbsent(first, HEADER_TIMESTAMP, "" + (timestamp / 1000))
+        + "_"
+        + putHeaderIfAbsent(last, HEADER_TIMESTAMP, "" + (timestamp / 1000));
   }
 
-  private String getEventTimestampAddEventTimestampHeaders(Event event,
-      long timestamp) {
-    String timestampHeader = event.getHeaders().get(HEADER_TIMESTAMP);
-    if (timestampHeader == null) {
-      event.getHeaders().put(HEADER_TIMESTAMP,
-          timestampHeader = "" + timestamp / 1000);
-    }
-    return timestampHeader;
-  }
-
-  private Event addEventBatchHeaders(Event event, String batch, int index,
-      int total) {
-    event.getHeaders().put(HEADER_BATCH, batch);
-    event.getHeaders().put(HEADER_INDEX, String.format("%03d", index + 1));
-    event.getHeaders().put(HEADER_TOTAL, String.format("%03d", total));
+  private Event getEventWithHeaders(Event event, String batch, int index,
+      int total, long timestamp) {
+    putHeaderIfAbsent(event, HEADER_HOST, host);
+    putHeaderIfAbsent(event, HEADER_TYPE, Type.POLL.toString().toLowerCase());
+    putHeaderIfAbsent(event, HEADER_TIMESTAMP, "" + timestamp / 1000);
+    putHeaderIfAbsent(event, HEADER_BATCH, batch);
+    putHeaderIfAbsent(event, HEADER_INDEX, String.format("%03d", index + 1));
+    putHeaderIfAbsent(event, HEADER_TOTAL, String.format("%03d", total));
     return event;
+  }
+
+  private static String putHeaderIfAbsent(Event event, String key, String value) {
+    if (!event.getHeaders().containsKey(key)) {
+      event.getHeaders().put(key, value);
+    }
+    return value;
   }
 
   public static class Builder implements Interceptor.Builder {

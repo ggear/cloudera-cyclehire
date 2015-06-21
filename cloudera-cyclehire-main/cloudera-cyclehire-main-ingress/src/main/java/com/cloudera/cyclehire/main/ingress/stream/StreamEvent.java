@@ -9,4 +9,8 @@ public interface StreamEvent {
   public static String HEADER_TOTAL = "total";
   public static String HEADER_TIMESTAMP = "timestamp";
 
+  public enum Type {
+    POLL, TICK
+  };
+
 }
