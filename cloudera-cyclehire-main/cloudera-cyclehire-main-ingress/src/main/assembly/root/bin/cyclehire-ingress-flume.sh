@@ -20,14 +20,12 @@ FLUME_AGENT_HOSTS=${11:-"$FLUME_AGENT_HOSTS"}
 FLUME_AGENT_DIR_LIB=${12:-"/usr/lib/flume-ng/plugins.d/cyclehire"}
 FLUME_AGENT_NAME=${13:-"cyclelhire"}
 ROOT_DIR_HDFS_RAW_LANDED_XML=${14:-"$ROOT_DIR_HDFS_RAW_LANDED_XML"}
+ROOT_DIR_HDFS_RAW_LANDED_SEQ=${15:-"$ROOT_DIR_HDFS_RAW_LANDED_SEQ"}
 
-DIR=$ROOT_DIR_HDFS_RAW_LANDED_XML
-while [ $DIR != "/" ]; do
-  $ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -mkdir -p $DIR"
-  $ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -chmod 755 $DIR"
-  DIR=$(dirname $DIR)
-done
+$ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -mkdir -p $ROOT_DIR_HDFS_RAW_LANDED_XML"
 $ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -chmod 777 $ROOT_DIR_HDFS_RAW_LANDED_XML"
+$ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -mkdir -p $ROOT_DIR_HDFS_RAW_LANDED_SEQ"
+$ROOT_DIR/../../bin/cyclehire-shell-hadoop.sh "fs -chmod 777 $ROOT_DIR_HDFS_RAW_LANDED_SEQ"
 
 FLUME_AGENT_HOSTS_ARRAY=(${FLUME_AGENT_HOSTS//,/ })
 for FLUME_AGENT_HOST in "${FLUME_AGENT_HOSTS_ARRAY[@]}"; do
@@ -45,7 +43,8 @@ FLUME_AGENT_CONFIG=$(cat ./cloudera-cyclehire-main/cloudera-cyclehire-main-ingre
 	sed -e "s|\$HDFS_NAMENODE_HOST|$HDFS_NAMENODE_HOST|g" | \
 	sed -e "s|\$KAFKA_KAFKA_BROKER_HOSTS_AND_PORTS|$KAFKA_KAFKA_BROKER_HOSTS_AND_PORTS|g" | \
 	sed -e "s|\$ZOOKEEPER_SERVER_HOSTS_AND_PORTS|$ZOOKEEPER_SERVER_HOSTS_AND_PORTS|g" | \
-	sed -e "s|\$ROOT_DIR_HDFS_RAW_LANDED_XML|"$ROOT_DIR_HDFS_RAW_LANDED_XML"|g")
+	sed -e "s|\$ROOT_DIR_HDFS_RAW_LANDED_XML|$ROOT_DIR_HDFS_RAW_LANDED_XML|g" | \
+	sed -e "s|\$ROOT_DIR_HDFS_RAW_LANDED_SEQ|"$ROOT_DIR_HDFS_RAW_LANDED_SEQ"|g")
 
 python - "$MANAGER_SERVER_USER" "$MANAGER_SERVER_PWORD" "$MANAGER_SERVER_HOST" "$MANAGER_SERVER_PORT" "$FLUME_AGENT_NAME" "$FLUME_AGENT_CONFIG" << END
 
