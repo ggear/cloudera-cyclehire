@@ -33,7 +33,9 @@ import org.junit.Test;
 
 import com.cloudera.cyclehire.data.DataConstants;
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
-import com.cloudera.cyclehire.main.ingress.stream.StreamHttpSource;
+import com.cloudera.cyclehire.main.ingress.stream.StreamEvent;
+import com.cloudera.cyclehire.main.ingress.stream.StreamInterceptor;
+import com.cloudera.cyclehire.main.ingress.stream.StreamSource;
 import com.cloudera.cyclehire.main.test.TestConstants;
 import com.cloudera.framework.main.test.LocalClusterDfsMrBaseTest;
 import com.google.common.collect.ImmutableMap;
@@ -198,17 +200,22 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
     channelSelector.setChannels(channels);
     try {
       Context context = new Context();
-      context.put(StreamHttpSource.PROPERTY_POLL_MS, pollMs);
-      context.put(StreamHttpSource.PROPERTY_POLL_TICKS, pollTicks);
-      context.put(StreamHttpSource.PROPERTY_BATCH_SIZE, batchSize);
-      StreamHttpSource source = new StreamHttpSource();
+      context.put(StreamSource.PROPERTY_POLL_MS, pollMs);
+      context.put(StreamSource.PROPERTY_POLL_TICKS, pollTicks);
+      context.put(StreamSource.PROPERTY_BATCH_SIZE, batchSize);
+      StreamSource source = new StreamSource();
       source.setName("simple-stream-source");
       source.configure(context);
-      source.setChannelProcessor(new ChannelProcessor(channelSelector));
+      ChannelProcessor channelProcessor = new ChannelProcessor(channelSelector);
+      context.put("interceptors", "simple-steam-interceptor");
+      context.put("interceptors.simple-steam-interceptor.type",
+          StreamInterceptor.Builder.class.getName());
+      channelProcessor.configure(context);
+      source.setChannelProcessor(channelProcessor);
       source.start();
       long transactionTimestamp = System.currentTimeMillis() / 1000;
       for (int i = 0; i < iterations; i++) {
-        context.put(StreamHttpSource.PROPERTY_HTTP_URL, httpUrls[i
+        context.put(StreamSource.PROPERTY_HTTP_URL, httpUrls[i
             % httpUrls.length]);
         Configurables.configure(source, context);
         source.process();
@@ -219,12 +226,13 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
           while ((event = channel.take()) != null) {
             if (event != null) {
               Assert.assertNotNull(event.getHeaders().get(
-                  StreamHttpSource.HEADER_TIMESTAMP));
+                  StreamEvent.HEADER_TIMESTAMP));
+              Assert
+                  .assertTrue(Long.parseLong(event.getHeaders().get(
+                      StreamEvent.HEADER_TIMESTAMP)) <= System
+                      .currentTimeMillis() / 1000);
               Assert.assertTrue(Long.parseLong(event.getHeaders().get(
-                  StreamHttpSource.HEADER_TIMESTAMP)) <= System
-                  .currentTimeMillis() / 1000);
-              Assert.assertTrue(Long.parseLong(event.getHeaders().get(
-                  StreamHttpSource.HEADER_TIMESTAMP)) >= transactionTimestamp);
+                  StreamEvent.HEADER_TIMESTAMP)) >= transactionTimestamp);
               Assert.assertNotNull(event.getBody());
               if (Integer.parseInt(batchSize) == 1) {
                 Assert.assertEquals(httpResponses[i % httpUrls.length],
@@ -288,6 +296,10 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
       Path path = paths.next().getPath();
       PartitionKey partitionKey = new PartitionKey().batch(
           path.getParent().getName()).record(path.getName());
+
+      // TODO
+      System.err.println(partitionKey);
+
       Assert.assertTrue(partitionKey.isValid());
       fileCount++;
     }

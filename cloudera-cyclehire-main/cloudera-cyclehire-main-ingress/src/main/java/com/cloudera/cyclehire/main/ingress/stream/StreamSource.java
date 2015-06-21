@@ -25,27 +25,19 @@ import org.apache.flume.source.AbstractSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StreamHttpSource extends AbstractSource implements Configurable,
-    PollableSource {
+public class StreamSource extends AbstractSource implements Configurable,
+    PollableSource, StreamEvent {
 
   public static final String PROPERTY_HTTP_URL = "httpUrl";
   public static final String PROPERTY_POLL_MS = "pollMs";
   public static final String PROPERTY_POLL_TICKS = "pollTicks";
   public static final String PROPERTY_BATCH_SIZE = "batchSize";
 
-  public static String HEADER_HOST = "host";
-  public static String HEADER_TYPE = "type";
-  public static String HEADER_BATCH = "batch";
-  public static String HEADER_INDEX = "index";
-  public static String HEADER_TOTAL = "total";
-  public static String HEADER_TIMESTAMP = "timestamp";
-
   public enum Type {
     POLL, TICK
   };
 
-  private static final Logger LOG = LoggerFactory
-      .getLogger(StreamHttpSource.class);
+  private static final Logger LOG = LoggerFactory.getLogger(StreamSource.class);
 
   private String httpUrl = "http://www.tfl.gov.uk/tfl/"
       + "syndication/feeds/cycle-hire/livecyclehireupdates.xml";
@@ -133,16 +125,7 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
     header.put(HEADER_HOST, host);
     header.put(HEADER_TYPE, type.toString().toLowerCase());
     header.put(HEADER_TIMESTAMP, "" + timestamp / 1000);
-    header.put(HEADER_BATCH, "" + timestamp / 1000);
     return header;
-  }
-
-  private Map<String, String> setEventHeader(Event event, String batch,
-      int index, int total) {
-    event.getHeaders().put(HEADER_BATCH, batch);
-    event.getHeaders().put(HEADER_INDEX, String.format("%03d", index + 1));
-    event.getHeaders().put(HEADER_TOTAL, String.format("%03d", total));
-    return event.getHeaders();
   }
 
   private synchronized void processEvent(Event event, boolean flush) {
@@ -154,13 +137,6 @@ public class StreamHttpSource extends AbstractSource implements Configurable,
       }
     }
     if (eventBatch.size() > 0 && (flush || eventBatch.size() == batchSize)) {
-      String batch = eventBatch.get(0).getHeaders().get(HEADER_TIMESTAMP)
-          + "_"
-          + eventBatch.get(eventBatch.size() - 1).getHeaders()
-              .get(HEADER_TIMESTAMP);
-      for (int i = 0; i < eventBatch.size(); i++) {
-        setEventHeader(eventBatch.get(i), batch, i, eventBatch.size());
-      }
       if (LOG.isDebugEnabled()) {
         LOG.debug("Source [" + getName()
             + "] pending commit, buffered events [" + eventBatch.size() + "]");
