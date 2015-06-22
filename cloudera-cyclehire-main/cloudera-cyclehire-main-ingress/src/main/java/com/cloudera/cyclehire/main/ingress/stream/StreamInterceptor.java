@@ -83,6 +83,7 @@ public class StreamInterceptor implements Interceptor, StreamEvent {
     public Interceptor build() {
       return new StreamInterceptor();
     }
+    
   }
 
 }
