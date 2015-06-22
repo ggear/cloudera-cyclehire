@@ -75,8 +75,9 @@ public class StreamInterceptor implements Interceptor, StreamEvent {
 
   private static String putHeader(Event event, String key, String value,
       boolean force) {
-    if (force || !event.getHeaders().containsKey(key)) {
-      String valuePrevious = event.getHeaders().put(key, value);
+    String valuePrevious = event.getHeaders().get(key);
+    if (force || valuePrevious == null) {
+      event.getHeaders().put(key, value);
       if (LOG.isDebugEnabled()) {
         LOG.debug("Adding event header ["
             + key
@@ -87,7 +88,7 @@ public class StreamInterceptor implements Interceptor, StreamEvent {
                 + valuePrevious + "]")));
       }
     }
-    return value;
+    return (force || valuePrevious == null) ? value : valuePrevious;
   }
 
   public static class Builder implements Interceptor.Builder {
