@@ -7,8 +7,13 @@ import java.util.List;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.interceptor.Interceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StreamInterceptor implements Interceptor, StreamEvent {
+
+  private static final Logger LOG = LoggerFactory
+      .getLogger(StreamInterceptor.class);
 
   private String host = null;
 
@@ -20,6 +25,9 @@ public class StreamInterceptor implements Interceptor, StreamEvent {
     } catch (UnknownHostException exception) {
       throw new RuntimeException("Could not determine local hostname",
           exception);
+    }
+    if (LOG.isInfoEnabled()) {
+      LOG.info("Stream Interceptor initialised");
     }
   }
 
@@ -68,7 +76,16 @@ public class StreamInterceptor implements Interceptor, StreamEvent {
   private static String putHeader(Event event, String key, String value,
       boolean force) {
     if (force || !event.getHeaders().containsKey(key)) {
-      event.getHeaders().put(key, value);
+      String valuePrevious = event.getHeaders().put(key, value);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Adding event header ["
+            + key
+            + " ] with value ["
+            + value
+            + "]"
+            + (valuePrevious == null ? "" : (" overwriting previous value ["
+                + valuePrevious + "]")));
+      }
     }
     return value;
   }
@@ -83,7 +100,7 @@ public class StreamInterceptor implements Interceptor, StreamEvent {
     public Interceptor build() {
       return new StreamInterceptor();
     }
-    
+
   }
 
 }

@@ -35,6 +35,8 @@ public class StreamSource extends AbstractSource implements Configurable,
 
   private static final Logger LOG = LoggerFactory.getLogger(StreamSource.class);
 
+  private static final int HTTP_REPONSE_MAX_BYTES = 500000;
+
   private String httpUrl = "http://www.tfl.gov.uk/tfl/"
       + "syndication/feeds/cycle-hire/livecyclehireupdates.xml";
   private int pollMs = 1000;
@@ -174,7 +176,8 @@ public class StreamSource extends AbstractSource implements Configurable,
             + httpClientResponseCode + "]");
       }
       long httpClientGetTimestamp = System.currentTimeMillis();
-      String httpClientGetResponse = httpClientGet.getResponseBodyAsString();
+      String httpClientGetResponse = httpClientGet
+          .getResponseBodyAsString(HTTP_REPONSE_MAX_BYTES);
       if (LOG.isDebugEnabled()) {
         LOG.debug("Source [" + getName() + "] polled HTTP source, ms ["
             + (System.currentTimeMillis() - httpMs) + "]");
