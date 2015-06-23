@@ -266,7 +266,7 @@ public class StreamTest extends LocalClusterDfsMrBaseTest {
     channel.start();
     Context context = new Context();
     context.put("hdfs.path", pathLanded + "/%{" + StreamEvent.HEADER_BATCH
-        + "}_livecyclehireupdates-%{" + StreamEvent.HEADER_HOST + "}.xml");
+        + "}_livecyclehireupdates-%{" + StreamEvent.HEADER_AGENT_ID + "}.xml");
     context.put("hdfs.filePrefix", "%{" + StreamEvent.HEADER_TIMESTAMP
         + "}_livecyclehireupdates-%{" + StreamEvent.HEADER_INDEX + "}-of-%{"
         + StreamEvent.HEADER_TOTAL + "}");

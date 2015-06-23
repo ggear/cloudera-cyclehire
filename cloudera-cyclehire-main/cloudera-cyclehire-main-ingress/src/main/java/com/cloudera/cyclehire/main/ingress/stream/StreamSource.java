@@ -1,7 +1,5 @@
 package com.cloudera.cyclehire.main.ingress.stream;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StreamSource extends AbstractSource implements Configurable,
-    PollableSource, StreamEvent {
+    PollableSource {
 
   public static final String PROPERTY_HTTP_URL = "httpUrl";
   public static final String PROPERTY_POLL_MS = "pollMs";
@@ -43,7 +41,6 @@ public class StreamSource extends AbstractSource implements Configurable,
   private int pollTicks = 0;
   private int batchSize = 1;
 
-  private String host = null;
   private HttpClient httpClient;
   private String eventBodyCache;
   private List<Event> eventBatch;
@@ -79,21 +76,14 @@ public class StreamSource extends AbstractSource implements Configurable,
       sourceCounter = new SourceCounter(getName());
     }
     if (LOG.isInfoEnabled()) {
-      LOG.info("Source [" + getName() + "] configured with context [" + context
-          + "]");
+      LOG.info("Source [" + getName() + "] configured, Agent ID ["
+          + StreamEvent.AGENT_ID + "], context [" + context + "]");
     }
   }
 
   @Override
   public synchronized void start() {
     super.start();
-    try {
-      host = System.getenv("HOSTNAME") != null ? System.getenv("HOSTNAME")
-          : InetAddress.getLocalHost().getCanonicalHostName();
-    } catch (UnknownHostException exception) {
-      throw new RuntimeException("Could not determine local hostname",
-          exception);
-    }
     httpClient = new HttpClient();
     httpClient.getHttpConnectionManager().getParams()
         .setConnectionTimeout(pollMs);
@@ -118,11 +108,12 @@ public class StreamSource extends AbstractSource implements Configurable,
     }
   }
 
-  private Map<String, String> getEventHeader(long timestamp, Type type) {
+  private Map<String, String> getEventHeader(long timestamp,
+      StreamEvent.Type type) {
     Map<String, String> header = new HashMap<String, String>();
-    header.put(HEADER_HOST, host);
-    header.put(HEADER_TYPE, type.toString().toLowerCase());
-    header.put(HEADER_TIMESTAMP, "" + timestamp / 1000);
+    header.put(StreamEvent.HEADER_AGENT_ID, StreamEvent.AGENT_ID);
+    header.put(StreamEvent.HEADER_TYPE, type.toString().toLowerCase());
+    header.put(StreamEvent.HEADER_TIMESTAMP, "" + timestamp / 1000);
     return header;
   }
 
@@ -189,7 +180,8 @@ public class StreamSource extends AbstractSource implements Configurable,
         processEvent(
             EventBuilder.withBody(httpClientGetResponse,
                 Charset.forName(Charsets.UTF_8.name()),
-                getEventHeader(httpClientGetTimestamp, Type.POLL)), false);
+                getEventHeader(httpClientGetTimestamp, StreamEvent.Type.POLL)),
+            false);
         eventBodyCache = httpClientGetResponse;
       }
       int tickMs = pollMs / (pollTicks + 1);
@@ -197,11 +189,11 @@ public class StreamSource extends AbstractSource implements Configurable,
       for (int i = 0; i <= pollTicks; i++) {
         if (pollTicks > 0 && i < pollTicks) {
           if (tickRequired) {
-            processEvent(
-                EventBuilder.withBody(httpClientGetResponse,
-                    Charset.forName(Charsets.UTF_8.name()),
-                    getEventHeader(System.currentTimeMillis(), Type.TICK)),
-                false);
+            processEvent(EventBuilder.withBody(
+                httpClientGetResponse,
+                Charset.forName(Charsets.UTF_8.name()),
+                getEventHeader(System.currentTimeMillis(),
+                    StreamEvent.Type.TICK)), false);
           } else {
             tickRequired = true;
           }

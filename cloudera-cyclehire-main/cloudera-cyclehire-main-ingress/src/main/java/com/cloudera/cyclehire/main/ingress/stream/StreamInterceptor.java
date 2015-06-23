@@ -1,7 +1,5 @@
 package com.cloudera.cyclehire.main.ingress.stream;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 
 import org.apache.flume.Context;
@@ -10,24 +8,16 @@ import org.apache.flume.interceptor.Interceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StreamInterceptor implements Interceptor, StreamEvent {
+public class StreamInterceptor implements Interceptor {
 
   private static final Logger LOG = LoggerFactory
       .getLogger(StreamInterceptor.class);
 
-  private String host = null;
-
   @Override
   public void initialize() {
-    try {
-      host = System.getenv("HOSTNAME") != null ? System.getenv("HOSTNAME")
-          : InetAddress.getLocalHost().getCanonicalHostName();
-    } catch (UnknownHostException exception) {
-      throw new RuntimeException("Could not determine local hostname",
-          exception);
-    }
     if (LOG.isInfoEnabled()) {
-      LOG.info("Stream Interceptor initialised");
+      LOG.info("Stream Interceptor initialised, Agent ID ["
+          + StreamEvent.AGENT_ID + "]");
     }
   }
 
@@ -54,18 +44,22 @@ public class StreamInterceptor implements Interceptor, StreamEvent {
   }
 
   private String getEventBatchHeader(Event first, Event last, long timestamp) {
-    return putHeader(first, HEADER_TIMESTAMP, "" + (timestamp / 1000)) + "_"
-        + putHeader(last, HEADER_TIMESTAMP, "" + (timestamp / 1000));
+    return putHeader(first, StreamEvent.HEADER_TIMESTAMP, "" + timestamp / 1000)
+        + "_"
+        + putHeader(last, StreamEvent.HEADER_TIMESTAMP, "" + timestamp / 1000);
   }
 
   private Event getEventWithHeaders(Event event, String batch, int index,
       int total, long timestamp) {
-    putHeader(event, HEADER_HOST, host);
-    putHeader(event, HEADER_TYPE, Type.POLL.toString().toLowerCase());
-    putHeader(event, HEADER_TIMESTAMP, "" + timestamp / 1000);
-    putHeader(event, HEADER_BATCH, batch, true);
-    putHeader(event, HEADER_INDEX, String.format("%03d", index), true);
-    putHeader(event, HEADER_TOTAL, String.format("%03d", total), true);
+    putHeader(event, StreamEvent.HEADER_AGENT_ID, StreamEvent.AGENT_ID);
+    putHeader(event, StreamEvent.HEADER_TYPE, StreamEvent.Type.POLL.toString()
+        .toLowerCase());
+    putHeader(event, StreamEvent.HEADER_TIMESTAMP, "" + timestamp / 1000);
+    putHeader(event, StreamEvent.HEADER_BATCH, batch, true);
+    putHeader(event, StreamEvent.HEADER_INDEX, String.format("%03d", index),
+        true);
+    putHeader(event, StreamEvent.HEADER_TOTAL, String.format("%03d", total),
+        true);
     return event;
   }
 
@@ -84,11 +78,11 @@ public class StreamInterceptor implements Interceptor, StreamEvent {
             + " ] with value ["
             + value
             + "]"
-            + (valuePrevious == null ? "" : (" overwriting previous value ["
-                + valuePrevious + "]")));
+            + (valuePrevious == null ? "" : " overwriting previous value ["
+                + valuePrevious + "]"));
       }
     }
-    return (force || valuePrevious == null) ? value : valuePrevious;
+    return force || valuePrevious == null ? value : valuePrevious;
   }
 
   public static class Builder implements Interceptor.Builder {
