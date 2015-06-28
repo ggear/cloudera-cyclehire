@@ -24,16 +24,14 @@ public enum PartitionFlag {
     return false;
   }
 
-  public static boolean list(FileSystem hdfs, Path path,
-      PartitionFlag partitionFlag) throws IOException {
+  public static boolean list(FileSystem hdfs, Path path, PartitionFlag partitionFlag) throws IOException {
     try {
       FileStatus pathStatus = hdfs.getFileStatus(path);
       if (pathStatus != null && !isValue(path.getName())) {
         if (!pathStatus.isDirectory()) {
           pathStatus = hdfs.getFileStatus(path.getParent());
         }
-        if (hdfs
-            .exists(new Path(pathStatus.getPath(), partitionFlag.toString()))) {
+        if (partitionFlag == null || hdfs.exists(new Path(pathStatus.getPath(), partitionFlag.toString()))) {
           return true;
         }
       }
@@ -44,8 +42,7 @@ public enum PartitionFlag {
     return false;
   }
 
-  public static List<PartitionFlag> list(FileSystem hdfs, Path path)
-      throws IOException {
+  public static List<PartitionFlag> list(FileSystem hdfs, Path path) throws IOException {
     List<PartitionFlag> partitionFlags = new ArrayList<PartitionFlag>();
     try {
       FileStatus pathStatus = hdfs.getFileStatus(path);
@@ -54,8 +51,7 @@ public enum PartitionFlag {
           pathStatus = hdfs.getFileStatus(path.getParent());
         }
         for (PartitionFlag partitionFlag : PartitionFlag.values()) {
-          if (hdfs.exists(new Path(pathStatus.getPath(), partitionFlag
-              .toString()))) {
+          if (hdfs.exists(new Path(pathStatus.getPath(), partitionFlag.toString()))) {
             partitionFlags.add(partitionFlag);
           }
         }
@@ -67,8 +63,7 @@ public enum PartitionFlag {
     return partitionFlags;
   }
 
-  public static boolean update(FileSystem hdfs, Path path,
-      PartitionFlag partitionFlag) throws IOException {
+  public static boolean update(FileSystem hdfs, Path path, PartitionFlag partitionFlag) throws IOException {
     FileStatus status = null;
     boolean updated = false;
     boolean isDirectory = true;
@@ -77,17 +72,16 @@ public enum PartitionFlag {
       isDirectory = status.isDirectory();
       for (PartitionFlag partitionFlagToDelete : list(hdfs, path)) {
         if (!partitionFlagToDelete.equals(partitionFlag)) {
-          hdfs.delete(new Path(hdfs.getFileStatus(path).isDirectory() ? path
-              : path.getParent(), partitionFlagToDelete.toString()), false);
+          hdfs.delete(
+              new Path(hdfs.getFileStatus(path).isDirectory() ? path : path.getParent(), partitionFlagToDelete
+                  .toString()), false);
         } else
           updated = true;
       }
     } catch (FileNotFoundException exception) {
       hdfs.mkdirs(path);
     }
-    return updated
-        || hdfs.createNewFile(new Path(isDirectory ? path : path.getParent(),
-            partitionFlag.toString()));
+    return updated || hdfs.createNewFile(new Path(isDirectory ? path : path.getParent(), partitionFlag.toString()));
   }
 
 }

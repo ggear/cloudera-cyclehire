@@ -14,8 +14,7 @@ import org.apache.hadoop.mapreduce.Partitioner;
 
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
 
-public class ClenseReducerPartitioner extends Partitioner<PartitionKey, Text>
-    implements Configurable {
+public class ClenseReducerPartitioner extends Partitioner<PartitionKey, Text> implements Configurable {
 
   public static final String PARTITIONS = "mapreduce.clense.reducer.partitioner.partitions";
 
@@ -37,21 +36,18 @@ public class ClenseReducerPartitioner extends Partitioner<PartitionKey, Text>
     return configuration;
   }
 
-  public static void setPartitions(Configuration configuration,
-      Set<String> partitions) {
+  public static void setPartitions(Configuration configuration, Set<String> partitions) {
     configuration.set(PARTITIONS, StringUtils.join(partitions, ','));
   }
 
   public static Set<String> getPartitions(Configuration configuration) {
-    return new HashSet<String>(Arrays.asList(configuration.getStrings(
-        PARTITIONS, new String[0])));
+    return new HashSet<String>(Arrays.asList(configuration.getStrings(PARTITIONS, new String[0])));
   }
 
   @Override
   public int getPartition(PartitionKey key, Text value, int numPartitions) {
-    return (partitionsIndex.containsKey(key.getPartition()) ? partitionsIndex
-        .get(key.getPartition()) : key.getPartition().hashCode()
-        & Integer.MAX_VALUE)
+    return (partitionsIndex.containsKey(key.getPartition()) ? partitionsIndex.get(key.getPartition()) : key
+        .getPartition().hashCode() & Integer.MAX_VALUE)
         % numPartitions;
   }
 }

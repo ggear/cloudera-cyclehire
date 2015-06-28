@@ -20,11 +20,9 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
 
-public class PartitionInputFormatTarGzip extends
-    FileInputFormat<PartitionKey, Text> {
+public class PartitionInputFormatTarGzip extends FileInputFormat<PartitionKey, Text> {
 
-  private static final Log LOG = LogFactory
-      .getLog(PartitionInputFormatTarGzip.class);
+  private static final Log LOG = LogFactory.getLog(PartitionInputFormatTarGzip.class);
 
   @Override
   protected boolean isSplitable(JobContext context, Path filename) {
@@ -32,8 +30,8 @@ public class PartitionInputFormatTarGzip extends
   }
 
   @Override
-  public RecordReader<PartitionKey, Text> createRecordReader(InputSplit split,
-      TaskAttemptContext context) throws IOException, InterruptedException {
+  public RecordReader<PartitionKey, Text> createRecordReader(InputSplit split, TaskAttemptContext context)
+      throws IOException, InterruptedException {
     return new RecordReader<PartitionKey, Text>() {
 
       private Path path;
@@ -43,13 +41,11 @@ public class PartitionInputFormatTarGzip extends
       private TarArchiveInputStream stream;
 
       @Override
-      public void initialize(InputSplit split, TaskAttemptContext context)
-          throws InterruptedException {
+      public void initialize(InputSplit split, TaskAttemptContext context) throws InterruptedException {
         path = ((FileSplit) split).getPath();
         try {
-          stream = new TarArchiveInputStream(new GzipCompressorInputStream(
-              new BufferedInputStream(path.getFileSystem(
-                  context.getConfiguration()).open(path))));
+          stream = new TarArchiveInputStream(new GzipCompressorInputStream(new BufferedInputStream(path.getFileSystem(
+              context.getConfiguration()).open(path))));
         } catch (IOException exception) {
           if (LOG.isErrorEnabled()) {
             LOG.error("Could not read file [" + path + "]", exception);
@@ -62,8 +58,7 @@ public class PartitionInputFormatTarGzip extends
         if (stream != null) {
           if ((entry = stream.getNextTarEntry()) != null) {
             if (entry.isDirectory()
-                || !(partitionKey = new PartitionKey().batch(
-                    path.getParent().getName()).record(entry.getName()))
+                || !(partitionKey = new PartitionKey().batch(path.getParent().getName()).record(entry.getName()))
                     .isValid()) {
               return nextKeyValue();
             } else {
@@ -76,8 +71,7 @@ public class PartitionInputFormatTarGzip extends
       }
 
       @Override
-      public PartitionKey getCurrentKey() throws IOException,
-          InterruptedException {
+      public PartitionKey getCurrentKey() throws IOException, InterruptedException {
         return partitionKey;
       }
 

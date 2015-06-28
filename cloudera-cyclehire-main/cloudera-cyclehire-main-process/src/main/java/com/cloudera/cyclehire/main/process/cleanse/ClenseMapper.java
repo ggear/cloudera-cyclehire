@@ -8,14 +8,11 @@ import org.apache.hadoop.mapreduce.Mapper;
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
 import com.cloudera.cyclehire.main.common.model.PartitionRecord;
 
-public class ClenseMapper extends
-    Mapper<PartitionKey, Text, PartitionKey, Text> {
+public class ClenseMapper extends Mapper<PartitionKey, Text, PartitionKey, Text> {
 
   @Override
-  protected void map(PartitionKey key, Text value, Context context)
-      throws IOException, InterruptedException {
-    context.write(new PartitionRecord().key(key).epochUpdate(value.toString())
-        .getKey(), value);
+  protected void map(PartitionKey key, Text value, Context context) throws IOException, InterruptedException {
+    context.write(new PartitionRecord().key(key).epochUpdate(value.toString()).getKey(), value);
   }
 
 }

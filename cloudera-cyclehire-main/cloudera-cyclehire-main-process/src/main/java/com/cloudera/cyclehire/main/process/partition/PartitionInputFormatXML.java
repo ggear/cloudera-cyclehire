@@ -19,11 +19,9 @@ import org.apache.hadoop.mapreduce.lib.input.CombineFileSplit;
 
 import com.cloudera.cyclehire.main.common.model.PartitionKey;
 
-public class PartitionInputFormatXML extends
-    CombineFileInputFormat<PartitionKey, Text> {
+public class PartitionInputFormatXML extends CombineFileInputFormat<PartitionKey, Text> {
 
-  private static final Log LOG = LogFactory
-      .getLog(PartitionInputFormatTarGzip.class);
+  private static final Log LOG = LogFactory.getLog(PartitionInputFormatTarGzip.class);
 
   public PartitionInputFormatXML() {
     super();
@@ -36,31 +34,28 @@ public class PartitionInputFormatXML extends
   }
 
   @Override
-  public RecordReader<PartitionKey, Text> createRecordReader(InputSplit split,
-      TaskAttemptContext context) throws IOException {
-    return new CombineFileRecordReader<PartitionKey, Text>(
-        (CombineFileSplit) split, context, PartitionRecordReaderXML.class);
+  public RecordReader<PartitionKey, Text> createRecordReader(InputSplit split, TaskAttemptContext context)
+      throws IOException {
+    return new CombineFileRecordReader<PartitionKey, Text>((CombineFileSplit) split, context,
+        PartitionRecordReaderXML.class);
   }
 
-  public static class PartitionRecordReaderXML extends
-      RecordReader<PartitionKey, Text> {
+  public static class PartitionRecordReaderXML extends RecordReader<PartitionKey, Text> {
 
     private Path path;
     private Text value;
     private PartitionKey key;
     private InputStream stream;
 
-    public PartitionRecordReaderXML(CombineFileSplit split,
-        TaskAttemptContext context, Integer index) throws IOException {
+    public PartitionRecordReaderXML(CombineFileSplit split, TaskAttemptContext context, Integer index)
+        throws IOException {
       path = split.getPath(index);
     }
 
     @Override
-    public void initialize(InputSplit split, TaskAttemptContext context)
-        throws IOException, InterruptedException {
+    public void initialize(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
       try {
-        stream = new BufferedInputStream(path.getFileSystem(
-            context.getConfiguration()).open(path));
+        stream = new BufferedInputStream(path.getFileSystem(context.getConfiguration()).open(path));
       } catch (IOException exception) {
         if (LOG.isErrorEnabled()) {
           LOG.error("Could not read file [" + path + "]", exception);
@@ -73,8 +68,7 @@ public class PartitionInputFormatXML extends
       boolean exhausted = stream == null;
       if (!exhausted) {
         try {
-          if (!(exhausted = !(key = new PartitionKey().path(path.toString()))
-              .isValid())) {
+          if (!(exhausted = !(key = new PartitionKey().path(path.toString())).isValid())) {
             value = new Text(IOUtils.toString(stream));
           }
         } catch (IOException exception) {
@@ -89,8 +83,7 @@ public class PartitionInputFormatXML extends
     }
 
     @Override
-    public PartitionKey getCurrentKey() throws IOException,
-        InterruptedException {
+    public PartitionKey getCurrentKey() throws IOException, InterruptedException {
       return key;
     }
 

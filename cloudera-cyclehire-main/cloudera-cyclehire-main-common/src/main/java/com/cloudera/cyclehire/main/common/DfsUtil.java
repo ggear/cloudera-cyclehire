@@ -23,59 +23,48 @@ import org.apache.hadoop.security.AccessControlException;
 
 public class DfsUtil {
 
-  public static boolean canDoAction(FileSystem hdfs, String user,
-      String[] groups, Path path, FsAction action) throws IOException {
+  public static boolean canDoAction(FileSystem hdfs, String user, String[] groups, Path path, FsAction action)
+      throws IOException {
     FileStatus status = hdfs.getFileStatus(path);
     FsPermission permission = status.getPermission();
     if (permission.getOtherAction().implies(action)) {
       return true;
     }
     for (String group : groups) {
-      if (group.equals(status.getGroup())
-          && permission.getGroupAction().implies(action)) {
+      if (group.equals(status.getGroup()) && permission.getGroupAction().implies(action)) {
         return true;
       }
     }
-    if (user.equals(status.getOwner())
-        && permission.getUserAction().implies(action)) {
+    if (user.equals(status.getOwner()) && permission.getUserAction().implies(action)) {
       return true;
     }
     return false;
   }
 
-  public static boolean copyFromLocalFile(FileSystem hdfs, Path fileSource,
-      Path fileDestination, boolean fileSuccessMarker, long fileSize,
-      int bufferSizeBytes, int replicationFactor, long blockSizeBytes)
+  public static boolean copyFromLocalFile(FileSystem hdfs, Path fileSource, Path fileDestination,
+      boolean fileSuccessMarker, long fileSize, int bufferSizeBytes, int replicationFactor, long blockSizeBytes)
       throws IOException {
-    Path filesuccess = fileSuccessMarker ? new Path(
-        fileDestination.getParent(), FileOutputCommitter.SUCCEEDED_FILE_NAME)
-        : null;
-    if (!hdfs.exists(fileDestination)
-        && (!fileSuccessMarker || !hdfs.exists(filesuccess))) {
+    Path filesuccess = fileSuccessMarker ? new Path(fileDestination.getParent(),
+        FileOutputCommitter.SUCCEEDED_FILE_NAME) : null;
+    if (!hdfs.exists(fileDestination) && (!fileSuccessMarker || !hdfs.exists(filesuccess))) {
       hdfs.mkdirs(fileDestination.getParent());
-      IOUtils
-          .copyBytes(new FileInputStream(new File(fileSource.toString())), hdfs
-              .create(fileDestination, false, bufferSizeBytes,
-                  (short) replicationFactor, blockSizeBytes), bufferSizeBytes,
-              true);
+      IOUtils.copyBytes(new FileInputStream(new File(fileSource.toString())),
+          hdfs.create(fileDestination, false, bufferSizeBytes, (short) replicationFactor, blockSizeBytes),
+          bufferSizeBytes, true);
       if (fileSuccessMarker) {
-        hdfs.createNewFile(new Path(fileDestination.getParent(),
-            FileOutputCommitter.SUCCEEDED_FILE_NAME));
+        hdfs.createNewFile(new Path(fileDestination.getParent(), FileOutputCommitter.SUCCEEDED_FILE_NAME));
       }
       return true;
-    } else if (hdfs.exists(fileDestination)
-        && hdfs.getFileStatus(fileDestination).getLen() == fileSize
+    } else if (hdfs.exists(fileDestination) && hdfs.getFileStatus(fileDestination).getLen() == fileSize
         && (!fileSuccessMarker || hdfs.exists(filesuccess))) {
       return false;
     } else {
-      throw new IOException("File [" + fileDestination
-          + "] already exists, but is corrupt");
+      throw new IOException("File [" + fileDestination + "] already exists, but is corrupt");
     }
   }
 
-  public static boolean createSymlinkOrCopy(FileSystem hdfs, Path target,
-      Path link) throws AccessControlException, FileAlreadyExistsException,
-      FileNotFoundException, ParentNotDirectoryException, IOException {
+  public static boolean createSymlinkOrCopy(FileSystem hdfs, Path target, Path link) throws AccessControlException,
+      FileAlreadyExistsException, FileNotFoundException, ParentNotDirectoryException, IOException {
     boolean isSymlinked = FileSystem.areSymlinksEnabled();
     if (isSymlinked) {
       try {
@@ -90,12 +79,11 @@ public class DfsUtil {
     return isSymlinked;
   }
 
-  public static List<Path> listFiles(FileSystem hdfs, Path path, boolean recurse)
-      throws FileNotFoundException, IOException {
+  public static List<Path> listFiles(FileSystem hdfs, Path path, boolean recurse) throws FileNotFoundException,
+      IOException {
     List<Path> files = new ArrayList<Path>();
     try {
-      RemoteIterator<LocatedFileStatus> filesIterator = hdfs.listFiles(path,
-          recurse);
+      RemoteIterator<LocatedFileStatus> filesIterator = hdfs.listFiles(path, recurse);
       while (filesIterator.hasNext()) {
         files.add(filesIterator.next().getPath());
       }

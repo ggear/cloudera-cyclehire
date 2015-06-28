@@ -14,8 +14,7 @@ public class ClenseReducerGrouper extends WritableComparator {
   @Override
   @SuppressWarnings("rawtypes")
   public int compare(WritableComparable one, WritableComparable two) {
-    return ((PartitionKey) one).getEpochUpdate().compareTo(
-        ((PartitionKey) two).getEpochUpdate());
+    return ((PartitionKey) one).getEpochUpdate().compareTo(((PartitionKey) two).getEpochUpdate());
   }
 
 }

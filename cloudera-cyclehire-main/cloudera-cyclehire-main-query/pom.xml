@@ -38,12 +38,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.cloudera.cyclehire</groupId>
-			<artifactId>cloudera-cyclehire-data</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.cloudera.framework.main</groupId>
 			<artifactId>cloudera-framework-main-runtime</artifactId>
 			<version>${cloudera-framework.version}</version>
@@ -63,20 +57,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>unpack-test-data</id>
-						<phase>process-test-resources</phase>
-						<goals>
-							<goal>unpack-dependencies</goal>
-						</goals>
-						<configuration>
-							<includeArtifactIds>cloudera-cyclehire-data</includeArtifactIds>
-							<excludes>**\/*.sh</excludes>
-							<outputDirectory>${project.build.directory}/test-data</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

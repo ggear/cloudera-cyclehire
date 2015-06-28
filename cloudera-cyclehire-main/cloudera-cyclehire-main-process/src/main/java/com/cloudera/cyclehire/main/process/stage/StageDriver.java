@@ -24,12 +24,10 @@ import com.cloudera.framework.main.common.Driver;
 
 public class StageDriver extends Driver {
 
-  public static final Counter[] COUNTERS = new Counter[] {
-      Counter.FILES_SKIPPED, Counter.FILES_FAILED, Counter.FILES_SUCCESSFUL,
-      Counter.FILES, Counter.BATCHES_SKIPPED, Counter.BATCHES_FAILED,
-      Counter.BATCHES_SUCCESSFUL, Counter.BATCHES, Counter.PARTITIONS_SKIPPED,
-      Counter.PARTITIONS_FAILED, Counter.PARTITIONS_SUCCESSFUL,
-      Counter.PARTITIONS };
+  public static final Counter[] COUNTERS = new Counter[] { Counter.FILES_SKIPPED, Counter.FILES_FAILED,
+      Counter.FILES_SUCCESSFUL, Counter.FILES, Counter.BATCHES_SKIPPED, Counter.BATCHES_FAILED,
+      Counter.BATCHES_SUCCESSFUL, Counter.BATCHES, Counter.PARTITIONS_SKIPPED, Counter.PARTITIONS_FAILED,
+      Counter.PARTITIONS_SUCCESSFUL, Counter.PARTITIONS };
 
   private static final Logger LOG = LoggerFactory.getLogger(StageDriver.class);
 
@@ -78,11 +76,9 @@ public class StageDriver extends Driver {
 
     inputLandedPath = new Path(arguments[0]);
     if (!hdfs.exists(inputLandedPath)
-        || !DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser()
-            .getUserName(), UserGroupInformation.getCurrentUser()
-            .getGroupNames(), inputLandedPath, FsAction.READ)) {
-      throw new Exception("HDFS landed directory [" + inputLandedPath
-          + "] not available to user ["
+        || !DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser().getUserName(), UserGroupInformation
+            .getCurrentUser().getGroupNames(), inputLandedPath, FsAction.READ)) {
+      throw new Exception("HDFS landed directory [" + inputLandedPath + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
     if (LOG.isInfoEnabled()) {
@@ -92,20 +88,16 @@ public class StageDriver extends Driver {
     inputStagedPath = new Path(arguments[1]);
     if (hdfs.exists(inputStagedPath)) {
       if (!hdfs.isDirectory(inputStagedPath)) {
-        throw new Exception("HDFS staged directory [" + inputStagedPath
-            + "] is not a directory");
+        throw new Exception("HDFS staged directory [" + inputStagedPath + "] is not a directory");
       }
-      if (!DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser()
-          .getUserName(),
-          UserGroupInformation.getCurrentUser().getGroupNames(),
-          inputStagedPath, FsAction.ALL)) {
+      if (!DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser().getUserName(), UserGroupInformation
+          .getCurrentUser().getGroupNames(), inputStagedPath, FsAction.ALL)) {
         throw new Exception("HDFS staged directory [" + inputStagedPath
             + "] has too restrictive permissions to read/write as user ["
             + UserGroupInformation.getCurrentUser().getUserName() + "]");
       }
     } else {
-      hdfs.mkdirs(inputStagedPath, new FsPermission(FsAction.ALL,
-          FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
+      hdfs.mkdirs(inputStagedPath, new FsPermission(FsAction.ALL, FsAction.READ_EXECUTE, FsAction.READ_EXECUTE));
     }
     if (LOG.isInfoEnabled()) {
       LOG.info("HDFS staged directory [" + inputStagedPath + "] validated");
@@ -115,8 +107,7 @@ public class StageDriver extends Driver {
   }
 
   @Override
-  public int execute() throws InterruptedException, ExecutionException,
-      IOException, ClassNotFoundException {
+  public int execute() throws InterruptedException, ExecutionException, IOException, ClassNotFoundException {
 
     FileSystem hdfs = FileSystem.newInstance(getConf());
 
@@ -127,45 +118,34 @@ public class StageDriver extends Driver {
     Map<Path, PartitionKey> stagedTodo = new HashMap<>();
     for (Path landedPath : DfsUtil.listFiles(hdfs, inputLandedPath, true)) {
       if (!PartitionFlag.isValue(landedPath.getName())) {
-        for (PartitionKey partitionKey : PartitionKey.getKeys(landedPath
-            .getParent().getName(), landedPath.getName())) {
-          boolean landedPathExists = hdfs.exists(new Path(landedPath
-              .getParent(), partitionKey.getRecord()));
-          Path stagedPath = new Path(
-              new StringBuilder(PartitionKey.PATH_NOMINAL_LENGTH)
-                  .append(inputStagedPath)
-                  .append('/')
-                  .append(
-                      partitionKey.isValid() && landedPathExists ? Counter.BATCHES_SUCCESSFUL
-                          .getPath() : Counter.BATCHES_FAILED.getPath())
-                  .append('/').append(partitionKey.getPath()).toString());
-          if (PartitionFlag.list(hdfs, landedPath, PartitionFlag._SUCCESS)
-              && PartitionFlag.list(hdfs, stagedPath).isEmpty()) {
+        for (PartitionKey partitionKey : PartitionKey.getKeys(landedPath.getParent().getName(), landedPath.getName())) {
+          boolean landedPathExists = hdfs.exists(new Path(landedPath.getParent(), partitionKey.getRecord()));
+          Path stagedPath = new Path(new StringBuilder(PartitionKey.PATH_NOMINAL_LENGTH)
+              .append(inputStagedPath)
+              .append('/')
+              .append(
+                  partitionKey.isValid() && landedPathExists ? Counter.BATCHES_SUCCESSFUL.getPath()
+                      : Counter.BATCHES_FAILED.getPath()).append('/').append(partitionKey.getPath()).toString());
+          if (PartitionFlag.list(hdfs, landedPath, null) && PartitionFlag.list(hdfs, stagedPath).isEmpty()) {
             if (partitionKey.isValid() && landedPathExists) {
               DfsUtil.createSymlinkOrCopy(hdfs, landedPath, stagedPath);
-              PartitionFlag.update(hdfs, stagedPath.getParent(),
-                  PartitionFlag._PARTITION);
-              incrementCounter(Counter.FILES_SUCCESSFUL, 1,
-                  partitionKey.getBatch() + '/' + partitionKey.getRecord(),
+              PartitionFlag.update(hdfs, stagedPath.getParent(), PartitionFlag._PARTITION);
+              incrementCounter(Counter.FILES_SUCCESSFUL, 1, partitionKey.getBatch() + '/' + partitionKey.getRecord(),
                   counterFiles);
               incrementCounter(Counter.BATCHES_SUCCESSFUL, 1,
-                  partitionKey.getPartition() + '/' + partitionKey.getBatch(),
-                  counterBatches);
-              incrementCounter(Counter.PARTITIONS_SUCCESSFUL, 1,
-                  partitionKey.getPartition(), counterPartitions);
+                  partitionKey.getPartition() + '/' + partitionKey.getBatch(), counterBatches);
+              incrementCounter(Counter.PARTITIONS_SUCCESSFUL, 1, partitionKey.getPartition(), counterPartitions);
             } else {
               stagedFailed.put(stagedPath, partitionKey);
               if (landedPathExists) {
-                incrementCounter(Counter.FILES_FAILED, 1,
-                    partitionKey.getBatch() + '/' + partitionKey.getRecord(),
+                incrementCounter(Counter.FILES_FAILED, 1, partitionKey.getBatch() + '/' + partitionKey.getRecord(),
                     counterFiles);
               }
             }
           } else {
             stagedTodo.put(stagedPath, partitionKey);
             if (landedPathExists) {
-              incrementCounter(Counter.FILES_SKIPPED, 1,
-                  partitionKey.getBatch() + '/' + partitionKey.getRecord(),
+              incrementCounter(Counter.FILES_SKIPPED, 1, partitionKey.getBatch() + '/' + partitionKey.getRecord(),
                   counterFiles);
             }
           }
@@ -176,17 +156,15 @@ public class StageDriver extends Driver {
       PartitionKey partitionKey = stagedFailed.get(stagedPath);
       hdfs.createNewFile(stagedPath);
       PartitionFlag.update(hdfs, stagedPath.getParent(), PartitionFlag._FAILED);
-      incrementCounter(Counter.BATCHES_FAILED, 1, partitionKey.getPartition()
-          + '/' + partitionKey.getBatch(), counterBatches);
-      incrementCounter(Counter.PARTITIONS_FAILED, 1,
-          partitionKey.getPartition(), counterPartitions);
+      incrementCounter(Counter.BATCHES_FAILED, 1, partitionKey.getPartition() + '/' + partitionKey.getBatch(),
+          counterBatches);
+      incrementCounter(Counter.PARTITIONS_FAILED, 1, partitionKey.getPartition(), counterPartitions);
     }
     for (Path stagedPath : stagedTodo.keySet()) {
       PartitionKey partitionKey = stagedTodo.get(stagedPath);
-      incrementCounter(Counter.BATCHES_SKIPPED, 1, partitionKey.getPartition()
-          + '/' + partitionKey.getBatch(), counterBatches);
-      incrementCounter(Counter.PARTITIONS_SKIPPED, 1,
-          partitionKey.getPartition(), counterPartitions);
+      incrementCounter(Counter.BATCHES_SKIPPED, 1, partitionKey.getPartition() + '/' + partitionKey.getBatch(),
+          counterBatches);
+      incrementCounter(Counter.PARTITIONS_SKIPPED, 1, partitionKey.getPartition(), counterPartitions);
     }
     incrementCounter(Counter.FILES, counterFiles.size());
     incrementCounter(Counter.BATCHES, counterBatches.size());

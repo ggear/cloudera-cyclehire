@@ -14,8 +14,7 @@ import com.cloudera.cyclehire.main.common.model.PartitionKey;
 import com.cloudera.cyclehire.main.common.model.PartitionRecord;
 import com.cloudera.cyclehire.main.process.partition.PartitionDriver;
 
-public class ClenseReducer extends
-    Reducer<PartitionKey, Text, NullWritable, Text> {
+public class ClenseReducer extends Reducer<PartitionKey, Text, NullWritable, Text> {
 
   public static final int RECORD_BUFFER_SIZE_DATA = 1024;
   public static final int RECORD_BUFFER_SIZE_METADATA = 256;
@@ -35,37 +34,31 @@ public class ClenseReducer extends
   }
 
   @Override
-  protected void reduce(PartitionKey key, Iterable<Text> values, Context context)
-      throws IOException, InterruptedException {
+  protected void reduce(PartitionKey key, Iterable<Text> values, Context context) throws IOException,
+      InterruptedException {
     boolean isDuplicate = false;
-    String valueTimestamps = new StringBuilder().append(key.getEpochGet())
-        .append(MrUtil.RECORD_COLUMN_DELIM).append(key.getEpochUpdate())
-        .toString();
+    String valueTimestamps = new StringBuilder().append(key.getEpochGet()).append(MrUtil.RECORD_COLUMN_DELIM)
+        .append(key.getEpochUpdate()).toString();
     for (Text value : values) {
       Counter counter = null;
       String valueString = value.toString();
       PartitionRecord record = new PartitionRecord().key(key).xml(
-          valueString.substring(0,
-              valueString.indexOf(MrUtil.RECORD_COLUMN_DELIM)));
+          valueString.substring(0, valueString.indexOf(MrUtil.RECORD_COLUMN_DELIM)));
       for (List<String> valueStringLists : record.getTable()) {
-        StringBuilder valueStringBuilder = new StringBuilder(
-            RECORD_BUFFER_SIZE_DATA).append(valueTimestamps);
+        StringBuilder valueStringBuilder = new StringBuilder(RECORD_BUFFER_SIZE_DATA).append(valueTimestamps);
         if (!isDuplicate) {
           for (String valueStringList : valueStringLists) {
-            valueStringBuilder.append(MrUtil.RECORD_COLUMN_DELIM).append(
-                valueStringList);
+            valueStringBuilder.append(MrUtil.RECORD_COLUMN_DELIM).append(valueStringList);
           }
           if (record.isValid()) {
             counter = Counter.RECORDS_CLEANSED;
           } else {
-            valueStringBuilder.append(MrUtil.RECORD_COLUMN_DELIM).append(
-                record.getXml());
+            valueStringBuilder.append(MrUtil.RECORD_COLUMN_DELIM).append(record.getXml());
             counter = Counter.RECORDS_MALFORMED;
           }
         } else {
           if (valueStringLists.size() > 0) {
-            valueStringBuilder.append(MrUtil.RECORD_COLUMN_DELIM).append(
-                valueStringLists.get(0));
+            valueStringBuilder.append(MrUtil.RECORD_COLUMN_DELIM).append(valueStringLists.get(0));
           }
           counter = Counter.RECORDS_DUPLICATE;
         }
@@ -78,11 +71,8 @@ public class ClenseReducer extends
                 .append(PATH_PREFIX)
                 .append(counter.getPath())
                 .append(
-                    key.type(PartitionDriver.OUTPUT_FORMAT)
-                        .codec(
-                            MrUtil.getCodecString(context.getConfiguration()))
-                        .getPathPartition()).append('/')
-                .append(PartitionKey.TOKEN_NAME).toString());
+                    key.type(PartitionDriver.OUTPUT_FORMAT).codec(MrUtil.getCodecString(context.getConfiguration()))
+                        .getPathPartition()).append('/').append(PartitionKey.TOKEN_NAME).toString());
       }
       isDuplicate = isDuplicate || record.isValid();
       context.getCounter(counter).increment(1);

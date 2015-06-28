@@ -24,6 +24,14 @@
 		<module>cloudera-cyclehire-main-systest</module>
 	</modules>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.cloudera.cyclehire</groupId>
+			<artifactId>cloudera-cyclehire-data</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<filters>
 			<filter>./../cloudera-cyclehire-main-assembly/src/main/filter/${target.environment}_filter.properties</filter>
@@ -44,6 +52,29 @@
 				<filtering>true</filtering>
 			</testResource>
 		</testResources>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>unpack-test-data</id>
+							<phase>process-test-resources</phase>
+							<goals>
+								<goal>unpack-dependencies</goal>
+							</goals>
+							<configuration>
+								<includeArtifactIds>cloudera-cyclehire-data</includeArtifactIds>
+								<includes>cyclehire/**/*</includes>
+								<excludes>**/*.sh</excludes>
+								<outputDirectory>${project.build.directory}/test-data</outputDirectory>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 </project>

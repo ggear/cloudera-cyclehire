@@ -30,17 +30,15 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   public static final String TOKEN_PARTITION_MONTH = "month";
   public static final String TOKEN_NAME = "livecyclehireupdates";
 
-  public static final Pattern REGEX_RECORD = Pattern.compile("([1-9][0-9]{9})_"
-      + TOKEN_NAME + "([a-zA-Z0-9\\-\\.]*)\\.xml");
-  public static final Pattern REGEX_BATCH = Pattern
-      .compile("([1-9][0-9]{9})_([1-9][0-9]{9})_" + TOKEN_NAME
-          + "([a-zA-Z0-9\\-]*)\\.([a-z]+)\\.?([a-z]*)");
+  public static final Pattern REGEX_RECORD = Pattern.compile("([1-9][0-9]{9})_" + TOKEN_NAME
+      + "([a-zA-Z0-9\\-\\.]*)\\.xml");
+  public static final Pattern REGEX_BATCH = Pattern.compile("([1-9][0-9]{9})_([1-9][0-9]{9})_" + TOKEN_NAME
+      + "([a-zA-Z0-9\\-]*)\\.([a-z]+)\\.?([a-z]*)");
   public static final Pattern REGEX_PATH = Pattern
       .compile(".*\\/([a-zA-Z0-9_]+)\\/([a-zA-Z0-9_]+)\\/(.*)\\/(.*\\.[a-z]+\\.?[a-z]*)\\/(.*\\.[a-z]+\\.?[a-z]*).*");
 
   private static final long EPOCH_MIN = 1280448000000L;
-  private static final long EPOCH_MAX = System.currentTimeMillis() + 100L
-      * 365L * 24L * 60L * 60L * 1000L;
+  private static final long EPOCH_MAX = System.currentTimeMillis() + 100L * 365L * 24L * 60L * 60L * 1000L;
 
   private byte version = 1;
 
@@ -64,10 +62,8 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
     Set<String> batches = new HashSet<String>();
     List<PartitionKey> keys = new ArrayList<PartitionKey>();
     if (record != null) {
-      for (String partition : new PartitionKey().batch(batch).record(record)
-          .getPartitions()) {
-        PartitionKey key = new PartitionKey().batch(batch).record(record)
-            .partition(partition);
+      for (String partition : new PartitionKey().batch(batch).record(record).getPartitions()) {
+        PartitionKey key = new PartitionKey().batch(batch).record(record).partition(partition);
         batches.add(key.getPathBatch());
         keys.add(key);
       }
@@ -96,8 +92,7 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   public PartitionKey record(String record) {
     this.record = record == null ? "" : record;
     recordMatcher = null;
-    if (getMatcherRecord() == null
-        && REGEX_BATCH.matcher(this.record).matches()) {
+    if (getMatcherRecord() == null && REGEX_BATCH.matcher(this.record).matches()) {
       this.record = "";
     }
     if (this.epochPoll == 0L && getMatcherRecord() != null) {
@@ -163,19 +158,15 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
     if (!record.equals("") && getMatcherRecord() == null) {
       return false;
     }
-    long epochRecord = getMatcherRecord() == null ? 0L : 1000 * Long
-        .parseLong(getMatcherRecord().group(1));
-    if (epochRecord != 0L
-        && (epochRecord > EPOCH_MAX || epochRecord < EPOCH_MIN)) {
+    long epochRecord = getMatcherRecord() == null ? 0L : 1000 * Long.parseLong(getMatcherRecord().group(1));
+    if (epochRecord != 0L && (epochRecord > EPOCH_MAX || epochRecord < EPOCH_MIN)) {
       return false;
     }
     if (epochPoll != 0L
-        && (epochPoll > EPOCH_MAX || epochPoll < EPOCH_MIN
-            || epochPoll > epochBatchMax || epochPoll < epochBatchMin)) {
+        && (epochPoll > EPOCH_MAX || epochPoll < EPOCH_MIN || epochPoll > epochBatchMax || epochPoll < epochBatchMin)) {
       return false;
     }
-    if (epochUpdate != 0L
-        && (epochUpdate > EPOCH_MAX || epochUpdate < EPOCH_MIN)) {
+    if (epochUpdate != 0L && (epochUpdate > EPOCH_MAX || epochUpdate < EPOCH_MIN)) {
       return false;
     }
     if (!getPartitions().contains(getPartition())) {
@@ -190,28 +181,26 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
     if (getPartition().equals(PartitionFlag._UNKNOWN.toString())) {
       return false;
     }
-    if (getPartitions().equals(
-        Arrays.asList(new String[] { PartitionFlag._UNKNOWN.toString() }))) {
+    if (getPartitions().equals(Arrays.asList(new String[] { PartitionFlag._UNKNOWN.toString() }))) {
       return false;
     }
     return true;
   }
 
   public String getType() {
-    return type == null ? getMatcherBatch() == null ? PartitionFlag._UNKNOWN
-        .toString() : getMatcherBatch().group(4) : type;
+    return type == null ? getMatcherBatch() == null ? PartitionFlag._UNKNOWN.toString() : getMatcherBatch().group(4)
+        : type;
   }
 
   public String getCodec() {
-    return codec == null ? getMatcherBatch() == null ? PartitionFlag._UNKNOWN
-        .toString() : getMatcherBatch().group(5).equals("") ? MrUtil.CODEC_NONE
-        : getMatcherBatch().group(5) : codec;
+    return codec == null ? getMatcherBatch() == null ? PartitionFlag._UNKNOWN.toString() : getMatcherBatch().group(5)
+        .equals("") ? MrUtil.CODEC_NONE : getMatcherBatch().group(5) : codec;
   }
 
   public String getPartition() {
     Set<String> partitions = getPartitions();
-    return partition == null ? partitions.size() == 1 ? partitions.iterator()
-        .next() : PartitionFlag._UNKNOWN.toString() : partition;
+    return partition == null ? partitions.size() == 1 ? partitions.iterator().next() : PartitionFlag._UNKNOWN
+        .toString() : partition;
   }
 
   public Set<String> getPartitions() {
@@ -219,38 +208,26 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
     if (getMatcherBatch() != null) {
       Calendar calendarMin = null;
       Calendar calendarMax = null;
-      Calendar calendarMinRange = getCalendarMonth(1000 * Long
-          .parseLong(getMatcherBatch().group(1)));
-      Calendar calendarMaxRange = getCalendarMonth(1000 * Long
-          .parseLong(getMatcherBatch().group(2)));
+      Calendar calendarMinRange = getCalendarMonth(1000 * Long.parseLong(getMatcherBatch().group(1)));
+      Calendar calendarMaxRange = getCalendarMonth(1000 * Long.parseLong(getMatcherBatch().group(2)));
       if (!record.equals("")) {
         if (getMatcherRecord() != null) {
-          calendarMin = getCalendarMonth(1000 * Long
-              .parseLong(getMatcherRecord().group(1)));
-          calendarMax = getCalendarMonth(1000 * Long
-              .parseLong(getMatcherRecord().group(1)));
+          calendarMin = getCalendarMonth(1000 * Long.parseLong(getMatcherRecord().group(1)));
+          calendarMax = getCalendarMonth(1000 * Long.parseLong(getMatcherRecord().group(1)));
         }
       } else {
         calendarMin = calendarMinRange;
         calendarMax = calendarMaxRange;
       }
-      if (calendarMin != null
-          && calendarMin.getTimeInMillis() < EPOCH_MAX
-          && calendarMin.getTimeInMillis() > EPOCH_MIN
-          && calendarMax != null
-          && calendarMax.getTimeInMillis() < EPOCH_MAX
+      if (calendarMin != null && calendarMin.getTimeInMillis() < EPOCH_MAX && calendarMin.getTimeInMillis() > EPOCH_MIN
+          && calendarMax != null && calendarMax.getTimeInMillis() < EPOCH_MAX
           && calendarMax.getTimeInMillis() > EPOCH_MIN
           && calendarMax.getTimeInMillis() >= calendarMin.getTimeInMillis()
-          && calendarMin.getTimeInMillis() >= calendarMinRange
-              .getTimeInMillis()
-          && calendarMax.getTimeInMillis() <= calendarMaxRange
-              .getTimeInMillis()) {
-        calendarMin.setTime(DateUtils.truncate(calendarMin, Calendar.MONTH)
-            .getTime());
-        while (calendarMin.getTimeInMillis() == calendarMax.getTimeInMillis()
-            || calendarMin.before(calendarMax)) {
-          partitions.add(TOKEN_PARTITION_YEAR + "="
-              + calendarMin.get(Calendar.YEAR) + "/" + TOKEN_PARTITION_MONTH
+          && calendarMin.getTimeInMillis() >= calendarMinRange.getTimeInMillis()
+          && calendarMax.getTimeInMillis() <= calendarMaxRange.getTimeInMillis()) {
+        calendarMin.setTime(DateUtils.truncate(calendarMin, Calendar.MONTH).getTime());
+        while (calendarMin.getTimeInMillis() == calendarMax.getTimeInMillis() || calendarMin.before(calendarMax)) {
+          partitions.add(TOKEN_PARTITION_YEAR + "=" + calendarMin.get(Calendar.YEAR) + "/" + TOKEN_PARTITION_MONTH
               + "=" + String.format("%d", calendarMin.get(Calendar.MONTH) + 1));
           calendarMin.add(Calendar.MONTH, 1);
         }
@@ -271,19 +248,16 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   }
 
   public String getPath() {
-    return new StringBuilder(PATH_NOMINAL_LENGTH).append(getPathBatch())
-        .append('/').append(getRecord()).toString();
+    return new StringBuilder(PATH_NOMINAL_LENGTH).append(getPathBatch()).append('/').append(getRecord()).toString();
   }
 
   public String getPathBatch() {
-    return new StringBuilder(PATH_NOMINAL_LENGTH).append(getPathPartition())
-        .append('/').append(getBatch()).toString();
+    return new StringBuilder(PATH_NOMINAL_LENGTH).append(getPathPartition()).append('/').append(getBatch()).toString();
   }
 
   public String getPathPartition() {
-    return new StringBuilder(PATH_NOMINAL_LENGTH).append('/').append(getType())
-        .append('/').append(getCodec()).append('/').append(getPartition())
-        .toString();
+    return new StringBuilder(PATH_NOMINAL_LENGTH).append('/').append(getType()).append('/').append(getCodec())
+        .append('/').append(getPartition()).toString();
   }
 
   protected static Calendar getCalendarMonth(long epoch) {
@@ -315,8 +289,7 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
   }
 
   public String getBatch() {
-    return batch == null || batch.equals("") ? PartitionFlag._UNKNOWN
-        .toString() : batch;
+    return batch == null || batch.equals("") ? PartitionFlag._UNKNOWN.toString() : batch;
   }
 
   public Long getEpochGet() {
@@ -378,10 +351,8 @@ public class PartitionKey implements WritableComparable<PartitionKey> {
 
   @Override
   public int compareTo(PartitionKey that) {
-    int compare = epochUpdate > that.epochUpdate ? +1
-        : epochUpdate < that.epochUpdate ? -1 : 0;
-    return compare == 0 ? epochPoll > that.epochPoll ? +1
-        : epochPoll < that.epochPoll ? -1 : 0 : compare;
+    int compare = epochUpdate > that.epochUpdate ? +1 : epochUpdate < that.epochUpdate ? -1 : 0;
+    return compare == 0 ? epochPoll > that.epochPoll ? +1 : epochPoll < that.epochPoll ? -1 : 0 : compare;
   }
 
 }

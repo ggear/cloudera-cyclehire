@@ -38,8 +38,7 @@ public class ProcessDriver extends Driver {
 
   @Override
   public String[] parameters() {
-    return new String[] { "hdfs-dir-landed", "hdfs-dir-staged",
-        "hdfs-dir-partitioned", "hdfs-dir-processed" };
+    return new String[] { "hdfs-dir-landed", "hdfs-dir-staged", "hdfs-dir-partitioned", "hdfs-dir-processed" };
   }
 
   @Override
@@ -72,19 +71,15 @@ public class ProcessDriver extends Driver {
   }
 
   @Override
-  public int execute() throws InterruptedException, ExecutionException,
-      IOException, ClassNotFoundException {
+  public int execute() throws InterruptedException, ExecutionException, IOException, ClassNotFoundException {
 
     int returnValue = RETURN_FAILURE_RUNTIME;
     Driver stageDriver = new StageDriver(getConf());
     Driver partitionDriver = new PartitionDriver(getConf());
     Driver cleanseDriver = new CleanseDriver(getConf());
-    if ((returnValue = stageDriver.run(new String[] { inputLandedPath,
-        inputStagedPath })) == RETURN_SUCCESS) {
-      if ((returnValue = partitionDriver.run(new String[] { inputStagedPath,
-          inputPartitionedPath })) == RETURN_SUCCESS) {
-        returnValue = cleanseDriver.run(new String[] { inputStagedPath,
-            inputPartitionedPath, inputProcessedPath });
+    if ((returnValue = stageDriver.run(new String[] { inputLandedPath, inputStagedPath })) == RETURN_SUCCESS) {
+      if ((returnValue = partitionDriver.run(new String[] { inputStagedPath, inputPartitionedPath })) == RETURN_SUCCESS) {
+        returnValue = cleanseDriver.run(new String[] { inputStagedPath, inputPartitionedPath, inputProcessedPath });
       }
     }
 

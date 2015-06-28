@@ -14,22 +14,16 @@ public class MrUtil {
   public static final String CODEC_NONE = "none";
 
   public static String getCodecString(Configuration configuration) {
-    boolean compress = configuration.getBoolean(FileOutputFormat.COMPRESS_TYPE,
-        false);
+    boolean compress = configuration.getBoolean(FileOutputFormat.COMPRESS_TYPE, false);
     if (compress) {
-      String codecType = configuration
-          .get(FileOutputFormat.COMPRESS_TYPE, null);
-      Class<?> codecClass = configuration.getClass(
-          FileOutputFormat.COMPRESS_CODEC,
-          codecType == null
-              || !codecType.equals(CompressionType.NONE.toString()) ? null
-              : DefaultCodec.class);
+      String codecType = configuration.get(FileOutputFormat.COMPRESS_TYPE, null);
+      Class<?> codecClass = configuration.getClass(FileOutputFormat.COMPRESS_CODEC,
+          codecType == null || !codecType.equals(CompressionType.NONE.toString()) ? null : DefaultCodec.class);
       if (codecClass == null) {
         return CODEC_NONE;
       } else {
         try {
-          return ((CompressionCodec) codecClass.newInstance())
-              .getDefaultExtension().replace(".", "");
+          return ((CompressionCodec) codecClass.newInstance()).getDefaultExtension().replace(".", "");
         } catch (Exception exception) {
           throw new RuntimeException("Could not determine codec", exception);
         }

@@ -23,12 +23,10 @@ import com.cloudera.framework.main.common.Driver;
 
 public class CleanDriver extends Driver {
 
-  public static final Counter[] COUNTERS = new Counter[] {
-      Counter.FILES_SKIPPED, Counter.FILES_FAILED, Counter.FILES_SUCCESSFUL,
-      Counter.FILES, Counter.BATCHES_SKIPPED, Counter.BATCHES_FAILED,
-      Counter.BATCHES_SUCCESSFUL, Counter.BATCHES, Counter.PARTITIONS_SKIPPED,
-      Counter.PARTITIONS_FAILED, Counter.PARTITIONS_SUCCESSFUL,
-      Counter.PARTITIONS };
+  public static final Counter[] COUNTERS = new Counter[] { Counter.FILES_SKIPPED, Counter.FILES_FAILED,
+      Counter.FILES_SUCCESSFUL, Counter.FILES, Counter.BATCHES_SKIPPED, Counter.BATCHES_FAILED,
+      Counter.BATCHES_SUCCESSFUL, Counter.BATCHES, Counter.PARTITIONS_SKIPPED, Counter.PARTITIONS_FAILED,
+      Counter.PARTITIONS_SUCCESSFUL, Counter.PARTITIONS };
 
   private static final Logger LOG = LoggerFactory.getLogger(CleanDriver.class);
 
@@ -77,11 +75,9 @@ public class CleanDriver extends Driver {
 
     inputLandedPath = new Path(arguments[0]);
     if (!hdfs.exists(inputLandedPath)
-        || !DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser()
-            .getUserName(), UserGroupInformation.getCurrentUser()
-            .getGroupNames(), inputLandedPath, FsAction.READ)) {
-      throw new Exception("HDFS landed directory [" + inputLandedPath
-          + "] not available to user ["
+        || !DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser().getUserName(), UserGroupInformation
+            .getCurrentUser().getGroupNames(), inputLandedPath, FsAction.READ)) {
+      throw new Exception("HDFS landed directory [" + inputLandedPath + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
     if (LOG.isInfoEnabled()) {
@@ -90,11 +86,9 @@ public class CleanDriver extends Driver {
 
     inputStagedPath = new Path(arguments[1]);
     if (!hdfs.exists(inputStagedPath)
-        || !DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser()
-            .getUserName(), UserGroupInformation.getCurrentUser()
-            .getGroupNames(), inputStagedPath, FsAction.READ)) {
-      throw new Exception("HDFS landed directory [" + inputStagedPath
-          + "] not available to user ["
+        || !DfsUtil.canDoAction(hdfs, UserGroupInformation.getCurrentUser().getUserName(), UserGroupInformation
+            .getCurrentUser().getGroupNames(), inputStagedPath, FsAction.READ)) {
+      throw new Exception("HDFS landed directory [" + inputStagedPath + "] not available to user ["
           + UserGroupInformation.getCurrentUser().getUserName() + "]");
     }
     if (LOG.isInfoEnabled()) {
@@ -105,8 +99,7 @@ public class CleanDriver extends Driver {
   }
 
   @Override
-  public int execute() throws InterruptedException, ExecutionException,
-      IOException, ClassNotFoundException {
+  public int execute() throws InterruptedException, ExecutionException, IOException, ClassNotFoundException {
 
     FileSystem hdfs = FileSystem.newInstance(getConf());
 
@@ -118,33 +111,26 @@ public class CleanDriver extends Driver {
     Map<Path, PartitionKey> stagedTodo = new HashMap<>();
     for (Path landedPath : DfsUtil.listFiles(hdfs, inputLandedPath, true)) {
       if (!PartitionFlag.isValue(landedPath.getName())) {
-        for (PartitionKey partitionKey : PartitionKey.getKeys(landedPath
-            .getParent().getName(), landedPath.getName())) {
-          boolean landedPathExists = hdfs.exists(new Path(landedPath
-              .getParent(), partitionKey.getRecord()));
-          Path stagedPath = new Path(
-              new StringBuilder(PartitionKey.PATH_NOMINAL_LENGTH)
-                  .append(inputStagedPath)
-                  .append('/')
-                  .append(
-                      partitionKey.isValid() && landedPathExists ? Counter.BATCHES_SUCCESSFUL
-                          .getPath() : Counter.BATCHES_FAILED.getPath())
-                  .append('/').append(partitionKey.getPath()).toString());
+        for (PartitionKey partitionKey : PartitionKey.getKeys(landedPath.getParent().getName(), landedPath.getName())) {
+          boolean landedPathExists = hdfs.exists(new Path(landedPath.getParent(), partitionKey.getRecord()));
+          Path stagedPath = new Path(new StringBuilder(PartitionKey.PATH_NOMINAL_LENGTH)
+              .append(inputStagedPath)
+              .append('/')
+              .append(
+                  partitionKey.isValid() && landedPathExists ? Counter.BATCHES_SUCCESSFUL.getPath()
+                      : Counter.BATCHES_FAILED.getPath()).append('/').append(partitionKey.getPath()).toString());
           if (PartitionFlag.list(hdfs, landedPath, PartitionFlag._SUCCESS)
-              && !PartitionFlag
-                  .list(hdfs, stagedPath, PartitionFlag._PARTITION)) {
+              && !PartitionFlag.list(hdfs, stagedPath, PartitionFlag._PARTITION)) {
             landedCleaned.put(landedPath, partitionKey);
             stagedCleaned.put(stagedPath, partitionKey);
             if (landedPathExists) {
-              incrementCounter(Counter.FILES_SUCCESSFUL, 1,
-                  partitionKey.getBatch() + '/' + partitionKey.getRecord(),
+              incrementCounter(Counter.FILES_SUCCESSFUL, 1, partitionKey.getBatch() + '/' + partitionKey.getRecord(),
                   counterFiles);
             }
           } else {
             stagedTodo.put(stagedPath, partitionKey);
             if (landedPathExists) {
-              incrementCounter(Counter.FILES_SKIPPED, 1,
-                  partitionKey.getBatch() + '/' + partitionKey.getRecord(),
+              incrementCounter(Counter.FILES_SKIPPED, 1, partitionKey.getBatch() + '/' + partitionKey.getRecord(),
                   counterFiles);
             }
           }
@@ -154,21 +140,18 @@ public class CleanDriver extends Driver {
     for (Path stagedPath : stagedCleaned.keySet()) {
       PartitionKey partitionKey = stagedCleaned.get(stagedPath);
       hdfs.delete(stagedPath.getParent(), true);
-      incrementCounter(Counter.BATCHES_SUCCESSFUL, 1,
-          partitionKey.getPartition() + '/' + partitionKey.getBatch(),
+      incrementCounter(Counter.BATCHES_SUCCESSFUL, 1, partitionKey.getPartition() + '/' + partitionKey.getBatch(),
           counterBatches);
-      incrementCounter(Counter.PARTITIONS_SUCCESSFUL, 1,
-          partitionKey.getPartition(), counterPartitions);
+      incrementCounter(Counter.PARTITIONS_SUCCESSFUL, 1, partitionKey.getPartition(), counterPartitions);
     }
     for (Path landedPath : landedCleaned.keySet()) {
       hdfs.delete(landedPath.getParent(), true);
     }
     for (Path stagedPath : stagedTodo.keySet()) {
       PartitionKey partitionKey = stagedTodo.get(stagedPath);
-      incrementCounter(Counter.BATCHES_SKIPPED, 1, partitionKey.getPartition()
-          + '/' + partitionKey.getBatch(), counterBatches);
-      incrementCounter(Counter.PARTITIONS_SKIPPED, 1,
-          partitionKey.getPartition(), counterPartitions);
+      incrementCounter(Counter.BATCHES_SKIPPED, 1, partitionKey.getPartition() + '/' + partitionKey.getBatch(),
+          counterBatches);
+      incrementCounter(Counter.PARTITIONS_SKIPPED, 1, partitionKey.getPartition(), counterPartitions);
     }
     incrementCounter(Counter.FILES, counterFiles.size());
     incrementCounter(Counter.BATCHES, counterBatches.size());
