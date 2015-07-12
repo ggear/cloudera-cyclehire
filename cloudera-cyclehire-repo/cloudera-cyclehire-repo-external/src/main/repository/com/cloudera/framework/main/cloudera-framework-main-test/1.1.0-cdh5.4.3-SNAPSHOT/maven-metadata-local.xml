@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata modelVersion="1.1.0">
   <groupId>com.cloudera.framework.main</groupId>
-  <artifactId>cloudera-framework-main-common</artifactId>
-  <version>1.1.0-cdh5.4.2-SNAPSHOT</version>
+  <artifactId>cloudera-framework-main-test</artifactId>
+  <version>1.1.0-cdh5.4.3-SNAPSHOT</version>
   <versioning>
     <snapshot>
       <localCopy>true</localCopy>
     </snapshot>
-    <lastUpdated>20150628135331</lastUpdated>
+    <lastUpdated>20150712092409</lastUpdated>
     <snapshotVersions>
       <snapshotVersion>
         <extension>jar</extension>
-        <value>1.1.0-cdh5.4.2-SNAPSHOT</value>
-        <updated>20150628135331</updated>
+        <value>1.1.0-cdh5.4.3-SNAPSHOT</value>
+        <updated>20150712092409</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>1.1.0-cdh5.4.2-SNAPSHOT</value>
-        <updated>20150628135331</updated>
+        <value>1.1.0-cdh5.4.3-SNAPSHOT</value>
+        <updated>20150712092409</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>

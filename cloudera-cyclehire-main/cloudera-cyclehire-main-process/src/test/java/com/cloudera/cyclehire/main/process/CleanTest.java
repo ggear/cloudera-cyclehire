@@ -3,6 +3,8 @@ package com.cloudera.cyclehire.main.process;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
@@ -48,12 +50,20 @@ public class CleanTest extends LocalClusterDfsMrTest implements TestConstants {
             //
             { { null }, }, //
             { { null }, }, //
-        } }, //
+        }, //
+        new Map[] {
+            //
+            Collections.emptyMap(), //
+            Collections.emptyMap(), //
+            Collections.emptyMap(), //
+        }, //
+    }, //
     });
   }
 
-  public CleanTest(String[] sources, String[] destinations, String[] datasets, String[][] subsets, String[][][] labels) {
-    super(sources, destinations, datasets, subsets, labels);
+  public CleanTest(String[] sources, String[] destinations, String[] datasets, String[][] subsets, String[][][] labels,
+      @SuppressWarnings("rawtypes") Map[] counters) {
+    super(sources, destinations, datasets, subsets, labels, counters);
   }
 
   protected Driver cleanDriver;

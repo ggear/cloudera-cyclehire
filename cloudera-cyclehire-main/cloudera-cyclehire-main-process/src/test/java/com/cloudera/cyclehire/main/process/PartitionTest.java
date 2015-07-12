@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
@@ -52,13 +53,20 @@ public class PartitionTest extends LocalClusterDfsMrTest implements TestConstant
             //
             { { null }, }, //
             { { null }, }, //
-        } }, //
+        }, //
+        new Map[] {
+            //
+            Collections.emptyMap(), //
+            Collections.emptyMap(), //
+            Collections.emptyMap(), //
+        }, //
+    }, //
     });
   }
 
   public PartitionTest(String[] sources, String[] destinations, String[] datasets, String[][] subsets,
-      String[][][] labels) {
-    super(sources, destinations, datasets, subsets, labels);
+      String[][][] labels, @SuppressWarnings("rawtypes") Map[] counters) {
+    super(sources, destinations, datasets, subsets, labels, counters);
   }
 
   protected Driver stageDriver;

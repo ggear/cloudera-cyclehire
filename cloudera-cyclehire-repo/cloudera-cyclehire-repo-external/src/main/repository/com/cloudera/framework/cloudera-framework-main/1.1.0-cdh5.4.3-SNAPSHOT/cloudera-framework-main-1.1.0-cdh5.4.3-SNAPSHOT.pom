@@ -3,20 +3,23 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.cloudera.framework.main</groupId>
-	<artifactId>cloudera-framework-main-client</artifactId>
+	<groupId>com.cloudera.framework</groupId>
+	<artifactId>cloudera-framework-main</artifactId>
 	<packaging>pom</packaging>
-	<version>1.1.0-cdh5.4.2-SNAPSHOT</version>
+	<version>1.1.0-cdh5.4.3-SNAPSHOT</version>
 
 	<parent>
-		<groupId>com.cloudera.framework</groupId>
-		<artifactId>cloudera-framework-main</artifactId>
-		<version>1.1.0-cdh5.4.2-SNAPSHOT</version>
+		<groupId>com.cloudera</groupId>
+		<artifactId>cloudera-framework</artifactId>
+		<version>1.1.0-cdh5.4.3-SNAPSHOT</version>
 	</parent>
 
 	<modules>
-		<module>cloudera-framework-main-client-core</module>
-		<module>cloudera-framework-main-client-flume</module>
+		<module>cloudera-framework-main-client</module>
+		<module>cloudera-framework-main-runtime</module>
+		<module>cloudera-framework-main-test</module>
+		<module>cloudera-framework-main-common</module>
+		<module>cloudera-framework-main-archetype</module>
 	</modules>
 
 	<build>
@@ -27,7 +30,7 @@
 				<configuration>
 					<filesets>
 						<fileset>
-							<directory>../../cloudera-framework-repo/cloudera-framework-repo-external/src/main/repository</directory>
+							<directory>../cloudera-framework-repo/cloudera-framework-repo-external/src/main/repository</directory>
 							<includes>
 								<include>**/${project.artifactId}/**</include>
 							</includes>
@@ -49,7 +52,7 @@
 						<configuration>
 							<pomFile>pom.xml</pomFile>
 							<file>pom.xml</file>
-							<localRepositoryPath>../../cloudera-framework-repo/cloudera-framework-repo-external/src/main/repository</localRepositoryPath>
+							<localRepositoryPath>../cloudera-framework-repo/cloudera-framework-repo-external/src/main/repository</localRepositoryPath>
 						</configuration>
 					</execution>
 				</executions>

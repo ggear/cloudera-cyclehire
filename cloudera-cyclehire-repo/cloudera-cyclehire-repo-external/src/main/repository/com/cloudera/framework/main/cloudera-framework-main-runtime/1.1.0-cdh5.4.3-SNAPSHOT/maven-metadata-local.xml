@@ -2,17 +2,17 @@
 <metadata modelVersion="1.1.0">
   <groupId>com.cloudera.framework.main</groupId>
   <artifactId>cloudera-framework-main-runtime</artifactId>
-  <version>1.1.0-cdh5.4.2-SNAPSHOT</version>
+  <version>1.1.0-cdh5.4.3-SNAPSHOT</version>
   <versioning>
     <snapshot>
       <localCopy>true</localCopy>
     </snapshot>
-    <lastUpdated>20150628135328</lastUpdated>
+    <lastUpdated>20150712092406</lastUpdated>
     <snapshotVersions>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>1.1.0-cdh5.4.2-SNAPSHOT</value>
-        <updated>20150628135328</updated>
+        <value>1.1.0-cdh5.4.3-SNAPSHOT</value>
+        <updated>20150712092406</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>

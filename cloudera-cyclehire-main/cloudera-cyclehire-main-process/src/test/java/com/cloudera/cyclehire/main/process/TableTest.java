@@ -2,6 +2,7 @@ package com.cloudera.cyclehire.main.process;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,14 @@ public class TableTest extends MiniClusterDfsMrHiveTest implements TestConstants
             //
             { { null }, }, //
             { { null }, }, //
-        } }, //
+        }, //
+        new Map[] {
+            //
+            Collections.emptyMap(), //
+            Collections.emptyMap(), //
+            Collections.emptyMap(), //
+        }, //
+    }, //
     });
   }
 
@@ -98,8 +106,9 @@ public class TableTest extends MiniClusterDfsMrHiveTest implements TestConstants
     }
   };
 
-  public TableTest(String[] sources, String[] destinations, String[] datasets, String[][] subsets, String[][][] labels) {
-    super(sources, destinations, datasets, subsets, labels);
+  public TableTest(String[] sources, String[] destinations, String[] datasets, String[][] subsets, String[][][] labels,
+      @SuppressWarnings("rawtypes") Map[] counters) {
+    super(sources, destinations, datasets, subsets, labels, counters);
   }
 
   @Before

@@ -4,38 +4,20 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cloudera.framework.main</groupId>
-	<artifactId>cloudera-framework-main-common</artifactId>
-	<packaging>jar</packaging>
-	<version>1.1.0-cdh5.4.2-SNAPSHOT</version>
+	<artifactId>cloudera-framework-main-client</artifactId>
+	<packaging>pom</packaging>
+	<version>1.1.0-cdh5.4.3-SNAPSHOT</version>
 
 	<parent>
 		<groupId>com.cloudera.framework</groupId>
 		<artifactId>cloudera-framework-main</artifactId>
-		<version>1.1.0-cdh5.4.2-SNAPSHOT</version>
+		<version>1.1.0-cdh5.4.3-SNAPSHOT</version>
 	</parent>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.cloudera.framework.main.client</groupId>
-			<artifactId>cloudera-framework-main-client-core</artifactId>
-			<version>${project.version}</version>
-			<type>pom</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.cloudera.framework.main.client</groupId>
-			<artifactId>cloudera-framework-main-client-flume</artifactId>
-			<version>${project.version}</version>
-			<type>pom</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.cloudera.framework.main</groupId>
-			<artifactId>cloudera-framework-main-test</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+	<modules>
+		<module>cloudera-framework-main-client-core</module>
+		<module>cloudera-framework-main-client-flume</module>
+	</modules>
 
 	<build>
 		<plugins>
@@ -56,6 +38,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
+				<inherited>false</inherited>
 				<executions>
 					<execution>
 						<id>install-artifact</id>
@@ -65,7 +48,7 @@
 						</goals>
 						<configuration>
 							<pomFile>pom.xml</pomFile>
-							<file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
+							<file>pom.xml</file>
 							<localRepositoryPath>../../cloudera-framework-repo/cloudera-framework-repo-external/src/main/repository</localRepositoryPath>
 						</configuration>
 					</execution>
