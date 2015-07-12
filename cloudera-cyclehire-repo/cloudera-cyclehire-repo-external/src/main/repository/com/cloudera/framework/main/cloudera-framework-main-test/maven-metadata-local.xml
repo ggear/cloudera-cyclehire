@@ -4,8 +4,8 @@
   <artifactId>cloudera-framework-main-test</artifactId>
   <versioning>
     <versions>
-      <version>1.1.0-cdh5.4.3-SNAPSHOT</version>
+      <version>1.2.0-cdh5.4.4-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20150712092409</lastUpdated>
+    <lastUpdated>20150712104228</lastUpdated>
   </versioning>
 </metadata>
